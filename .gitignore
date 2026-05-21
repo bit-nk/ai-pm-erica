@@ -1,0 +1,29 @@
+# Client data — never commit real client files
+clients/
+*.client.md
+
+# Generated artefacts — output only, not source
+.claude/skills/Artifacts/
+
+# Root-level client documents
+BINQ_Business_Score_Project_Charter.md
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment / secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Logs
+*.log
