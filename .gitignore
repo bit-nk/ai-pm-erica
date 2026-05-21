@@ -19,6 +19,9 @@ BINQ_Business_Score_Project_Charter.md
 *.swp
 *.swo
 
+# Claude Code local settings — personal overrides, never shared
+.claude/settings.local.json
+
 # Environment / secrets
 .env
 .env.*
