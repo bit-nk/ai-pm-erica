@@ -1,0 +1,8 @@
+Run the **05-prd-generator** skill on the following input.
+
+Read `.claude/skills/05-prd-generator/skill.md` for the full workflow and output format.
+Read `.claude/skills/05-prd-generator/reference.md` for a worked example if needed.
+Read `.claude/skills/05-prd-generator/brd-guide.md` if the output should follow BRD conventions.
+
+Requirements, charter, or discovery output:
+$ARGUMENTS
