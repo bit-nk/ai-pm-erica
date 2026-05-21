@@ -65,6 +65,53 @@ Client artefacts live in `clients/CLIENT_NAME/` locally and are excluded from ve
 
 ---
 
+## Saving Artefacts
+
+After producing any artefact, always ask the user where they want it saved or published before taking any action. Never write a file or post to an external system without confirmation.
+
+**How to ask — present options every time:**
+
+> "Where would you like me to save this artefact?"
+>
+> 1. **Local file** — saved to `clients/CLIENT/FOLDER/YYYY-MM-DD-filename.md`
+> 2. **Confluence** — published as a new page (ask for space and parent page)
+> 3. **Jira** — created as an epic, story, or issue (ask for project key)
+> 4. **Google Drive** — saved as a new Doc or file (ask for folder)
+> 5. **Notion** — created as a new page (ask for workspace and parent page)
+> 6. **Gmail** — drafted as an email ready to send (ask for recipient)
+> 7. **Clipboard only** — display the output for the user to copy manually
+
+**Default local paths by artefact type:**
+
+| Artefact | Default local path |
+|---|---|
+| Intake summary | `clients/CLIENT/project-artefacts/YYYY-MM-DD-intake-summary.md` |
+| Risk scan | `clients/CLIENT/project-artefacts/YYYY-MM-DD-risk-scan.md` |
+| Project charter | `clients/CLIENT/project-artefacts/YYYY-MM-DD-project-charter.md` |
+| Discovery output | `clients/CLIENT/project-artefacts/YYYY-MM-DD-discovery-workshop.md` |
+| PRD | `clients/CLIENT/project-artefacts/YYYY-MM-DD-prd.md` |
+| User stories | `clients/CLIENT/user-stories/YYYY-MM-DD-epics-and-stories.md` |
+| Sprint SOW | `clients/CLIENT/sprint-artefacts/YYYY-MM-DD-sprint-N-sow.md` |
+| Sprint report | `clients/CLIENT/sprint-artefacts/YYYY-MM-DD-sprint-N-report.md` |
+| Meeting notes | `clients/CLIENT/meeting-notes/YYYY-MM-DD-meeting-title.md` |
+
+**Destination-specific behaviour:**
+
+- **Local:** Use today's date (`YYYY-MM-DD`) as the filename prefix. If the client name is unknown, ask before suggesting a path. After saving, confirm the full path.
+- **Confluence:** Use the `createConfluencePage` tool. Ask for the space key and parent page title. Format output as clean markdown — Confluence renders it correctly.
+- **Jira:** Use `createJiraIssue` for stories and tasks, or `createIssue` for epics. Ask for the project key. Map acceptance criteria to the description field.
+- **Google Drive:** Use `create_file` or `copy_file`. Ask for the destination folder name or ID. Default to Google Docs format for text artefacts.
+- **Notion:** Use `notion-create-pages`. Ask for the parent page or database. Apply appropriate Notion page properties where available.
+- **Gmail:** Use `create_draft`. Ask for recipient name and email. Format the artefact as the email body with a short covering note at the top.
+
+**Rules that apply to all destinations:**
+- Always confirm the destination before writing or posting.
+- If the user says "save it" without specifying where, ask — never assume.
+- If the client name is not yet known, ask for it before proceeding.
+- After saving or publishing, confirm where it landed so the user knows exactly where to find it.
+
+---
+
 ## Output Defaults
 
 - Markdown format unless the user specifies otherwise
