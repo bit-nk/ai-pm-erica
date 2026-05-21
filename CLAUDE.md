@@ -2,8 +2,22 @@
 
 A Claude Code project that acts as a senior PM co-pilot. It converts raw inputs — stakeholder messages, meeting transcripts, feature requests — into structured, decision-ready PM artefacts.
 
-## Quick Reference
+## Start Here
 
+**`/pm [paste anything]`** — the recommended entry point. The PM Orchestrator analyses your input, builds a skill plan, and runs the right skills in the right order. You review and approve each step.
+
+Use individual commands only when you know exactly which skill you need.
+
+---
+
+## Commands
+
+### Orchestrator
+| Command | What It Does |
+|---|---|
+| `/pm` | PM Orchestrator — analyses input, plans and chains skills automatically |
+
+### Individual Skills
 | Command | What It Does |
 |---|---|
 | `/triage` | Triage a raw stakeholder message or request |
@@ -19,11 +33,13 @@ A Claude Code project that acts as a senior PM co-pilot. It converts raw inputs 
 
 ## Skill Chain
 
-Skills are designed to run in sequence through a delivery lifecycle:
+When using individual skills, they run in sequence through the delivery lifecycle:
 
 ```
 Raw request → /triage → /risk-scan → /charter → /discovery → /prd → /stories → /sprint-sow
 ```
+
+`/pm` handles this chain automatically.
 
 ## Detailed Instructions
 
