@@ -97,75 +97,61 @@ Missing instrumentation is expensive to retrofit — always specify it.
 
 ---
 
-## Example (from a real story)
+## Example (expense submission flow)
 
 ```
-## Screen 1 — Business Score Entry
+## Screen 1 — Submit Expense
 
 ### Functional Specs
-- Screen displays: title "Business Score", subtitle "Get your Experian-backed
-  business credit score in minutes.", primary "Create new account" button,
-  secondary "I already have an account" link, and info note "Soft credit check
-  only. No impact on your business credit score. Data sourced via Experian
-  Business Credit Bureau."
-- Tapping "Create new account" navigates to the Find Your Company screen.
-- Tapping "I already have an account" navigates to the Authentication sign-in
-  flow (BBS-37).
-- Tapping the back arrow navigates to the previous home screen.
-
----
-
-## Screen 2 — Find Your Company
-
-### Functional Specs
-- Screen displays: title "Find your company", subtitle "Search the Companies
-  House register", and a search field with a search icon.
-- Once input reaches the minimum character threshold, the system queries the
-  Companies House register in real time with debouncing.
-- Each result row shows: company name (bold), registration number prefixed
-  with # and registered address.
-- Tapping a company row shows a loading indicator on the row, fetches
-  registered directors, then navigates to Screen 3.
-- Tapping the back arrow returns to Screen 1.
-- Leading/trailing whitespace is trimmed from the search input before querying.
-- Clearing the search field clears the results list; no error is shown.
+- Screen displays: title "Submit Expense", subtitle "Fill in the details below
+  and attach your receipt.", Amount field (required), Category dropdown
+  (required, options: Travel / Meals / Equipment / Other), Date field
+  (required, defaults to today), Description field (optional, 500 char max),
+  Receipt upload (optional, accepts JPG/PNG/PDF), "Submit" button, "Cancel" link.
+- "Submit" button is disabled until Amount, Category, and Date are all filled.
+- Tapping "Submit" with valid fields saves the claim with status "Pending Approval"
+  and navigates to Screen 2.
+- Tapping "Cancel" with no data entered returns to the My Claims list.
+- Tapping "Cancel" with data entered shows the unsaved-changes dialog.
+- Tapping the back arrow behaves identically to "Cancel".
 
 ### Error Handling
-- Companies House API unavailable: dismiss results list and show "We're having
-  trouble searching right now. Please try again." with a retry option.
-- Zero results returned: show "No companies found for '[query]'. Try a
-  different name or company number."
-- Director fetch fails after company tap: show "We couldn't load the directors
-  for this company. Please try again." and keep user on Screen 2.
+- Amount empty on submit: show inline error "Please enter an amount."
+- Category not selected on submit: show inline error "Please select a category."
+- Date empty on submit: show inline error "Please enter a date."
+- Receipt wrong file type: reject before upload and show "Only JPG, PNG, and PDF files are accepted."
+- Receipt over 5MB: reject and show "File must be under 5MB."
+- API error on submit: show banner "Something went wrong. Please try again." and keep form data.
 
 ---
 
-## Screen 3 — Confirm Your Identity
+## Screen 2 — Submission Confirmed
 
 ### Functional Specs
-- Screen displays: title "Confirm your identity", subtitle "Select your name
-  from the registered director of [Company Name]."
-- Company summary card shows: company name, registered number and address.
-- Each director row shows: Full Name.
-- Tapping a director row records the selection and proceeds to the next
-  onboarding step.
-- Tapping "Not listed? Search a different company" returns to Screen 2 with
-  the search field empty.
-- Tapping the back arrow returns to Screen 2.
-- Single director: list displays one row; no empty state shown.
+- Screen displays: title "Claim submitted", confirmation message "Your expense
+  claim has been submitted and is awaiting manager approval.", "View my claims"
+  button.
+- Tapping "View my claims" navigates to the My Claims list.
+- No back arrow — submission is complete and cannot be undone from this screen.
 
 ---
 
 ## Non-Functional Specs
-- Companies House search results appear within 1s of the debounce threshold
-  firing on a 4G connection.
-- Director list loads within 1s of company tap.
+- Form loads within 1s on a standard broadband connection.
+- Submission API response within 2s on a 4G connection.
+- Receipt upload completes within 3s for a file under 5MB on 4G.
 
 ---
 
 ## Out of Scope
-- Email / password creation — handled in the next onboarding story.
-- Director identity verification beyond name selection.
+- Manager approval flow — handled in a separate story.
+- Multi-currency support — GBP only in this story.
+
+---
+
+## Permissions
+- Authenticated employees: can submit claims.
+- Unauthenticated users: cannot access this screen; redirected to sign-in.
 
 ---
 
@@ -179,5 +165,5 @@ Missing instrumentation is expensive to retrofit — always specify it.
 ---
 
 ## Dependencies
-- Companies House API: `[YOUR_API_BASE_URL]/swagger/index.html#operations-tag-CompaniesHouse`
+- Expense API: `[YOUR_API_BASE_URL]/expenses`
 ```
