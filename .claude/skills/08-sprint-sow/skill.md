@@ -162,9 +162,22 @@ Sprint [N] is considered complete when all of the following conditions are met:
 ## OUTPUT DELIVERY
 
 1. Render the full document in chat as clean markdown.
-2. Save to: `.claude/skills/Artifacts/sprint-sow/{sprint-name}/sow.md`
-   - Use kebab-case sprint names, e.g. `sprint-0-technical-foundation`, `sprint-1-auth`
-3. Confirm the saved path at the end of your response.
+2. Ask the user where they want it saved:
+
+> "Where would you like me to save this? I can save it locally or push it directly to any platform you have connected via MCP."
+>
+> **Local**
+> 1. **Local file** — saved to `clients/CLIENT/sprint-artefacts/YYYY-MM-DD-sprint-N-sow.md`
+>
+> **Connected platforms (via MCP)**
+> 2. **Confluence** — published as a new page (I'll ask for your domain, space, and parent page)
+> 3. **Google Drive** — saved as a new Doc (I'll ask for the folder)
+> 4. **Notion** — created as a new page (I'll ask for your workspace and parent page)
+>
+> **No save**
+> 5. **Clipboard only** — leave it here for you to copy manually
+
+Do not save or publish anything until the user confirms the destination.
 
 ---
 ```

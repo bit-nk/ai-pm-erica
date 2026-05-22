@@ -10,15 +10,6 @@ Turn raw meeting transcripts into clean, useful meeting minutes. Remove filler, 
 
 ---
 
-## Confluence configuration
-
-- **Cloud ID:** `intelligentlending.atlassian.net`
-- **Space:** `Binq`
-- **Meeting Minutes folder page ID:** `1510965252`
-- **Tag to add for AI-generated/updated pages:** `AI`
-
----
-
 ## What to do
 
 ### Step 1 — Read the transcript
@@ -98,61 +89,48 @@ Generate 3–5 relevant questions. Make them specific to THIS meeting, not gener
 
 ---
 
-### Step 4 — Check Confluence for an existing page
+### Step 4 — Ask where to save
 
-Before saving anything, always check whether a meeting minutes page already exists for the same date.
+After presenting the minutes, ask the user where they want them saved:
 
-1. Call `getConfluencePageDescendants` with:
-   - `cloudId`: `intelligentlending.atlassian.net`
-   - `pageId`: `1510965252`
-   - `limit`: 50
+> "Where would you like me to save this? I can save it locally or push it directly to any platform you have connected via MCP."
+>
+> **Local**
+> 1. **Local file** — saved to `clients/CLIENT/meeting-notes/YYYY-MM-DD-meeting-title.md`
+>
+> **Connected platforms (via MCP)**
+> 2. **Confluence** — published as a new page (I'll ask for your domain, space, and parent page)
+> 3. **Google Drive** — saved as a new Doc (I'll ask for the folder)
+> 4. **Notion** — created as a new page (I'll ask for your workspace and parent page)
+> 5. **Gmail** — drafted as an email (I'll ask for the recipient)
+>
+> **No save**
+> 6. **Clipboard only** — leave it here for you to copy manually
 
-2. Look through the returned pages for a title that matches today's meeting date (e.g. "Meeting Minutes – 15 May 2026" or similar date format).
-
-3. **If a matching page exists:**
-   - Tell the user: "A meeting minutes page for [date] already exists in Confluence. Would you like me to update it with this transcript?"
-   - Wait for confirmation before doing anything.
-   - If yes → go to **Update existing page** below.
-   - If no → stop. Don't save anything.
-
-4. **If no matching page exists:**
-   - Tell the user: "No meeting minutes page found for [date] in the default folder. Where would you like me to create it?"
-   - Give the user two options:
-     a. "Save it in the default Meeting Minutes folder" (parent ID `1510965252`)
-     b. "Somewhere else — please share the Confluence page URL or folder name you'd like it saved under"
-   - If the user provides a different URL, extract the page ID from it (it appears as a numeric ID in the path, e.g. `/pages/1234567890/`). Use that as the `parentId`.
-   - If the user provides a page name instead of a URL, use `searchConfluenceUsingCql` with `title = "[name]" AND space = "Binq"` to look it up and get its ID.
-   - Once you have a confirmed location → go to **Create new page** below.
-   - If the user says no or doesn't want to save → stop.
+Do not save or publish anything until the user confirms the destination.
 
 ---
 
-### Step 5 — Save to Confluence
+### Step 5 — Save to the confirmed destination
 
-#### Create new page
+**If Confluence is chosen:**
 
-Use `createConfluencePage`:
-- `cloudId`: `intelligentlending.atlassian.net`
-- `spaceId`: retrieve using `getConfluenceSpaces` filtering for key `Binq` if not already known
-- `parentId`: the page ID confirmed with the user in Step 4 (default: `1510965252`)
-- `title`: `Meeting Minutes – [DD MMM YYYY]` (e.g. "Meeting Minutes – 15 May 2026")
-- `contentFormat`: `markdown`
-- `body`: the full meeting minutes output from Step 2
-- After creation, add the label `AI`
-
-#### Update existing page
-
-Use `updateConfluencePage`:
-- `cloudId`: `intelligentlending.atlassian.net`
-- `pageId`: [ID of the existing page]
-- `contentFormat`: `markdown`
-- `body`: the updated meeting minutes
-- `versionMessage`: `Updated by AI from transcript`
-- After update, ensure the label `AI` is present on the page
-
-#### Adding the AI label
-
-After creating or updating, add the label `AI` to the page. Use `Atlassian:searchConfluenceUsingCql` or the Confluence labels API if a direct label tool is available. If no label tool is available, mention to the user: "I've saved the page — please manually add the 'AI' label in Confluence."
+1. Ask for: Confluence cloud domain, space key, and parent page title or ID
+2. Check for an existing page with the same date by calling `getConfluencePageDescendants` using the parent page ID the user provides. If a matching page exists, ask whether to update it or create a new one.
+3. **Create new page** using `createConfluencePage`:
+   - `cloudId`: as provided by the user
+   - `spaceId`: resolved from the space key via `getConfluenceSpaces`
+   - `parentId`: as provided by the user
+   - `title`: `Meeting Minutes – [DD MMM YYYY]`
+   - `contentFormat`: `markdown`
+   - `body`: the full meeting minutes from Step 2
+4. **Update existing page** using `updateConfluencePage`:
+   - `cloudId`: as provided by the user
+   - `pageId`: the existing page ID
+   - `contentFormat`: `markdown`
+   - `body`: the updated meeting minutes
+   - `versionMessage`: `Updated by AI from transcript`
+5. Return the live page URL to the user after saving.
 
 ---
 
