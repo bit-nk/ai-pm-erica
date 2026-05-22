@@ -179,5 +179,5 @@ Missing instrumentation is expensive to retrofit — always specify it.
 ---
 
 ## Dependencies
-- Companies House API: https://lookups.intelligentlending.co.uk/swagger/index.html#operations-tag-CompaniesHouse
+- Companies House API: `[YOUR_API_BASE_URL]/swagger/index.html#operations-tag-CompaniesHouse`
 ```

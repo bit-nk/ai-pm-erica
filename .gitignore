@@ -5,8 +5,8 @@ clients/
 # Generated artefacts — output only, not source
 .claude/skills/Artifacts/
 
-# Root-level client documents
-BINQ_Business_Score_Project_Charter.md
+# Root-level client documents — use generic patterns, never hardcode client names
+*_Project_Charter.md
 
 # macOS
 .DS_Store
