@@ -36,17 +36,27 @@ Open the folder in Claude Code:
 claude .
 ```
 
-Claude will automatically read `.claude/claude.md` and the skills in `.claude/skills/` and be ready to use them.
+Claude will automatically read `.claude/CLAUDE.md` and the skills in `.claude/skills/` and be ready to use them.
 
 ## How to Use
 
-Type a skill name or describe your task in plain English:
+Type a slash command to run a specific skill:
 
 ```
-/01-intake-triage
+/triage
+/charter
+/prd
+/stories
+/sprint-sow
 ```
 
-Or paste raw input and ask Claude to triage it:
+Or use the PM Orchestrator to let Claude choose the right skill automatically:
+
+```
+/pm Here's a message from my client — [paste anything]
+```
+
+Or just describe your task in plain English and Claude will route it:
 
 ```
 Here's a message from my client — can you run intake triage on this?

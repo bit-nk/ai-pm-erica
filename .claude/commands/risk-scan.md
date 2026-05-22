@@ -4,5 +4,7 @@ Read `.claude/skills/02-initial-risk-scan/skill.md` for the full workflow, scori
 Read `.claude/skills/02-initial-risk-scan/reference.md` for a worked example if needed.
 Read `.claude/skills/02-initial-risk-scan/phase-guide.md` if the project is in Testing or Deployment phase.
 
+If no input is provided below, ask the user: "Please share the project context — name, phase, timeline, known risks, and any recent changes."
+
 Project context:
 $ARGUMENTS

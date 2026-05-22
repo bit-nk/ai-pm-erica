@@ -4,5 +4,7 @@ Read `.claude/skills/05-prd-generator/skill.md` for the full workflow and output
 Read `.claude/skills/05-prd-generator/reference.md` for a worked example if needed.
 Read `.claude/skills/05-prd-generator/brd-guide.md` if the output should follow BRD conventions.
 
+If no input is provided below, ask the user: "Please share your discovery findings, project charter, or feature brief. Also let me know if you need a PRD (product/engineering audience) or a BRD (business/stakeholder audience)."
+
 Requirements, charter, or discovery output:
 $ARGUMENTS

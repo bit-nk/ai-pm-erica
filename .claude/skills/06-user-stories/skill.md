@@ -1,5 +1,9 @@
 ---
 name: 06-user-stories
+tools:
+  - mcp__claude_ai_Atlassian_Rovo__searchJiraIssuesUsingJql
+  - mcp__claude_ai_Atlassian_Rovo__createJiraIssue
+  - mcp__claude_ai_Atlassian_Rovo__getJiraProjectIssueTypesMetadata
 description: >
   Act as a senior PM to transform design files, requirement docs, PRDs, and
   feature descriptions into structured Jira epics and user stories with clean,
