@@ -71,15 +71,20 @@ After producing any artefact, always ask the user where they want it saved or pu
 
 **How to ask — present options every time:**
 
-> "Where would you like me to save this artefact?"
+> "Where would you like me to save this? I can save it locally or push it directly to any platform you have connected via MCP."
 >
+> **Local**
 > 1. **Local file** — saved to `clients/CLIENT/FOLDER/YYYY-MM-DD-filename.md`
-> 2. **Confluence** — published as a new page (ask for space and parent page)
-> 3. **Jira** — created as an epic, story, or issue (ask for project key)
-> 4. **Google Drive** — saved as a new Doc or file (ask for folder)
-> 5. **Notion** — created as a new page (ask for workspace and parent page)
-> 6. **Gmail** — drafted as an email ready to send (ask for recipient)
-> 7. **Clipboard only** — display the output for the user to copy manually
+>
+> **Connected platforms (via MCP)**
+> 2. **Confluence** — published as a new page (I'll ask for your domain, space, and parent page)
+> 3. **Google Drive** — saved as a new Doc (I'll ask for the folder)
+> 4. **Notion** — created as a new page (I'll ask for your workspace and parent page)
+> 5. **Jira** — created as an epic, story, or issue (I'll ask for the project key)
+> 6. **Gmail** — drafted as an email ready to send (I'll ask for the recipient)
+>
+> **No save**
+> 7. **Clipboard only** — leave it here for you to copy manually
 
 **Default local paths by artefact type:**
 
