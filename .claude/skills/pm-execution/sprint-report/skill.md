@@ -1,5 +1,5 @@
 ---
-name: 07-jira-sprint-report-analyst
+name: sprint-report
 tools:
   - mcp__claude_ai_Atlassian_Rovo__searchJiraIssuesUsingJql
   - mcp__claude_ai_Atlassian_Rovo__getJiraIssue

@@ -8,23 +8,25 @@ You are a senior product manager with 15+ years of experience across B2B SaaS, f
 
 A library of structured PM skills that turn messy inputs (raw stakeholder messages, meeting transcripts, vague feature requests) into decision-ready PM artefacts (intake summaries, risk registers, charters, user stories, sprint SOWs).
 
+Skills are organised by domain. The current domain is `pm-execution`, covering the full delivery lifecycle from raw intake through sprint planning.
+
 ---
 
 ## Available Skills
 
 Skills are invoked by name or triggered automatically when the input matches their description.
 
-| Skill | Trigger |
-|---|---|
-| `01-intake-triage` | Raw client message, forwarded email, vague request needing triage |
-| `02-initial-risk-scan` | Any risk review request; "analyse risks", "risk scan", phase gate |
-| `03-project-charter` | "Write the charter", new project formalisation |
-| `04-discovery-workshop` | Discovery planning, workshop facilitation |
-| `05-prd-generator` | "Write a PRD", "document requirements", full product spec |
-| `06-user-stories` | "Break into stories", "create epics", Jira tickets from requirements |
-| `07-jira-sprint-report-analyst` | Sprint report or velocity analysis from Jira data |
-| `08-sprint-sow` | "Write the sprint SOW", sprint scope of work document |
-| `09-meeting-note` | Meeting transcript → clean minutes and action items |
+| Skill | Path | Trigger |
+|---|---|---|
+| `intake-triage` | `.claude/skills/pm-execution/intake-triage/` | Raw client message, forwarded email, vague request needing triage |
+| `risk-scan` | `.claude/skills/pm-execution/risk-scan/` | Any risk review request; "analyse risks", "risk scan", phase gate |
+| `project-charter` | `.claude/skills/pm-execution/project-charter/` | "Write the charter", new project formalisation |
+| `discovery-workshop` | `.claude/skills/pm-execution/discovery-workshop/` | Discovery planning, workshop facilitation |
+| `prd` | `.claude/skills/pm-execution/prd/` | "Write a PRD", "document requirements", full product spec |
+| `user-stories` | `.claude/skills/pm-execution/user-stories/` | "Break into stories", "create epics", Jira tickets from requirements |
+| `sprint-report` | `.claude/skills/pm-execution/sprint-report/` | Sprint report or velocity analysis from Jira data |
+| `sprint-sow` | `.claude/skills/pm-execution/sprint-sow/` | "Write the sprint SOW", sprint scope of work document |
+| `meeting-note` | `.claude/skills/pm-execution/meeting-note/` | Meeting transcript → clean minutes and action items |
 
 ---
 
@@ -34,13 +36,13 @@ Skills are designed to chain in delivery order:
 
 ```
 Raw request
-  → 01-intake-triage
-      → 02-initial-risk-scan (alongside any phase)
-          → 03-project-charter
-              → 04-discovery-workshop
-                  → 05-prd-generator
-                      → 06-user-stories
-                          → 08-sprint-sow
+  → intake-triage
+      → risk-scan (alongside any phase)
+          → project-charter
+              → discovery-workshop
+                  → prd
+                      → user-stories
+                          → sprint-sow
 ```
 
 After completing one skill, suggest the logical next skill unless the user redirects.

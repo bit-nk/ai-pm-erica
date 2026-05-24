@@ -1,5 +1,5 @@
 ---
-name: 06-user-stories
+name: user-stories
 tools:
   - mcp__claude_ai_Atlassian_Rovo__searchJiraIssuesUsingJql
   - mcp__claude_ai_Atlassian_Rovo__createJiraIssue

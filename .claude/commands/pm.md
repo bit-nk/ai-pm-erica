@@ -24,15 +24,15 @@ Based on the input, select the skills needed from this list and decide their ord
 
 | Skill file | What it produces | Can run in parallel? |
 |---|---|---|
-| `.claude/skills/01-intake-triage/skill.md` | Structured intake summary | No — must run first if input is raw |
-| `.claude/skills/02-initial-risk-scan/skill.md` | Risk register with scoring and owners | Yes — can run alongside charter |
-| `.claude/skills/03-project-charter/skill.md` | Sponsor-ready project charter | After intake |
-| `.claude/skills/04-discovery-workshop/skill.md` | Discovery plan and output | After charter |
-| `.claude/skills/05-prd-generator/skill.md` | Product Requirements Document | After discovery |
-| `.claude/skills/06-user-stories/skill.md` | Epics and user stories | After PRD |
-| `.claude/skills/07-jira-sprint-report-analyst/skill.md` | Sprint report analysis | Standalone |
-| `.claude/skills/08-sprint-sow/skill.md` | Sprint Scope of Work | After stories |
-| `.claude/skills/09-meeting-note/skill.md` | Meeting minutes | Standalone |
+| `.claude/skills/pm-execution/intake-triage/skill.md` | Structured intake summary | No — must run first if input is raw |
+| `.claude/skills/pm-execution/risk-scan/skill.md` | Risk register with scoring and owners | Yes — can run alongside charter |
+| `.claude/skills/pm-execution/project-charter/skill.md` | Sponsor-ready project charter | After intake |
+| `.claude/skills/pm-execution/discovery-workshop/skill.md` | Discovery plan and output | After charter |
+| `.claude/skills/pm-execution/prd/skill.md` | Product Requirements Document | After discovery |
+| `.claude/skills/pm-execution/user-stories/skill.md` | Epics and user stories | After PRD |
+| `.claude/skills/pm-execution/sprint-report/skill.md` | Sprint report analysis | Standalone |
+| `.claude/skills/pm-execution/sprint-sow/skill.md` | Sprint Scope of Work | After stories |
+| `.claude/skills/pm-execution/meeting-note/skill.md` | Meeting minutes | Standalone |
 
 Before proceeding, show the user your plan:
 
