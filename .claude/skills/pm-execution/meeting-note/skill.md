@@ -1,5 +1,5 @@
 ---
-name: 09-meeting-note
+name: meeting-note
 tools:
   - mcp__claude_ai_Atlassian_Rovo__createConfluencePage
   - mcp__claude_ai_Atlassian_Rovo__updateConfluencePage
