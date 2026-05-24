@@ -33,6 +33,7 @@ Based on the input, select the skills needed from this list and decide their ord
 | `.claude/skills/pm-execution/sprint-report/skill.md` | Sprint report analysis | Standalone |
 | `.claude/skills/pm-execution/sprint-sow/skill.md` | Sprint Scope of Work | After stories |
 | `.claude/skills/pm-execution/meeting-note/skill.md` | Meeting minutes | Standalone |
+| `.claude/skills/pm-execution/technical-feasibility-review/skill.md` | PM-ready feasibility summary with risks and SA questions | Standalone or after intake-triage |
 
 Before proceeding, show the user your plan:
 
