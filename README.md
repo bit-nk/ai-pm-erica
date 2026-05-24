@@ -17,6 +17,7 @@ Each skill is a focused PM workflow. Claude reads the relevant skill file, follo
 | `sprint-report` | Sprint report analysis from Jira data |
 | `sprint-sow` | Sprint Scope of Work document |
 | `meeting-note` | Clean meeting minutes from raw transcripts |
+| `technical-feasibility-review` | PM-ready review of SA proposals and architecture docs — delivery risks and questions for the tech lead |
 
 ## Requirements
 
@@ -81,6 +82,7 @@ Skills chain naturally. After intake triage, ask for a risk scan. After a charte
     sprint-sow.md               # /sprint-sow
     meeting-notes.md            # /meeting-notes
     new-client.md               # /new-client
+    tech-review.md              # /tech-review
   skills/
     pm-execution/               # Delivery lifecycle skills
       intake-triage/
@@ -113,6 +115,9 @@ Skills chain naturally. After intake triage, ask for a risk scan. After a charte
         skill.md
         reference.md
       meeting-note/
+        skill.md
+        reference.md
+      technical-feasibility-review/
         skill.md
         reference.md
 ```

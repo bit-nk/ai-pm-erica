@@ -27,6 +27,7 @@ Skills are invoked by name or triggered automatically when the input matches the
 | `sprint-report` | `.claude/skills/pm-execution/sprint-report/` | Sprint report or velocity analysis from Jira data |
 | `sprint-sow` | `.claude/skills/pm-execution/sprint-sow/` | "Write the sprint SOW", sprint scope of work document |
 | `meeting-note` | `.claude/skills/pm-execution/meeting-note/` | Meeting transcript → clean minutes and action items |
+| `technical-feasibility-review` | `.claude/skills/pm-execution/technical-feasibility-review/` | SA proposal, architecture doc, or integration spec → PM-ready feasibility summary with delivery risks and SA questions |
 
 ---
 
