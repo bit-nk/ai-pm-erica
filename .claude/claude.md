@@ -8,7 +8,7 @@ You are a senior product manager with 15+ years of experience across B2B SaaS, f
 
 A library of structured PM skills that turn messy inputs (raw stakeholder messages, meeting transcripts, vague feature requests) into decision-ready PM artefacts (intake summaries, risk registers, charters, user stories, sprint SOWs).
 
-Skills are organised by domain. The current domain is `pm-execution`, covering the full delivery lifecycle from raw intake through sprint planning.
+Skills follow the official Claude plugin layout: `skills/<name>/SKILL.md` at the project root, namespaced as `/ai-pm-assistant:<name>` when loaded as a plugin.
 
 ---
 
@@ -18,18 +18,18 @@ Skills are invoked by name or triggered automatically when the input matches the
 
 | Skill | Path | Trigger |
 |---|---|---|
-| `triage` | `.claude/skills/pm-execution/triage/` | Raw client message, forwarded email, vague request needing triage |
-| `risk-scan` | `.claude/skills/pm-execution/risk-scan/` | Any risk review request; "analyse risks", "risk scan", phase gate |
-| `charter` | `.claude/skills/pm-execution/charter/` | "Write the charter", new project formalisation |
-| `discovery` | `.claude/skills/pm-execution/discovery/` | Discovery planning, workshop facilitation |
-| `prd` | `.claude/skills/pm-execution/prd/` | "Write a PRD", "document requirements", full product spec |
-| `stories` | `.claude/skills/pm-execution/stories/` | "Break into stories", "create epics", Jira tickets from requirements |
-| `sprint-report` | `.claude/skills/pm-execution/sprint-report/` | Sprint report or velocity analysis from Jira data |
-| `sprint-sow` | `.claude/skills/pm-execution/sprint-sow/` | "Write the sprint SOW", sprint scope of work document |
-| `sprint-planning` | `.claude/skills/pm-execution/sprint-planning/` | "Plan the sprint", capacity planning, backlog scoping, sprint plan document |
-| `meeting-notes` | `.claude/skills/pm-execution/meeting-notes/` | Meeting transcript → clean minutes and action items |
-| `tech-review` | `.claude/skills/pm-execution/tech-review/` | SA proposal, architecture doc, or integration spec → PM-ready feasibility summary with delivery risks and SA questions |
-| `release-checklist` | `.claude/skills/pm-execution/release-checklist/` | "Are we ready to ship?", go/no-go assessment, release sign-off, pre-deploy checklist |
+| `triage` | `skills/triage/` | Raw client message, forwarded email, vague request needing triage |
+| `risk-scan` | `skills/risk-scan/` | Any risk review request; "analyse risks", "risk scan", phase gate |
+| `charter` | `skills/charter/` | "Write the charter", new project formalisation |
+| `discovery` | `skills/discovery/` | Discovery planning, workshop facilitation |
+| `prd` | `skills/prd/` | "Write a PRD", "document requirements", full product spec |
+| `stories` | `skills/stories/` | "Break into stories", "create epics", Jira tickets from requirements |
+| `sprint-report` | `skills/sprint-report/` | Sprint report or velocity analysis from Jira data |
+| `sprint-sow` | `skills/sprint-sow/` | "Write the sprint SOW", sprint scope of work document |
+| `sprint-planning` | `skills/sprint-planning/` | "Plan the sprint", capacity planning, backlog scoping, sprint plan document |
+| `meeting-notes` | `skills/meeting-notes/` | Meeting transcript → clean minutes and action items |
+| `tech-review` | `skills/tech-review/` | SA proposal, architecture doc, or integration spec → PM-ready feasibility summary with delivery risks and SA questions |
+| `release-checklist` | `skills/release-checklist/` | "Are we ready to ship?", go/no-go assessment, release sign-off, pre-deploy checklist |
 
 ---
 

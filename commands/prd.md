@@ -1,8 +1,12 @@
+---
+description: Write a Product Requirements Document (PRD) or Business Requirements Document (BRD)
+---
+
 Run the **prd** skill on the following input.
 
-Read `.claude/skills/pm-execution/prd/skill.md` for the full workflow and output format.
-Read `.claude/skills/pm-execution/prd/reference.md` for a worked example if needed.
-Read `.claude/skills/pm-execution/prd/brd-guide.md` if the output should follow BRD conventions.
+Read `skills/prd/SKILL.md` for the full workflow and output format.
+Read `skills/prd/reference.md` for a worked example if needed.
+Read `skills/prd/brd-guide.md` if the output should follow BRD conventions.
 
 If no input is provided below, ask the user: "Please share your discovery findings, project charter, or feature brief. Also let me know if you need a PRD (product/engineering audience) or a BRD (business/stakeholder audience)."
 
