@@ -29,6 +29,8 @@ Use individual commands only when you know exactly which skill you need.
 | `/sprint-report` | Analyse a Jira sprint report |
 | `/sprint-sow` | Write a Sprint Scope of Work |
 | `/meeting-notes` | Extract minutes from a meeting transcript |
+| `/tech-review` | Review an SA proposal or architecture doc for delivery risk |
+| `/release-checklist` | Run a go/no-go assessment before a production release |
 | `/new-client` | Scaffold a new client folder |
 
 ## Skill Chain
@@ -36,7 +38,7 @@ Use individual commands only when you know exactly which skill you need.
 When using individual skills, they run in sequence through the delivery lifecycle:
 
 ```
-Raw request → /triage → /risk-scan → /charter → /discovery → /prd → /stories → /sprint-sow
+Raw request → /triage → /risk-scan → /charter → /discovery → /prd → /stories → /sprint-sow → /release-checklist
 ```
 
 `/pm` handles this chain automatically.

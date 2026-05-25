@@ -5,7 +5,7 @@
 
 # AI PM Assistant: Your Senior PM Co-Pilot in Claude Code
 
-> 10 structured PM skills across the full delivery lifecycle. From raw stakeholder message to sprint-ready artefact — without switching tools.
+> 11 structured PM skills across the full delivery lifecycle. From raw stakeholder message to production release — without switching tools.
 
 Designed for Claude Code. Drop it into any project and get a senior PM brain on demand.
 
@@ -281,6 +281,7 @@ Claude will read the input, identify the right skill (or chain of skills), and a
     sprint-sow.md                    # /sprint-sow
     meeting-notes.md                 # /meeting-notes
     tech-review.md                   # /tech-review
+    release-checklist.md             # /release-checklist
     new-client.md                    # /new-client
   skills/
     pm-execution/                    # Full delivery lifecycle skills
@@ -317,6 +318,9 @@ Claude will read the input, identify the right skill (or chain of skills), and a
         skill.md
         reference.md
       technical-feasibility-review/
+        skill.md
+        reference.md
+      release-checklist/
         skill.md
         reference.md
 clients/                             # Local only — excluded from version control
