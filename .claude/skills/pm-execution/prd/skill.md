@@ -169,11 +169,6 @@ Requirements that cannot be finalised until these are answered:
 
 ---
 
-# Style Rules
-- Be concise. No long essays, no generic filler, no overconfidence.
-- Use bullets only where they aid clarity.
-- If something is unclear, say so explicitly.
-- Prefer practical PM judgment over theory.
 # Reference Files
 
 - `reference.md` — Full worked example: brief → complete PRD. Read when input is thin or requirements are hard to separate from solutions.

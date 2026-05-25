@@ -158,20 +158,4 @@ Sprint [N] is complete when all of the following are true:
 ## Output Delivery
 
 1. Render the full plan in chat as clean markdown.
-2. Ask the user where they want it saved:
-
-> "Where would you like me to save this?"
->
-> **Local**
-> 1. **Local file** — saved to `clients/CLIENT/sprint-artefacts/YYYY-MM-DD-sprint-N-plan.md`
->
-> **Connected platforms (via MCP)**
-> 2. **Confluence** — published as a new page
-> 3. **Google Drive** — saved as a new Doc
-> 4. **Notion** — created as a new page
-> 5. **Jira** — sprint created with items assigned
->
-> **No save**
-> 6. **Clipboard only**
-
-Do not save or publish anything until the user confirms the destination.
+2. Follow the **Saving Artefacts** rules in `.claude/CLAUDE.md` — ask where to save before writing anything. Default local path: `clients/CLIENT/sprint-artefacts/YYYY-MM-DD-sprint-N-plan.md`
