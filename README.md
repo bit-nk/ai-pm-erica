@@ -57,7 +57,7 @@ cd ai-pm
 claude .
 ```
 
-Claude reads `.claude/CLAUDE.md` and the skills in `.claude/skills/` automatically. No configuration needed.
+Claude reads `CLAUDE.md` and the skills in `.claude/skills/` automatically. No configuration needed.
 
 ---
 
