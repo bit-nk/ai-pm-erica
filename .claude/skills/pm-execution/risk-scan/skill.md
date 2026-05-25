@@ -179,12 +179,6 @@ Explain why top risks are ranked as they are — especially where velocity or de
 - [ ] Verdict honestly reflects the register
 
 ---
-# Style Rules
-- Be concise. No long essays, no generic filler, no overconfidence.
-- Use bullets only where they aid clarity.
-- If something is unclear, say so explicitly.
-- Prefer practical PM judgment over theory.
-
 
 # Reference Files
 

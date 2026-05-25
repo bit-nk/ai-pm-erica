@@ -126,14 +126,6 @@ Suggest the single best immediate PM action. Examples:
 
 ---
 
-# Style Rules
-- Be concise. No long essays, no generic filler, no overconfidence.
-- Use bullets only where they aid clarity.
-- If something is unclear, say so explicitly.
-- Prefer practical PM judgment over theory.
-
----
-
 # Worked Example
 See REFERENCE.md for a full input → output example demonstrating this skill in action.
 
