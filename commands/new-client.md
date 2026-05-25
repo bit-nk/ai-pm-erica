@@ -1,3 +1,7 @@
+---
+description: Scaffold a new client folder structure under clients/
+---
+
 Scaffold a new client folder structure for the client named: $ARGUMENTS
 
 Create the following directory and file structure under `clients/`:
