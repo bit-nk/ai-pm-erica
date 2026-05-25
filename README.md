@@ -1,97 +1,266 @@
-# AI PM Assistant
+![GitHub stars](https://img.shields.io/github/stars/Erica-J-01/ai-pm)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](https://github.com/Erica-J-01/ai-pm/blob/main/LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](https://github.com/Erica-J-01/ai-pm/pulls)
+[![Built for Claude Code](https://img.shields.io/badge/Built%20for-Claude%20Code-blueviolet?style=flat-square)](https://claude.ai/code)
 
-A Claude Code project that gives you a senior PM co-pilot inside your terminal. It ships a library of structured skills — from intake triage through sprint planning — so you can go from raw stakeholder messages to sprint-ready artefacts without switching tools.
+# AI PM Assistant: Your Senior PM Co-Pilot in Claude Code
 
-## What It Does
+> 10 structured PM skills across the full delivery lifecycle. From raw stakeholder message to sprint-ready artefact — without switching tools.
 
-Each skill is a focused PM workflow. Claude reads the relevant skill file, follows the defined process, and produces a structured output you can paste directly into Confluence, Jira, or a client doc.
+Designed for Claude Code. Drop it into any project and get a senior PM brain on demand.
 
-| Skill | What It Produces |
-|---|---|
-| `intake-triage` | Structured intake summary from raw stakeholder requests |
-| `risk-scan` | Risk register with scoring, owners, and trigger signals |
-| `project-charter` | Sponsor-ready project charter |
-| `discovery-workshop` | Discovery workshop guide and output structure |
-| `prd` | Product Requirements Document |
-| `user-stories` | Jira-ready epics and user stories with acceptance criteria |
-| `sprint-report` | Sprint report analysis from Jira data |
-| `sprint-sow` | Sprint Scope of Work document |
-| `meeting-note` | Clean meeting minutes from raw transcripts |
-| `technical-feasibility-review` | PM-ready review of SA proposals and architecture docs — delivery risks and questions for the tech lead |
+## Start Here
 
-## Requirements
+Raw stakeholder message? → `/triage`  
+New project kicking off? → `/charter`  
+Writing requirements? → `/prd`  
+Breaking down stories? → `/stories`  
+Starting a sprint? → `/sprint-sow`  
+Not sure which skill you need? → `/pm [paste anything]`
 
-- [Claude Code](https://claude.ai/code) (CLI or VS Code extension)
-- An Anthropic account with Claude Code access
+If this project helps you, ⭐ the repo.
+
+---
+
+## Why AI PM Assistant?
+
+Generic AI gives you text. AI PM Assistant gives you structure.
+
+Each skill encodes a proven PM workflow — intake triage, risk analysis, discovery, PRDs, user stories, sprint planning — and walks Claude through it step by step. You get the rigour of a senior PM built into your terminal, not sitting in a workshop somewhere.
+
+The result: decision-ready artefacts in minutes, not hours.
+
+---
+
+## How It Works
+
+**Skills** are the building blocks. Each skill file gives Claude a defined workflow, output format, and style rules for a specific PM task. Skills are loaded automatically when relevant.
+
+**Commands** are slash commands that invoke a skill directly (`/triage`, `/prd`, `/stories`). The **PM Orchestrator** (`/pm`) reads your input, picks the right skill, and chains them in delivery order.
+
+**Skill chain:**
+
+```
+Raw request → /triage → /risk-scan → /charter → /discovery → /prd → /stories → /sprint-sow
+```
+
+After any command completes, the next logical skill is suggested — just follow the prompts.
+
+---
 
 ## Setup
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/ai-pm-assistant.git
-cd ai-pm-assistant
-```
-
-Open the folder in Claude Code:
-
-```bash
+git clone https://github.com/Erica-J-01/ai-pm.git
+cd ai-pm
 claude .
 ```
 
-Claude will automatically read `.claude/CLAUDE.md` and the skills in `.claude/skills/` and be ready to use them.
+Claude reads `.claude/CLAUDE.md` and the skills in `.claude/skills/` automatically. No configuration needed.
 
-## How to Use
+---
 
-Type a slash command to run a specific skill:
+## Available Skills
 
+<details>
+<summary><strong>intake-triage</strong> — Turn a raw stakeholder message into a structured intake summary</summary>
+
+**What it does:**  
+Reads a forwarded email, Slack message, or vague client request and produces a structured intake summary with problem statement, requestor context, priority signals, and a recommended next step.
+
+**When to use:**  
+- You receive a raw message and need to understand what's actually being asked  
+- You want to triage before committing to scope  
+- You need a clean summary to share with your team
+
+**Command:** `/triage`
+
+**Example:**
 ```
 /triage
-/charter
-/prd
-/stories
-/sprint-sow
+Here's a message from our client: "We need the reporting dashboard to show 
+real-time data. The exec team is presenting to the board next month and the 
+current refresh rate is embarrassing."
 ```
 
-Or use the PM Orchestrator to let Claude choose the right skill automatically:
+</details>
+
+<details>
+<summary><strong>risk-scan</strong> — Risk register with scoring, owners, and trigger signals</summary>
+
+**What it does:**  
+Analyses a project, PRD, or feature request and produces a risk register with likelihood/impact scoring, suggested owners, and early warning signals to watch.
+
+**When to use:**  
+- Phase gate reviews  
+- Before signing off on scope  
+- Alongside any other skill in the chain
+
+**Command:** `/risk-scan`
+
+</details>
+
+<details>
+<summary><strong>project-charter</strong> — Sponsor-ready project charter</summary>
+
+**What it does:**  
+Produces a complete project charter: objectives, scope, success metrics, stakeholders, assumptions, constraints, and a high-level timeline.
+
+**When to use:**  
+- Formalising a new project or engagement  
+- Getting executive sign-off  
+- Aligning a cross-functional team before discovery
+
+**Command:** `/charter`
+
+</details>
+
+<details>
+<summary><strong>discovery-workshop</strong> — Discovery workshop guide and output structure</summary>
+
+**What it does:**  
+Plans a discovery workshop or structures the output from one. Produces a facilitation guide, session agenda, or clean discovery summary depending on what you provide.
+
+**When to use:**  
+- Planning a discovery session with stakeholders  
+- Synthesising notes from a workshop you've already run  
+- Moving from problem space to solution space
+
+**Command:** `/discovery`
+
+</details>
+
+<details>
+<summary><strong>prd</strong> — Full Product Requirements Document</summary>
+
+**What it does:**  
+Produces a complete PRD: problem statement, goals, non-goals, user stories, functional requirements, edge cases, and open questions.
+
+**When to use:**  
+- Documenting requirements for a new feature or product  
+- Aligning engineering, design, and stakeholders before build  
+- Creating a source of truth for the sprint
+
+**Command:** `/prd`
+
+</details>
+
+<details>
+<summary><strong>user-stories</strong> — Jira-ready epics and user stories with acceptance criteria</summary>
+
+**What it does:**  
+Breaks requirements into epics and user stories following the 3 C's (Card, Conversation, Confirmation) and INVEST criteria. Each story includes a description, design notes, and testable acceptance criteria.
+
+**When to use:**  
+- Populating a backlog from a PRD or feature description  
+- Preparing tickets before sprint planning  
+- Breaking down a large feature into shippable increments
+
+**Command:** `/stories`
+
+</details>
+
+<details>
+<summary><strong>sprint-report</strong> — Sprint report analysis from Jira data</summary>
+
+**What it does:**  
+Analyses sprint data (velocity, completion rate, carry-over, blockers) and produces a structured sprint report with insights and recommendations for the next sprint.
+
+**When to use:**  
+- End-of-sprint review prep  
+- Velocity trend analysis  
+- Stakeholder reporting
+
+**Command:** `/sprint-report`
+
+</details>
+
+<details>
+<summary><strong>sprint-sow</strong> — Sprint Scope of Work document</summary>
+
+**What it does:**  
+Produces a sprint SOW with sprint goal, in-scope stories, out-of-scope items, dependencies, risks, and definition of done.
+
+**When to use:**  
+- Sprint kick-off documentation  
+- Client-facing sprint agreements  
+- Aligning stakeholders on what will and won't ship
+
+**Command:** `/sprint-sow`
+
+</details>
+
+<details>
+<summary><strong>meeting-note</strong> — Clean meeting minutes from raw transcripts</summary>
+
+**What it does:**  
+Turns a raw meeting transcript or bullet-point notes into structured minutes: attendees, decisions made, action items with owners and due dates, and parking lot items.
+
+**When to use:**  
+- Post-meeting documentation  
+- Capturing decisions before they get lost  
+- Sharing outcomes with stakeholders who weren't in the room
+
+**Command:** `/meeting-notes`
+
+</details>
+
+<details>
+<summary><strong>technical-feasibility-review</strong> — PM-ready review of SA proposals and architecture docs</summary>
+
+**What it does:**  
+Reads a solution architect proposal, architecture doc, or integration spec and produces a PM-ready feasibility summary: delivery risks, dependency flags, and a prioritised list of questions for the tech lead.
+
+**When to use:**  
+- Reviewing an SA proposal before committing to delivery  
+- Translating a technical doc into PM language  
+- Preparing for a feasibility conversation with engineering
+
+**Command:** `/tech-review`
+
+</details>
+
+---
+
+## PM Orchestrator
+
+Not sure which skill to use? The `/pm` command analyses your input and routes it automatically.
 
 ```
 /pm Here's a message from my client — [paste anything]
 ```
 
-Or just describe your task in plain English and Claude will route it:
+Claude will read the input, identify the right skill (or chain of skills), and ask for your approval before running each step. You stay in control.
 
-```
-Here's a message from my client — can you run intake triage on this?
-```
-
-Skills chain naturally. After intake triage, ask for a risk scan. After a charter, ask for user stories.
+---
 
 ## Project Structure
 
 ```
 .claude/
-  CLAUDE.md                     # Project-level Claude instructions
-  commands/                     # Slash command entry points
-    pm.md                       # PM Orchestrator (/pm)
-    triage.md                   # /triage
-    risk-scan.md                # /risk-scan
-    charter.md                  # /charter
-    discovery.md                # /discovery
-    prd.md                      # /prd
-    stories.md                  # /stories
-    sprint-report.md            # /sprint-report
-    sprint-sow.md               # /sprint-sow
-    meeting-notes.md            # /meeting-notes
-    new-client.md               # /new-client
-    tech-review.md              # /tech-review
+  CLAUDE.md                          # Behaviour rules, output defaults, skill routing
+  commands/                          # Slash command entry points
+    pm.md                            # /pm — PM Orchestrator
+    triage.md                        # /triage
+    risk-scan.md                     # /risk-scan
+    charter.md                       # /charter
+    discovery.md                     # /discovery
+    prd.md                           # /prd
+    stories.md                       # /stories
+    sprint-report.md                 # /sprint-report
+    sprint-sow.md                    # /sprint-sow
+    meeting-notes.md                 # /meeting-notes
+    tech-review.md                   # /tech-review
+    new-client.md                    # /new-client
   skills/
-    pm-execution/               # Delivery lifecycle skills
+    pm-execution/                    # Full delivery lifecycle skills
       intake-triage/
-        skill.md                # Skill definition and workflow
-        reference.md            # Worked example
+        skill.md                     # Workflow definition
+        reference.md                 # Worked example
       risk-scan/
         skill.md
         reference.md
-        phase-guide.md          # Phase-specific risk patterns
+        phase-guide.md               # Phase-specific risk patterns
       project-charter/
         skill.md
         reference.md
@@ -101,7 +270,7 @@ Skills chain naturally. After intake triage, ask for a risk scan. After a charte
       prd/
         skill.md
         reference.md
-        brd-guide.md            # BRD output variant
+        brd-guide.md                 # BRD output variant
       user-stories/
         skill.md
         reference.md
@@ -120,13 +289,24 @@ Skills chain naturally. After intake triage, ask for a risk scan. After a charte
       technical-feasibility-review/
         skill.md
         reference.md
+clients/                             # Local only — excluded from version control
 ```
+
+---
 
 ## Client Data
 
-The `clients/` directory (excluded from this repo via `.gitignore`) is where project artefacts for specific clients are stored locally. Never commit real client files to a public repository.
+The `clients/` directory is excluded from this repo via `.gitignore`. All client artefacts live there locally and are never committed to version control.
 
-To use the skills for your own clients, create your own `clients/YOUR_CLIENT/` folder locally after cloning.
+After cloning, create your own client folder:
+
+```bash
+mkdir -p clients/YOUR_CLIENT/project-artefacts
+```
+
+Skills will ask you where to save each artefact. You can save locally, or push directly to Confluence, Jira, Google Drive, Notion, or Gmail if you have those connected via MCP.
+
+---
 
 ## Contributing
 
@@ -135,21 +315,28 @@ To use the skills for your own clients, create your own `clients/YOUR_CLIENT/` f
 3. Follow the existing skill structure (`skill.md` + `reference.md` minimum)
 4. Open a pull request
 
-## Skill Authoring Guide
+**Skill authoring checklist:**
 
-Each skill needs at minimum:
-
-- **Frontmatter** — `name`, `description`, `tools`
-- **Purpose** — one paragraph on what this skill does and when to use it
-- **When to Use / Do Not Use** — clear routing boundaries
-- **Operating Principles** — numbered, concise
-- **Required Workflow** — numbered steps in order
-- **Output Format** — exact template Claude follows
-- **Style Rules** — tone and format guardrails
-- **Reference file** — a worked example input → output
+- `name`, `description`, `tools` in frontmatter
+- One-paragraph purpose statement
+- Clear "When to Use / Do Not Use" boundaries
+- Numbered operating principles
+- Numbered required workflow steps
+- Exact output format template
+- Style rules (tone, format guardrails)
+- A worked `reference.md` example (input → output)
 
 See any existing skill for the pattern.
 
+---
+
+## Requirements
+
+- [Claude Code](https://claude.ai/code) — CLI or VS Code extension
+- An Anthropic account with Claude Code access
+
+---
+
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).
