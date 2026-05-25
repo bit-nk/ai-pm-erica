@@ -45,7 +45,30 @@ Do not use to:
 # Required Workflow
 
 ## 1. Gather Inputs
-Before generating the checklist, confirm you have:
+
+Inputs can be provided in two ways — accept either, or a combination of both.
+
+### Option A — Jira link or sprint reference (preferred)
+If the user provides any of the following, fetch ticket data from Jira before proceeding:
+- A Jira sprint URL (e.g. `https://yourorg.atlassian.net/jira/software/projects/PROJ/boards/12?sprint=45`)
+- A Jira board URL with a named sprint
+- A sprint name and project key (e.g. "Sprint 11, project NOTIF")
+- A list of Jira ticket IDs (e.g. NOTIF-101, NOTIF-102)
+
+**Jira fetch steps:**
+1. Extract the project key and sprint name or ID from the URL or input.
+2. Use `searchJiraIssuesUsingJql` with the query: `project = "PROJECT_KEY" AND sprint = "SPRINT_NAME" ORDER BY status ASC` to retrieve all tickets in the sprint.
+3. For each ticket returned, note: key, summary, status, assignee, and issue type.
+4. Use `getJiraIssue` for any ticket where more detail is needed (e.g. labels, linked issues, fix version).
+5. Summarise what was fetched before proceeding — list tickets found, their statuses, and any that are not Done or In Review.
+6. If the Jira query returns no results, tell the user and ask them to confirm the project key and sprint name.
+
+Tickets with status **Done** → count as completed.
+Tickets with status **In Progress**, **In Review**, **In QA**, or **Blocked** → flag as incomplete in F1 and F2.
+Tickets with status **To Do** → flag as not started — likely a scoping issue.
+
+### Option B — Manual input
+If no Jira link is provided, confirm you have at least 4 of:
 - **Release name or version** (e.g., Sprint 14 Release, v2.4.1, Payments Phase 1)
 - **Release type** (Planned sprint / Hotfix / Phased rollout / Feature flag rollout)
 - **Target release date and time** (and timezone)
@@ -53,8 +76,11 @@ Before generating the checklist, confirm you have:
 - **Target environment** (Production / Staging → Prod / Regional rollout)
 - **Team** (PM, tech lead, QA lead, infra/DevOps lead)
 
-If fewer than 4 of these are provided, ask before proceeding:
-> "Before I run the go/no-go assessment, I need a few details: release name, release type, target date, features included, and who's on the release team. Which of these can you share?"
+If fewer than 4 are provided, ask before proceeding:
+> "Before I run the go/no-go assessment, I need a few details: release name, release type, target date, features included, and who's on the release team. Which of these can you share? You can also just paste a Jira sprint link and I'll pull the ticket data directly."
+
+### Combining both
+If the user provides a Jira link plus additional context (team names, known issues, target date), use the Jira data for Feature Readiness and supplement with the manual context for the remaining categories.
 
 ## 2. Categorise the Release
 Based on the release type, adjust checklist depth:
