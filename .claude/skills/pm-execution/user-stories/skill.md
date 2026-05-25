@@ -1,9 +1,5 @@
 ---
 name: user-stories
-tools:
-  - mcp__claude_ai_Atlassian_Rovo__searchJiraIssuesUsingJql
-  - mcp__claude_ai_Atlassian_Rovo__createJiraIssue
-  - mcp__claude_ai_Atlassian_Rovo__getJiraProjectIssueTypesMetadata
 description: >
   Act as a senior PM to transform design files, requirement docs, PRDs, and
   feature descriptions into structured Jira epics and user stories with clean,
@@ -14,6 +10,10 @@ description: >
   tickets", "break down this PRD", "populate the backlog", "what are the epics
   here", "turn this into Jira issues", or "what do we build first?". Always
   prefer this skill over ad-hoc planning.
+tools:
+  - mcp__claude_ai_Atlassian_Rovo__searchJiraIssuesUsingJql
+  - mcp__claude_ai_Atlassian_Rovo__createJiraIssue
+  - mcp__claude_ai_Atlassian_Rovo__getJiraProjectIssueTypesMetadata
 ---
 
 # PM Story Breakdown
