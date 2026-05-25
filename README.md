@@ -16,6 +16,7 @@ New project kicking off? → `/charter`
 Writing requirements? → `/prd`  
 Breaking down stories? → `/stories`  
 Starting a sprint? → `/sprint-sow`  
+Ready to ship? → `/release-checklist`  
 Not sure which skill you need? → `/pm [paste anything]`
 
 If this project helps you, ⭐ the repo.
@@ -41,7 +42,7 @@ The result: decision-ready artefacts in minutes, not hours.
 **Skill chain:**
 
 ```
-Raw request → /triage → /risk-scan → /charter → /discovery → /prd → /stories → /sprint-sow
+Raw request → /triage → /risk-scan → /charter → /discovery → /prd → /stories → /sprint-sow → /release-checklist
 ```
 
 After any command completes, the next logical skill is suggested — just follow the prompts.
@@ -217,6 +218,35 @@ Reads a solution architect proposal, architecture doc, or integration spec and p
 - Preparing for a feasibility conversation with engineering
 
 **Command:** `/tech-review`
+
+</details>
+
+<details>
+<summary><strong>release-checklist</strong> — Go/no-go assessment before any production release</summary>
+
+**What it does:**  
+Runs a structured readiness assessment across 7 categories — feature completeness, testing, operational readiness, communications, dependencies, approvals, and post-release readiness. Every checklist item is scored PASS / FAIL / RISK / UNCONFIRMED / N/A. Produces a categorised checklist, a blockers list, and one of three verdicts: **GO**, **NO-GO**, or **CONDITIONAL GO**.
+
+**When to use:**  
+- Before any planned sprint release  
+- Before shipping a hotfix or emergency patch  
+- Coordinating a phased or feature-flagged rollout  
+- Running a release readiness meeting with engineering and QA  
+- When a stakeholder asks "are we ready to ship?"
+
+**Command:** `/release-checklist`
+
+**Example:**
+```
+/release-checklist
+Release: Sprint 22 — Invoicing v2
+Type: Planned sprint release
+Date: Friday 30 May 2026, 6:00 PM AEST
+Tickets: FIN-441, FIN-442, FIN-443, FIN-451, FIN-461, FIN-470
+Team: PM Erica J, Tech lead Marcus R, QA lead Priya S, DevOps Tom W
+QA sign-off received for FIN-441 and FIN-442. FIN-443 still in testing.
+No load testing done. Rollback plan exists but unreviewed.
+```
 
 </details>
 
