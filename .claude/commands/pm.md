@@ -34,6 +34,7 @@ Based on the input, select the skills needed from this list and decide their ord
 | `.claude/skills/pm-execution/sprint-sow/skill.md` | Sprint Scope of Work | After stories |
 | `.claude/skills/pm-execution/meeting-note/skill.md` | Meeting minutes | Standalone |
 | `.claude/skills/pm-execution/technical-feasibility-review/skill.md` | PM-ready feasibility summary with risks and SA questions | Standalone or after intake-triage |
+| `.claude/skills/pm-execution/release-checklist/skill.md` | Go/no-go checklist with verdict — GO, NO-GO, or CONDITIONAL GO | After sprint SOW, or standalone before any release |
 
 Before proceeding, show the user your plan:
 

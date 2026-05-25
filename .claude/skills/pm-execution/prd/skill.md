@@ -56,8 +56,8 @@ Every requirement must be testable — if you can't write a test for it, it's no
 5. Flag any requirement that cannot be tested as incomplete
 6. Write the sign-off section last — it makes the document feel real and actionable
 
-For BRD-specific guidance — read `references/BRD-GUIDE.md`.
-For a full worked example — read `references/REFERENCE.md`.
+For BRD-specific guidance — read `brd-guide.md`.
+For a full worked example — read `reference.md`.
 
 ---
 
@@ -176,5 +176,5 @@ Requirements that cannot be finalised until these are answered:
 - Prefer practical PM judgment over theory.
 # Reference Files
 
-- `references/REFERENCE.md` — Full worked example: brief → complete PRD. Read when input is thin or requirements are hard to separate from solutions.
-- `references/BRD-GUIDE.md` — BRD-specific differences: business case summary, formal language, procurement context. Read when document type is BRD.
+- `reference.md` — Full worked example: brief → complete PRD. Read when input is thin or requirements are hard to separate from solutions.
+- `brd-guide.md` — BRD-specific differences: business case summary, formal language, procurement context. Read when document type is BRD.
