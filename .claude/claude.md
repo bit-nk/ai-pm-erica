@@ -26,6 +26,7 @@ Skills are invoked by name or triggered automatically when the input matches the
 | `user-stories` | `.claude/skills/pm-execution/user-stories/` | "Break into stories", "create epics", Jira tickets from requirements |
 | `sprint-report` | `.claude/skills/pm-execution/sprint-report/` | Sprint report or velocity analysis from Jira data |
 | `sprint-sow` | `.claude/skills/pm-execution/sprint-sow/` | "Write the sprint SOW", sprint scope of work document |
+| `sprint-planning` | `.claude/skills/pm-execution/sprint-planning/` | "Plan the sprint", capacity planning, backlog scoping, sprint plan document |
 | `meeting-note` | `.claude/skills/pm-execution/meeting-note/` | Meeting transcript → clean minutes and action items |
 | `technical-feasibility-review` | `.claude/skills/pm-execution/technical-feasibility-review/` | SA proposal, architecture doc, or integration spec → PM-ready feasibility summary with delivery risks and SA questions |
 | `release-checklist` | `.claude/skills/pm-execution/release-checklist/` | "Are we ready to ship?", go/no-go assessment, release sign-off, pre-deploy checklist |
@@ -45,7 +46,8 @@ Raw request
                   → prd
                       → user-stories
                           → sprint-sow
-                              → release-checklist
+                              → sprint-planning
+                                  → release-checklist
 ```
 
 After completing one skill, suggest the logical next skill unless the user redirects.
