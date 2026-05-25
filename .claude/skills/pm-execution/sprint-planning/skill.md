@@ -159,3 +159,9 @@ Sprint [N] is complete when all of the following are true:
 
 1. Render the full plan in chat as clean markdown.
 2. Follow the **Saving Artefacts** rules in `.claude/CLAUDE.md` — ask where to save before writing anything. Default local path: `clients/CLIENT/sprint-artefacts/YYYY-MM-DD-sprint-N-plan.md`
+
+---
+
+## Reference
+
+- `reference.md` — Full worked example: team + backlog input → complete sprint plan. Read when input is thin or capacity/prioritisation is ambiguous.
