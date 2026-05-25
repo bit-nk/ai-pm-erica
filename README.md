@@ -5,7 +5,7 @@
 
 # AI PM Assistant: Your Senior PM Co-Pilot in Claude Code
 
-> 11 structured PM skills across the full delivery lifecycle. From raw stakeholder message to production release — without switching tools.
+> 12 structured PM skills across the full delivery lifecycle. From raw stakeholder message to production release — without switching tools.
 
 Designed for Claude Code. Drop it into any project and get a senior PM brain on demand.
 
@@ -16,6 +16,7 @@ New project kicking off? → `/charter`
 Writing requirements? → `/prd`  
 Breaking down stories? → `/stories`  
 Starting a sprint? → `/sprint-sow`  
+Planning a sprint? → `/sprint-planning`  
 Ready to ship? → `/release-checklist`  
 Not sure which skill you need? → `/pm [paste anything]`
 
@@ -42,7 +43,7 @@ The result: decision-ready artefacts in minutes, not hours.
 **Skill chain:**
 
 ```
-Raw request → /triage → /risk-scan → /charter → /discovery → /prd → /stories → /sprint-sow → /release-checklist
+Raw request → /triage → /risk-scan → /charter → /discovery → /prd → /stories → /sprint-sow → /sprint-planning → /release-checklist
 ```
 
 After any command completes, the next logical skill is suggested — just follow the prompts.
@@ -222,6 +223,30 @@ Reads a solution architect proposal, architecture doc, or integration spec and p
 </details>
 
 <details>
+<summary><strong>sprint-planning</strong> — Sprint plan with capacity, backlog scoping, dependencies, and key dates</summary>
+
+**What it does:**
+Takes team availability, a prioritised backlog, and a sprint goal and produces a structured sprint plan: capacity table, P0/P1/P2 backlog breakdown, dependency tracking, risk flags, definition of done, and key dates. Defaults to 70–80% capacity planning and flags overcommitment explicitly.
+
+**When to use:**
+- Planning an upcoming sprint with a defined team and backlog
+- Working out realistic capacity after accounting for PTO and meetings
+- Aligning stakeholders on what will and won't ship this sprint
+
+**Command:** `/sprint-planning`
+
+**Example:**
+```
+/sprint-planning
+Sprint 3, 2 weeks. Team: Alice (FE, 8 days), Ben (BE, 7 days — 1 day PTO).
+Goal: Ship the client dashboard with live data.
+Backlog: PROJ-12 Dashboard UI (3pts), PROJ-13 Data API (5pts), PROJ-14 Export (2pts), PROJ-15 Notifications (3pts — stretch).
+Carryover: PROJ-11 Auth bug (2pts, blocked last sprint by infra).
+```
+
+</details>
+
+<details>
 <summary><strong>release-checklist</strong> — Go/no-go assessment before any production release</summary>
 
 **What it does:**  
@@ -279,30 +304,31 @@ Claude will read the input, identify the right skill (or chain of skills), and a
     stories.md                       # /stories
     sprint-report.md                 # /sprint-report
     sprint-sow.md                    # /sprint-sow
+    sprint-planning.md               # /sprint-planning
     meeting-notes.md                 # /meeting-notes
     tech-review.md                   # /tech-review
     release-checklist.md             # /release-checklist
     new-client.md                    # /new-client
   skills/
     pm-execution/                    # Full delivery lifecycle skills
-      intake-triage/
+      triage/
         skill.md                     # Workflow definition
         reference.md                 # Worked example
       risk-scan/
         skill.md
         reference.md
         phase-guide.md               # Phase-specific risk patterns
-      project-charter/
+      charter/
         skill.md
         reference.md
-      discovery-workshop/
+      discovery/
         skill.md
         reference.md
       prd/
         skill.md
         reference.md
         brd-guide.md                 # BRD output variant
-      user-stories/
+      stories/
         skill.md
         reference.md
         references/
@@ -314,10 +340,13 @@ Claude will read the input, identify the right skill (or chain of skills), and a
       sprint-sow/
         skill.md
         reference.md
-      meeting-note/
+      sprint-planning/
         skill.md
         reference.md
-      technical-feasibility-review/
+      meeting-notes/
+        skill.md
+        reference.md
+      tech-review/
         skill.md
         reference.md
       release-checklist/

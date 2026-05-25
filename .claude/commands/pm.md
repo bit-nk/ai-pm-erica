@@ -24,16 +24,17 @@ Based on the input, select the skills needed from this list and decide their ord
 
 | Skill file | What it produces | Can run in parallel? |
 |---|---|---|
-| `.claude/skills/pm-execution/intake-triage/skill.md` | Structured intake summary | No — must run first if input is raw |
+| `.claude/skills/pm-execution/triage/skill.md` | Structured intake summary | No — must run first if input is raw |
 | `.claude/skills/pm-execution/risk-scan/skill.md` | Risk register with scoring and owners | Yes — can run alongside charter |
-| `.claude/skills/pm-execution/project-charter/skill.md` | Sponsor-ready project charter | After intake |
-| `.claude/skills/pm-execution/discovery-workshop/skill.md` | Discovery plan and output | After charter |
+| `.claude/skills/pm-execution/charter/skill.md` | Sponsor-ready project charter | After intake |
+| `.claude/skills/pm-execution/discovery/skill.md` | Discovery plan and output | After charter |
 | `.claude/skills/pm-execution/prd/skill.md` | Product Requirements Document | After discovery |
-| `.claude/skills/pm-execution/user-stories/skill.md` | Epics and user stories | After PRD |
+| `.claude/skills/pm-execution/stories/skill.md` | Epics and user stories | After PRD |
 | `.claude/skills/pm-execution/sprint-report/skill.md` | Sprint report analysis | Standalone |
 | `.claude/skills/pm-execution/sprint-sow/skill.md` | Sprint Scope of Work | After stories |
-| `.claude/skills/pm-execution/meeting-note/skill.md` | Meeting minutes | Standalone |
-| `.claude/skills/pm-execution/technical-feasibility-review/skill.md` | PM-ready feasibility summary with risks and SA questions | Standalone or after intake-triage |
+| `.claude/skills/pm-execution/sprint-planning/skill.md` | Sprint plan with capacity, backlog, and key dates | After stories or sprint SOW |
+| `.claude/skills/pm-execution/meeting-notes/skill.md` | Meeting minutes | Standalone |
+| `.claude/skills/pm-execution/tech-review/skill.md` | PM-ready feasibility summary with risks and SA questions | Standalone or after triage |
 | `.claude/skills/pm-execution/release-checklist/skill.md` | Go/no-go checklist with verdict — GO, NO-GO, or CONDITIONAL GO | After sprint SOW, or standalone before any release |
 
 Before proceeding, show the user your plan:
