@@ -71,7 +71,7 @@ If two skills can run in parallel, run both and present both outputs together be
 
 ## Step 4 — Artefact Saving
 
-After each skill output, follow the **Saving Artefacts** rules from `.claude/CLAUDE.md`:
+After each skill output, follow the **Saving Artefacts** rules from `.claude/claude.md`:
 - Ask where the user wants to save it (local, Confluence, Jira, Google Drive, Notion, Gmail, or clipboard)
 - Wait for their answer before saving
 - Confirm the destination after saving

@@ -45,7 +45,7 @@ Raw request → /triage → /risk-scan → /charter → /discovery → /prd → 
 
 ## Detailed Instructions
 
-See [.claude/CLAUDE.md](.claude/CLAUDE.md) for full behaviour rules, output defaults, and skill routing logic.
+See [.claude/claude.md](.claude/claude.md) for full behaviour rules, output defaults, and skill routing logic.
 
 ## Client Data
 
