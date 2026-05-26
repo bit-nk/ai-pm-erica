@@ -14,18 +14,7 @@ $ARGUMENTS
 
 ---
 
-# PRD vs BRD — Which One?
-
-| | PRD | BRD |
-|---|---|---|
-| **Focus** | Product and user — what it does and for whom | Business — what it must achieve and why |
-| **Audience** | Product, design, engineering | Sponsors, business stakeholders, procurement |
-| **Tone** | User-centric, functional | Formal, outcome-driven |
-| **Use when** | Building a product or feature | Business change, system procurement, internal projects |
-
-If unclear, ask: "Is this primarily for the engineering/product team (PRD) or for business stakeholders and sign-off (BRD)?" Default to PRD for product/tech projects, BRD for business change or procurement.
-
-Both share the same core structure — the BRD reference file has the differences called out.
+If unclear whether PRD or BRD is needed, ask: "Is this for the engineering/product team (PRD) or for business stakeholders and sign-off (BRD)?" Default to PRD for product/tech projects, BRD for business change or procurement.
 
 ---
 
@@ -40,34 +29,6 @@ Both share the same core structure — the BRD reference file has the difference
 | Out-of-scope items | No | Explicitly excluding items prevents scope creep |
 
 If discovery findings aren't available, ask: "Has discovery been done? If not, requirements written now will likely change — consider running discovery first."
-
----
-
-# What Good Requirements Look Like
-
-A requirement answers: **who** needs **what** and **why**. If any of those three are missing, it's not a requirement — it's a wish.
-
-**Wrong:** "The system should be fast."
-**Right:** "The dashboard must load in under 2 seconds for users on a standard corporate network, so the ops team can check status during live incidents without delay."
-
-**Wrong:** "Admin users need reporting."
-**Right:** "Finance admins must be able to export a monthly expense report as CSV, including all transactions, approvers, and amounts, so they can reconcile against the GL without manual data entry."
-
-Every requirement must be testable — if you can't write a test for it, it's not specific enough.
-
----
-
-# Workflow
-
-1. Read all input fully before writing anything
-2. Identify the document type — PRD or BRD
-3. Separate functional requirements (what it does) from non-functional (how well it does it)
-4. Mark anything inferred or assumed as `[assumed]` — never invent requirements
-5. Flag any requirement that cannot be tested as incomplete
-6. Write the sign-off section last — it makes the document feel real and actionable
-
-For BRD-specific guidance — read `brd-guide.md`.
-For a full worked example — read `reference.md`.
 
 ---
 
@@ -164,22 +125,3 @@ Requirements that cannot be finalised until these are answered:
 | Tech Lead | | Approved / Changes requested | |
 | [Other stakeholder] | | | |
 
----
-
-# Quality Check
-
-- [ ] Every requirement has a who, what, and why
-- [ ] Every requirement is testable — if you can't write a test for it, rewrite it
-- [ ] Every goal has a measurable metric and target
-- [ ] Out of scope has at least 2 named items
-- [ ] Non-functional requirements have specific targets — not "fast" or "secure"
-- [ ] All `[assumed]` items are flagged
-- [ ] Open questions table exists — zero open questions at this stage is a red flag
-- [ ] Sign-off table has named approvers, not just roles
-
----
-
-# Reference Files
-
-- `reference.md` — Full worked example: brief → complete PRD. Read when input is thin or requirements are hard to separate from solutions.
-- `brd-guide.md` — BRD-specific differences: business case summary, formal language, procurement context. Read when document type is BRD.

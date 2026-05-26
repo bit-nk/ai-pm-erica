@@ -30,22 +30,6 @@ If project context or current phase is missing, ask before proceeding.
 
 ---
 
-# Phase → Risk Focus
-
-Apply the right lens for the current phase. Risks amber in an earlier phase can be red now — flag it.
-
-| Phase | What to focus on |
-|---|---|
-| Discovery | Problem clarity, stakeholder coverage, untested assumptions, shaky business case |
-| Design | Scope expansion, deferred decisions, unvalidated tech approach, missing acceptance criteria |
-| Development | Delivery pace, integration failures, technical debt, dependency slippage |
-| Testing | Defect rate, environment stability, UAT availability, coverage gaps |
-| Deployment | Rollback readiness, ops training, comms sequencing, data migration |
-
-For Testing and Deployment in detail — read `references/PHASE-GUIDE.md`.
-
----
-
 # Depth
 
 | Depth | When | Risks | Sections to include |
@@ -78,20 +62,6 @@ Score every risk across four dimensions — each one changes the response, not j
 Every Hard-detectability risk needs a **trigger signal** — a specific observable event that tells you the risk has activated. Without one, nobody knows when to act.
 
 **Response types:** Mitigate / Transfer / Avoid / Accept / Escalate. "Monitor" alone is not a response.
-
----
-
-# Workflow
-
-1. Read full input once — identify R1 (the single biggest threat given the current phase) then work outward
-2. Check recent changes explicitly — they are disproportionately high risk and often missed
-3. Score each risk across all four dimensions — don't default everything to Medium
-4. Assign a trigger signal to every Hard-detectability risk
-5. Assign an owner to every risk — no owner means no one is watching it
-6. Flag high-uncertainty, high-impact risks for validation experiments
-7. Write the stakeholder summary and overall verdict last — they must reflect the honest log
-
-For format examples and calibration — read `references/REFERENCE.md`.
 
 ---
 
@@ -173,24 +143,3 @@ Explain why top risks are ranked as they are — especially where velocity or de
 
 - [Area — why it couldn't be evaluated from available information]
 
----
-
-# Quality Check
-
-- [ ] Phase reflected in risk focus and proximity scores
-- [ ] Recent changes explicitly assessed
-- [ ] Every risk is a specific event, not a category label
-- [ ] All four attributes scored per risk
-- [ ] Hard-detectability risks have trigger signals
-- [ ] Every risk has an owner
-- [ ] Depth respected — correct sections included/omitted
-- [ ] Stakeholder summary uses "at risk of X due to Y" format
-- [ ] Decisions table contains only items needing authority above PM
-- [ ] Verdict honestly reflects the register
-
----
-
-# Reference Files
-
-- `references/REFERENCE.md` — Full worked example with scoring rationale. Read when calibrating output quality or unsure how to score a specific risk type.
-- `references/PHASE-GUIDE.md` — Detailed risk patterns per phase. Read for Testing or Deployment phases, or when a project is transitioning and prior-phase risks may still be active.

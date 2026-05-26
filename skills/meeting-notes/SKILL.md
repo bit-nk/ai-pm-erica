@@ -22,20 +22,7 @@ Turn raw meeting transcripts into clean, useful meeting minutes. Remove filler, 
 
 ## What to do
 
-### Step 1 — Read the transcript
-
-The transcript may arrive as:
-- A pasted block of text in the chat
-- An uploaded `.txt`, `.vtt`, `.docx`, or `.pdf` file (read it using the file-reading skill if needed)
-- A Teams auto-generated transcript (look for speaker labels like `John Smith   00:01:23`)
-
-Strip out:
-- Filler words ("um", "you know", "like", "so yeah")
-- Repetition (same point made multiple times — keep the clearest version)
-- Off-topic chatter (weather talk, lunch plans, "can everyone hear me?")
-- Crosstalk and false starts
-
----
+Strip filler, repetition, off-topic chatter, and crosstalk from the transcript before writing.
 
 ### Step 2 — Write the meeting minutes
 
@@ -142,26 +129,3 @@ Do not save or publish anything until the user confirms the destination.
    - `versionMessage`: `Updated by AI from transcript`
 5. Return the live page URL to the user after saving.
 
----
-
-## Tone and style rules
-
-- Write like a smart colleague summarizing a meeting for someone who wasn't there
-- Use simple, direct English — no corporate jargon unless it was used in the meeting and matters
-- Past tense for what happened ("The team decided...", "Sarah raised a concern about...")
-- Avoid vague phrases like "various topics were discussed" — be specific
-- If something was unclear in the transcript, write "[unclear]" rather than guessing
-
----
-
-## Edge cases
-
-**Transcript has no speaker labels** — Still extract content. Note at the top: "Speaker attribution not available."
-
-**Very short meeting (under 10 min)** — Skip the table format. Use a brief paragraph summary + bullets for action items.
-
-**Very long meeting (1+ hour)** — Group discussion points by agenda item or theme. Add a one-line "TL;DR" at the very top before the full minutes.
-
-**Multiple languages** — Write the minutes in the same language the user used to ask, regardless of the transcript language. Note the original language at the top.
-
-**Sensitive content** — If the transcript contains HR, legal, or confidential discussions, include a note: "⚠️ This summary contains sensitive content. Handle accordingly."

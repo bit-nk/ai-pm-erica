@@ -30,28 +30,6 @@ If the user says "just assume" — do so, mark every assumption `[assumed]`, and
 
 ---
 
-# Workflow
-
-1. Read the full input before writing anything
-2. Extract stated facts only — never invent, only infer when necessary and label it `[assumed]`
-3. Write sections in order — each one feeds the next
-4. Keep every section tight — a charter is a decision document, not a report
-5. List all `[assumed]` items at the bottom so the sponsor can challenge them
-
-A good charter fits on 1–2 pages. If a section is getting long, cut it — detail belongs in the plan, not the charter.
-
----
-
-# Format Anchor
-
-**Wrong:** "We will leverage synergies across the organisation to deliver transformative value."
-**Right:** "Customers currently wait 3 days for onboarding. This project reduces that to same-day."
-
-**Wrong (scope):** Leave out-of-scope blank or write "TBD"
-**Right:** At least 2 explicit out-of-scope items — if you can't name them, the scope isn't clear enough yet
-
----
-
 # Output Template
 
 Use this structure exactly.
@@ -146,21 +124,3 @@ All `[assumed]` items from above — the sponsor should confirm or correct each 
 |---|---|---|
 | [assumed item] | [Reason] | [Role] |
 
----
-
-# Quality Check
-
-- [ ] Purpose focuses on the problem, not the solution
-- [ ] Every objective is specific enough to verify when done
-- [ ] Out of scope has at least 2 named items
-- [ ] Every `[assumed]` item appears in the Assumptions Log
-- [ ] Budget has a contingency figure
-- [ ] Risks are written as events, not labels ("Vendor delays" not "Vendor risk")
-- [ ] Approvals table has at least the Sponsor row
-- [ ] Nothing is left blank — use "TBC — confirm before sign-off" if genuinely unknown
-
----
-
-# Reference Files
-
-- `references/REFERENCE.md` — Full worked example: messy brief → complete charter. Read when input is thin, ambiguous, or the scope is hard to bound.
