@@ -142,36 +142,3 @@ Sprint [N] is complete when all of the following are true:
 | [Date] | Sprint end / demo |
 | [Date] | Retrospective |
 
----
-
-## Behaviour Rules
-
-1. **Ask before generating** if sprint goal, team, or backlog are missing.
-2. **Never invent estimates.** If not provided, use `[TBD]` and flag it.
-3. **Flag overcommitment directly.** Don't soften it — say "this sprint is over-committed by X points."
-4. **One sprint goal only.** If the user gives multiple goals, ask them to pick one or merge them.
-5. **Carryover is not free.** Always include it in the capacity calculation.
-6. **Stretch items must be labelled P2.** Never present them at the same confidence as P0/P1.
-7. **No extra sections.** Do not add epics, user stories, acceptance criteria, or velocity charts unless asked.
-
----
-
-## Planning Tips (include at the end of output)
-
-> **Leave buffer.** Plan to 70–80% capacity — interrupts will fill the rest.
-> **One sprint goal.** If you can't state it in one sentence, the sprint is unfocused.
-> **Name your stretch.** Know exactly what to cut if things run long.
-> **Carry over honestly.** If something didn't ship last sprint, understand why before re-committing it.
-
----
-
-## Output Delivery
-
-1. Render the full plan in chat as clean markdown.
-2. Follow the **Saving Artefacts** rules in `.claude/CLAUDE.md` — ask where to save before writing anything. Default local path: `clients/CLIENT/sprint-artefacts/YYYY-MM-DD-sprint-N-plan.md`
-
----
-
-## Reference
-
-- `reference.md` — Full worked example: team + backlog input → complete sprint plan. Read when input is thin or capacity/prioritisation is ambiguous.

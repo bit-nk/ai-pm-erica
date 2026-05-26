@@ -43,23 +43,6 @@ If raw notes are provided, go straight to Summarise mode. Don't ask for more tha
 
 # Mode 1 — Plan
 
-## What Good Discovery Looks Like
-
-Discovery answers three questions before requirements are written:
-1. What problem are we actually solving? (not just the one stated)
-2. Who is affected, and how?
-3. What does success look like to the people who matter?
-
-A workshop that skips these produces requirements nobody needed.
-
-## Workflow
-
-1. Read the project brief and what's already known
-2. Identify the 3–5 most important unknowns — what must be true for the project to succeed?
-3. Group attendees by role — sponsors need different questions than end users
-4. Build the agenda around unknowns, not topics
-5. Prepare probing follow-up questions — the first answer is rarely the real one
-
 ## Output Template — Workshop Plan
 
 ---
@@ -130,25 +113,6 @@ The questions this session must answer:
 
 # Mode 2 — Summarise
 
-## What Good Findings Look Like
-
-Raw notes contain everything. A good summary contains only what matters:
-- The real problem (which may differ from the stated problem)
-- Who is affected and how
-- What success looks like
-- What the team disagrees on
-- What's still unknown
-
-A summary that just restates the notes hasn't added value. The PM's job is to interpret, not transcribe.
-
-## Workflow
-
-1. Read all notes fully before writing anything
-2. Separate facts (stated) from inferences (read between the lines) — label inferences `[inferred]`
-3. Look for the gap between what people said and what they meant
-4. Identify conflicts between what different attendees said
-5. Surface the unknowns that the session didn't resolve — these become the next step
-
 ## Output Template — Findings Summary
 
 ---
@@ -198,35 +162,3 @@ What the session did not answer — these become the agenda for the next session
 |---|---|---|
 | [Specific next action] | [Role] | [Date] |
 
----
-
-# Format Anchor
-
-**Wrong (finding):** "Stakeholders want better reporting."
-**Right (finding):** "The ops team manually exports 3 spreadsheets every Monday morning to produce a report that the finance team reads on Tuesday. This takes 4 hours and the data is 24 hours old by the time it's read."
-
-**Wrong (unknown):** "Requirements need clarification."
-**Right (unknown):** "It's unclear whether the new system needs to integrate with the legacy CRM or replace it. The answer changes the build cost by an estimated £40k and 3 months."
-
----
-
-# Quality Check
-
-**Plan mode:**
-- [ ] Session goal is one sentence and specific — not "discuss the project"
-- [ ] Key unknowns are listed — not topics, but actual questions that need answers
-- [ ] Questions include follow-ups that go beyond the surface answer
-- [ ] "What would make you pull the plug" is included for sponsor sessions
-
-**Summarise mode:**
-- [ ] Real problem section may differ from stated problem — if it does, say so
-- [ ] All findings are specific and evidence-based — no vague generalisations
-- [ ] Conflicts between attendees are named, not smoothed over
-- [ ] Still Unknown table has at least 1 entry — if zero unknowns came out of discovery, something is wrong
-- [ ] `[inferred]` label used wherever the PM is reading between the lines
-
----
-
-# Reference Files
-
-- `references/REFERENCE.md` — Worked examples for both modes: a messy brief turned into a workshop plan, and raw interview notes turned into a findings summary.
