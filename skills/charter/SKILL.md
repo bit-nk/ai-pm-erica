@@ -1,6 +1,17 @@
 ---
 name: project-charter
 description: Turns a project brief, intake summary, or rough idea into a complete, sponsor-ready project charter. Use whenever someone says "write the charter", "start a new project", "formalise this project", "we need a charter", "draft the project document", or pastes a brief and needs it turned into an official document. Also triggers after an intake summary is complete and the next step is formal authorisation. A charter is the document that officially starts a project — without it, the PM has no authority to act and the team has no agreed scope. Use this skill early, before any planning begins.
+version: 1.0.0
+argument-hint: <project brief or intake summary>
+allowed-tools: Read
+---
+
+## Input
+
+$ARGUMENTS
+
+*If no input is provided above, ask: "Please share the project brief or intake summary — project name, problem, sponsor, timeline, and budget if known."*
+
 ---
 
 # What to Gather First

@@ -1,14 +1,17 @@
 ---
 name: meeting-note
-description: >
-  Use this skill whenever the user wants to extract meeting notes, minutes, or a summary from a meeting transcript — especially from Microsoft Teams, Zoom, Google Meet, or any raw transcript text. Trigger when the user shares a transcript file or text and asks for a summary, key points, action items, decisions, or meeting minutes. Also trigger when the user says things like "summarize this meeting", "what was discussed", "extract the important parts", "write up the minutes", or pastes a block of conversation text that looks like a meeting transcript. This skill produces clean, plain-English meeting minutes and follow-up questions the user can ask to go deeper. Also trigger when the user wants to save or publish meeting minutes to Confluence.
-  - mcp__claude_ai_Atlassian_Rovo__createConfluencePage
-  - mcp__claude_ai_Atlassian_Rovo__updateConfluencePage
-  - mcp__claude_ai_Atlassian_Rovo__getConfluencePageDescendants
-  - mcp__claude_ai_Atlassian_Rovo__getConfluenceSpaces
-  - mcp__claude_ai_Google_Drive__create_file
-  - mcp__claude_ai_Notion__notion-create-pages
-  - mcp__claude_ai_Gmail__create_draft
+description: Use this skill whenever the user wants to extract meeting notes, minutes, or a summary from a meeting transcript — especially from Microsoft Teams, Zoom, Google Meet, or any raw transcript text. Trigger when the user shares a transcript file or text and asks for a summary, key points, action items, decisions, or meeting minutes. Also trigger when the user says things like "summarize this meeting", "what was discussed", "extract the important parts", "write up the minutes", or pastes a block of conversation text that looks like a meeting transcript. This skill produces clean, plain-English meeting minutes and follow-up questions the user can ask to go deeper. Also trigger when the user wants to save or publish meeting minutes to Confluence.
+version: 1.0.0
+argument-hint: <meeting transcript or raw notes>
+allowed-tools: Read, mcp__claude_ai_Atlassian_Rovo__createConfluencePage, mcp__claude_ai_Atlassian_Rovo__updateConfluencePage, mcp__claude_ai_Atlassian_Rovo__getConfluencePageDescendants, mcp__claude_ai_Atlassian_Rovo__getConfluenceSpaces, mcp__claude_ai_Google_Drive__create_file, mcp__claude_ai_Notion__notion-create-pages, mcp__claude_ai_Gmail__create_draft
+---
+
+## Input
+
+$ARGUMENTS
+
+*If no input is provided above, ask: "Please paste the meeting transcript or raw notes. Teams, Zoom, and Google Meet transcripts all work."*
+
 ---
 
 # Meeting Minutes Skill

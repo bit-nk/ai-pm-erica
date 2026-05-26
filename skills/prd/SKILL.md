@@ -1,6 +1,17 @@
 ---
 name: prd
 description: 'Writes a Product Requirements Document (PRD) or Business Requirements Document (BRD) from discovery findings, a project brief, or raw stakeholder input. Use whenever someone says "write the PRD", "write the BRD", "document the requirements", "we need a requirements document", "turn this into a spec", or has completed discovery and needs requirements formally documented before build begins. A PRD defines what to build and why — from the product/user perspective. A BRD defines what the business needs the solution to achieve — from the business/stakeholder perspective. Both serve the same purpose: give the team a single agreed source of truth so everyone builds the same thing. Use this skill after discovery, before user stories or design begins.'
+version: 1.0.0
+argument-hint: <discovery findings, charter, or feature brief>
+allowed-tools: Read
+---
+
+## Input
+
+$ARGUMENTS
+
+*If no input is provided above, ask: "Please share your discovery findings, project charter, or feature brief. Also let me know if you need a PRD (product/engineering audience) or a BRD (business/stakeholder audience)."*
+
 ---
 
 # PRD vs BRD — Which One?
