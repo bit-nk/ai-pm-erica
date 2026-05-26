@@ -1,18 +1,17 @@
 ---
 name: user-stories
-description: >
-  Act as a senior PM to transform design files, requirement docs, PRDs, and
-  feature descriptions into structured Jira epics and user stories with clean,
-  testable acceptance criteria. Trigger whenever the user shares a Figma link,
-  requirements doc, PRD, image, or pasted text and wants to plan, scope, or
-  ticket work — even if they don't use PM terminology. Trigger for phrases like:
-  "break this into stories", "create epics", "plan this feature", "write
-  tickets", "break down this PRD", "populate the backlog", "what are the epics
-  here", "turn this into Jira issues", or "what do we build first?". Always
-  prefer this skill over ad-hoc planning.
-  - mcp__claude_ai_Atlassian_Rovo__searchJiraIssuesUsingJql
-  - mcp__claude_ai_Atlassian_Rovo__createJiraIssue
-  - mcp__claude_ai_Atlassian_Rovo__getJiraProjectIssueTypesMetadata
+description: Act as a senior PM to transform design files, requirement docs, PRDs, and feature descriptions into structured Jira epics and user stories with clean, testable acceptance criteria. Trigger whenever the user shares a Figma link, requirements doc, PRD, image, or pasted text and wants to plan, scope, or ticket work — even if they don't use PM terminology. Trigger for phrases like "break this into stories", "create epics", "plan this feature", "write tickets", "break down this PRD", "populate the backlog", "what are the epics here", "turn this into Jira issues", or "what do we build first?". Always prefer this skill over ad-hoc planning.
+version: 1.0.0
+argument-hint: <PRD, feature description, or Figma link>
+allowed-tools: Read, mcp__claude_ai_Atlassian_Rovo__searchJiraIssuesUsingJql, mcp__claude_ai_Atlassian_Rovo__createJiraIssue, mcp__claude_ai_Atlassian_Rovo__getJiraProjectIssueTypesMetadata
+---
+
+## Input
+
+$ARGUMENTS
+
+*If no input is provided above, ask: "Please paste your PRD, feature description, Figma link, or requirements doc. Also share your Jira project key if you want stories created directly in Jira."*
+
 ---
 
 # PM Story Breakdown

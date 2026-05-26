@@ -1,6 +1,17 @@
 ---
 name: sprint-planning
 description: Produces a structured sprint plan from team availability, backlog items, and sprint goals. Use when a PM needs to plan an upcoming sprint — including capacity calculation, backlog scoping, dependency identification, and sprint plan document generation. Triggers on "plan the sprint", "help me plan sprint N", "let's do sprint planning", "work out our capacity", or any input that includes team availability and a backlog to prioritise.
+version: 1.0.0
+argument-hint: <team availability, backlog, and sprint goal>
+allowed-tools: Read
+---
+
+## Input
+
+$ARGUMENTS
+
+*If no input is provided above, ask: "Please share the sprint details — team members and availability, sprint length, backlog items to scope, sprint goal, and any carryover from last sprint."*
+
 ---
 
 # Sprint Planning

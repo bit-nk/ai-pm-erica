@@ -1,6 +1,17 @@
 ---
 name: discovery-workshop
 description: Plans and documents discovery workshops and stakeholder interviews for new projects. Use whenever a PM needs to prepare for or capture output from a discovery session — including when someone says "plan a discovery workshop", "run discovery on this", "I need to interview stakeholders", "help me structure discovery", "summarise what came out of the discovery session", or shares raw notes from a workshop or interview and needs them turned into structured findings. Discovery is where projects are made or broken — the goal is to understand the real problem before anyone commits to a solution. Use this skill before requirements are written and before any build begins.
+version: 1.0.0
+argument-hint: <project context or workshop notes>
+allowed-tools: Read
+---
+
+## Input
+
+$ARGUMENTS
+
+*If no input is provided above, ask: "Are you planning a discovery session or summarising one that's already happened? Then share the project context or raw notes."*
+
 ---
 
 # What This Skill Does

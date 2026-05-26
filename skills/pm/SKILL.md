@@ -1,5 +1,17 @@
 ---
-description: PM Orchestrator — analyses any input and chains the right skills automatically
+name: pm-orchestrator
+description: PM Orchestrator — analyses any input and chains the right skills automatically. Use whenever the user pastes a raw stakeholder message, meeting transcript, feature request, Jira data, or project brief and wants Claude to decide which PM skills to run and in what order. Trigger on "/pm", "orchestrate this", "figure out what I need", or any input that is too broad or ambiguous to route to a single skill directly. This is the recommended entry point for all PM work.
+version: 1.0.0
+argument-hint: <any input — message, transcript, brief, or Jira data>
+allowed-tools: Read
+---
+
+## Input
+
+$ARGUMENTS
+
+*If no input is provided above, ask: "Please share your input — a raw stakeholder message, meeting transcript, feature request, project brief, or Jira data. I'll figure out the right skills and order."*
+
 ---
 
 # PM Orchestrator
@@ -12,13 +24,10 @@ You do not execute skills yourself. You plan the workflow, run each skill in seq
 
 ## Step 1 — Analyse the Input
 
-Read the input below and determine:
+Read the input above and determine:
 - What type of input is this? (raw request / transcript / brief / Jira data / something else)
 - What delivery phase does this belong to? (pre-project / discovery / design / development / testing / deployment)
 - What is the user's most likely immediate need?
-
-Input:
-$ARGUMENTS
 
 ---
 
@@ -61,7 +70,7 @@ Wait for confirmation before executing.
 
 Run each skill in the agreed order. For each skill:
 
-1. Read the full `skill.md` file for that skill
+1. Read the full `SKILL.md` file for that skill
 2. Read the matching `reference.md` if available
 3. Execute the skill against the input (or the output of the previous skill)
 4. Present the output clearly labelled with the skill name
@@ -76,7 +85,7 @@ If two skills can run in parallel, run both and present both outputs together be
 
 ## Step 4 — Artefact Saving
 
-After each skill output, follow the **Saving Artefacts** rules from `.claude/claude.md`:
+After each skill output, follow the **Saving Artefacts** rules from `.claude/CLAUDE.md`:
 - Ask where the user wants to save it (local, Confluence, Jira, Google Drive, Notion, Gmail, or clipboard)
 - Wait for their answer before saving
 - Confirm the destination after saving
