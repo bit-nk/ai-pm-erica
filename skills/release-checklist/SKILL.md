@@ -1,7 +1,6 @@
 ---
 name: release-checklist
 description: Runs a structured go/no-go assessment before a SaaS release. Evaluates release readiness across feature completeness, testing, operational readiness, communications, dependencies, and approvals. Produces a categorised checklist with a clear GO / NO-GO / CONDITIONAL GO verdict and a list of blockers the PM must resolve before shipping. Use before any production release — planned sprint delivery, hotfix, or phased rollout.
-tools:
   - mcp__claude_ai_Atlassian_Rovo__createConfluencePage
   - mcp__claude_ai_Atlassian_Rovo__searchJiraIssuesUsingJql
   - mcp__claude_ai_Atlassian_Rovo__getJiraIssue
