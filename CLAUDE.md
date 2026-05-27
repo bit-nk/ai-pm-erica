@@ -32,6 +32,7 @@ Use individual commands only when you know exactly which skill you need.
 | `/meeting-notes` | Extract minutes from a meeting transcript |
 | `/tech-review` | Review an SA proposal or architecture doc for delivery risk |
 | `/release-checklist` | Run a go/no-go assessment before a production release |
+| `/decision-log` | Record a decision or plan change with full impact assessment |
 | `/new-client` | Scaffold a new client folder |
 
 ## Skill Chain
@@ -40,6 +41,8 @@ When using individual skills, they run in sequence through the delivery lifecycl
 
 ```
 Raw request → /triage → /risk-scan → /charter → /discovery → /prd → /stories → /sprint-sow → /sprint-planning → /release-checklist
+                                                                                                            ↕
+                                                                                                    /decision-log (after any skill that surfaces a decision)
 ```
 
 `/pm` handles this chain automatically.
