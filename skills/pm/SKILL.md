@@ -49,6 +49,7 @@ Based on the input, select the skills needed from this list and decide their ord
 | `skills/meeting-notes/SKILL.md` | Meeting minutes | Standalone |
 | `skills/tech-review/SKILL.md` | PM-ready feasibility summary with risks and SA questions | Standalone or after triage |
 | `skills/release-checklist/SKILL.md` | Go/no-go checklist with verdict — GO, NO-GO, or CONDITIONAL GO | After sprint SOW, or standalone before any release |
+| `skills/decision-log/SKILL.md` | Decision log table — records plan changes, scope revisions, and approvals | Yes — can run after any skill that surfaces a decision |
 
 Before proceeding, show the user your plan:
 
@@ -113,3 +114,4 @@ After all planned skills are complete, provide a brief summary:
 - Meeting notes and sprint reports are always standalone — they do not chain into other skills
 - If the input contains multiple distinct requests, separate them and handle each independently
 - If the input is too ambiguous to plan confidently, ask one clarifying question before building the plan
+- After each skill completes, check whether the output contains decisions, plan changes, scope revisions, or risks that imply a decision was made. If yes, ask: "I noticed [N] decision(s) in this output that may be worth logging — [brief description]. Want me to create a Decision Log entry?" If the user confirms, run `skills/decision-log/SKILL.md` using the current skill output as context.
