@@ -30,6 +30,7 @@ Skills are invoked by name or triggered automatically when the input matches the
 | `meeting-notes` | `skills/meeting-notes/` | Meeting transcript → clean minutes and action items |
 | `tech-review` | `skills/tech-review/` | SA proposal, architecture doc, or integration spec → PM-ready feasibility summary with delivery risks and SA questions |
 | `release-checklist` | `skills/release-checklist/` | "Are we ready to ship?", go/no-go assessment, release sign-off, pre-deploy checklist |
+| `decision-log` | `skills/decision-log/` | "Log this decision", "document this change", any scope/plan/timeline/budget revision needing an audit trail |
 
 ---
 
