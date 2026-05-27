@@ -5,7 +5,7 @@
 
 # AI PM Assistant: Your Senior PM Co-Pilot in Claude Code
 
-> 12 structured PM skills across the full delivery lifecycle. From raw stakeholder message to production release — without switching tools.
+> 13 structured PM skills across the full delivery lifecycle. From raw stakeholder message to production release — without switching tools.
 
 Designed for Claude Code. Drop it into any project and get a senior PM brain on demand.
 
@@ -18,6 +18,7 @@ Breaking down stories? → `/stories`
 Starting a sprint? → `/sprint-sow`  
 Planning a sprint? → `/sprint-planning`  
 Ready to ship? → `/release-checklist`  
+Logging a decision or plan change? → `/decision-log`  
 Not sure which skill you need? → `/pm [paste anything]`
 
 If this project helps you, ⭐ the repo.
@@ -44,6 +45,8 @@ The result: decision-ready artefacts in minutes, not hours.
 
 ```
 Raw request → /triage → /risk-scan → /charter → /discovery → /prd → /stories → /sprint-sow → /sprint-planning → /release-checklist
+                                                                                                                          ↕
+                                                                                                                  /decision-log (runs after any skill that surfaces a decision)
 ```
 
 After any command completes, the next logical skill is suggested — just follow the prompts.
@@ -58,7 +61,7 @@ cd ai-pm
 claude .
 ```
 
-Claude reads `CLAUDE.md` and the skills in `.claude/skills/` automatically. No configuration needed.
+Claude reads `CLAUDE.md` and `.claude/CLAUDE.md` automatically, and registers slash commands from `.claude/commands/`. No configuration needed.
 
 ---
 
@@ -275,6 +278,28 @@ No load testing done. Rollback plan exists but unreviewed.
 
 </details>
 
+<details>
+<summary><strong>decision-log</strong> — Structured decision log for plan changes, scope revisions, and approvals</summary>
+
+**What it does:**  
+Extracts decisions from any input — a change request, scope revision, or prior skill output — and produces a structured 11-column decision log table covering area, original plan, revised plan, reason, change owner, delivery impact, technical impact, product owner impact, cost impact, change status, and approver.
+
+**When to use:**  
+- A timeline, scope, budget, or architecture decision has been made and needs an audit trail  
+- The PM Orchestrator detects a decision in a skill output and asks whether to log it  
+- You need a formal change record to share with stakeholders or attach to a charter
+
+**Command:** `/decision-log`
+
+**Example:**
+```
+/decision-log
+We were planning a 3-month delivery but the client moved the go-live to 6 weeks.
+Engineering flagged this as a scope risk. We also dropped the reporting module from MVP.
+```
+
+</details>
+
 ---
 
 ## PM Orchestrator
@@ -294,7 +319,7 @@ Claude will read the input, identify the right skill (or chain of skills), and a
 ```
 .claude/
   CLAUDE.md                          # Behaviour rules, output defaults, skill routing
-  commands/                          # Slash command entry points
+  commands/                          # Slash command entry points (picked up by Claude Code)
     pm.md                            # /pm — PM Orchestrator
     triage.md                        # /triage
     risk-scan.md                     # /risk-scan
@@ -308,50 +333,51 @@ Claude will read the input, identify the right skill (or chain of skills), and a
     meeting-notes.md                 # /meeting-notes
     tech-review.md                   # /tech-review
     release-checklist.md             # /release-checklist
+    decision-log.md                  # /decision-log
     new-client.md                    # /new-client
-  skills/
-    pm-execution/                    # Full delivery lifecycle skills
-      triage/
-        skill.md                     # Workflow definition
-        reference.md                 # Worked example
-      risk-scan/
-        skill.md
-        reference.md
-        phase-guide.md               # Phase-specific risk patterns
-      charter/
-        skill.md
-        reference.md
-      discovery/
-        skill.md
-        reference.md
-      prd/
-        skill.md
-        reference.md
-        brd-guide.md                 # BRD output variant
-      stories/
-        skill.md
-        reference.md
-        references/
-          story-template.md
-          ac-format.md
-      sprint-report/
-        skill.md
-        reference.md
-      sprint-sow/
-        skill.md
-        reference.md
-      sprint-planning/
-        skill.md
-        reference.md
-      meeting-notes/
-        skill.md
-        reference.md
-      tech-review/
-        skill.md
-        reference.md
-      release-checklist/
-        skill.md
-        reference.md
+  settings.json                      # Permissions config
+skills/                              # Skill definitions (project root)
+  pm/
+    SKILL.md                         # PM Orchestrator workflow
+  triage/
+    SKILL.md                         # Workflow definition
+    reference.md                     # Worked example
+  risk-scan/
+    SKILL.md
+    reference.md
+  charter/
+    SKILL.md
+    reference.md
+  discovery/
+    SKILL.md
+    reference.md
+  prd/
+    SKILL.md
+    reference.md
+    brd-guide.md                     # BRD output variant
+  stories/
+    SKILL.md
+    reference.md
+    references/
+      story-template.md
+      ac-format.md
+  sprint-report/
+    SKILL.md
+  sprint-sow/
+    SKILL.md
+    reference.md
+  sprint-planning/
+    SKILL.md
+    reference.md
+  meeting-notes/
+    SKILL.md
+  tech-review/
+    SKILL.md
+  release-checklist/
+    SKILL.md
+    reference.md
+  decision-log/
+    SKILL.md
 clients/                             # Local only — excluded from version control
 ```
 
@@ -380,14 +406,12 @@ Skills will ask you where to save each artefact. You can save locally, or push d
 
 **Skill authoring checklist:**
 
-- `name`, `description`, `tools` in frontmatter
-- One-paragraph purpose statement
-- Clear "When to Use / Do Not Use" boundaries
-- Numbered operating principles
-- Numbered required workflow steps
-- Exact output format template
-- Style rules (tone, format guardrails)
-- A worked `reference.md` example (input → output)
+- `name`, `description`, `version`, `argument-hint`, `allowed-tools` in frontmatter
+- `## Input` block with `$ARGUMENTS` and a fallback ask if empty
+- What to Gather First (inputs required before generating)
+- Output template — exact structure Claude will follow
+- Save prompt following the Saving Artefacts rules in `.claude/CLAUDE.md`
+- A `reference.md` worked example (input → output) where helpful
 
 See any existing skill for the pattern.
 
