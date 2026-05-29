@@ -30,7 +30,7 @@ $ARGUMENTS
 ---
 
 ### Plain-English Summary
-[3–5 sentences. No jargon. What is being built, how the parts connect, what it replaces or depends on.]
+[3-5 sentences. No jargon. What is being built, how the parts connect, what it replaces or depends on.]
 
 ---
 
@@ -49,19 +49,19 @@ $ARGUMENTS
 |---|---|---|---|---|
 | R1 | ... | H/M/L | H/M/L | [Why this matters for delivery] |
 
-**Top risk to act on now:** [R1 name — one sentence on why it's the priority]
+**Top risk to act on now:** [R1 name - one sentence on why it's the priority]
 
 ---
 
 ### Dependencies
 
-- [Specific dependency — what must be true or done before this can proceed]
+- [Specific dependency - what must be true or done before this can proceed]
 
 ---
 
 ### Questions for the SA / Tech Lead
 
-1. [Specific, answerable question — delivery-focused]
+1. [Specific, answerable question - delivery-focused]
 2. ...
 
 ---

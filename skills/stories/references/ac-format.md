@@ -3,7 +3,7 @@
 AC must be **short and scannable**. One bullet = one testable statement.
 If a line takes more than one breath to read aloud, split it.
 
-Omit sections that genuinely don't apply — never leave one blank or write "N/A".
+Omit sections that genuinely don't apply - never leave one blank or write "N/A".
 
 ---
 
@@ -16,12 +16,12 @@ Definition of Done, Dependencies) appear **once at the end**.
 
 ---
 
-## Screen [N] — [Screen Name]
+## Screen [N] - [Screen Name]
 
 ### Functional Specs
 
 - Screen displays: [exact title, subtitle, buttons, labels, and UI copy visible on load]
-- [User action]: [what happens — navigation, state change, data fetch]
+- [User action]: [what happens - navigation, state change, data fetch]
 - [User action]: [outcome]
 
 *Rules:*
@@ -39,7 +39,7 @@ Definition of Done, Dependencies) appear **once at the end**.
 *Rules:*
 - Every API call must have a failure bullet
 - Every empty / zero-result state must have a bullet
-- Error messages quoted verbatim — no paraphrasing
+- Error messages quoted verbatim - no paraphrasing
 
 ---
 
@@ -52,14 +52,14 @@ Definition of Done, Dependencies) appear **once at the end**.
 - [Feature]: [measurable threshold] on [connection / device condition]
 - [Feature]: [measurable threshold]
 
-*Concrete numbers only — no "fast", "responsive", or "smooth".*
+*Concrete numbers only - no "fast", "responsive", or "smooth".*
 
 ---
 
 ## Out of Scope
 
-- [Thing that could be assumed in scope but isn't — be specific]
-- [Feature deferred to a later story — name it if known]
+- [Thing that could be assumed in scope but isn't - be specific]
+- [Feature deferred to a later story - name it if known]
 
 ---
 
@@ -72,9 +72,9 @@ Definition of Done, Dependencies) appear **once at the end**.
 
 ## Analytics *(omit if no trackable actions)*
 
-Missing instrumentation is expensive to retrofit — always specify it.
+Missing instrumentation is expensive to retrofit - always specify it.
 
-- Event: `[event_name]` — fires when [trigger]
+- Event: `[event_name]` - fires when [trigger]
   - Properties: `[property]`: [type], `[property]`: [type]
 
 ---
@@ -100,7 +100,7 @@ Missing instrumentation is expensive to retrofit — always specify it.
 ## Example (expense submission flow)
 
 ```
-## Screen 1 — Submit Expense
+## Screen 1 - Submit Expense
 
 ### Functional Specs
 - Screen displays: title "Submit Expense", subtitle "Fill in the details below
@@ -125,14 +125,14 @@ Missing instrumentation is expensive to retrofit — always specify it.
 
 ---
 
-## Screen 2 — Submission Confirmed
+## Screen 2 - Submission Confirmed
 
 ### Functional Specs
 - Screen displays: title "Claim submitted", confirmation message "Your expense
   claim has been submitted and is awaiting manager approval.", "View my claims"
   button.
 - Tapping "View my claims" navigates to the My Claims list.
-- No back arrow — submission is complete and cannot be undone from this screen.
+- No back arrow - submission is complete and cannot be undone from this screen.
 
 ---
 
@@ -144,8 +144,8 @@ Missing instrumentation is expensive to retrofit — always specify it.
 ---
 
 ## Out of Scope
-- Manager approval flow — handled in a separate story.
-- Multi-currency support — GBP only in this story.
+- Manager approval flow - handled in a separate story.
+- Multi-currency support - GBP only in this story.
 
 ---
 
