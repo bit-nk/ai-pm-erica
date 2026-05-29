@@ -1,4 +1,4 @@
-# Reference: Worked Example — PRD
+# Reference: Worked Example - PRD
 
 Use this to calibrate output quality, especially for separating requirements from solutions and writing testable requirements.
 
@@ -10,7 +10,7 @@ Use this to calibrate output quality, especially for separating requirements fro
 
 ---
 
-## PRD — Client Reporting Portal
+## PRD - Client Reporting Portal
 
 **Version:** 1.0 | **Date:** [Today] | **Author:** PM
 **Status:** Draft
@@ -40,23 +40,23 @@ Finance clients currently request invoice updates by email, creating a manual wo
 |---|---|---|
 | Finance client | External client who needs access to their invoices and reports | Find and download their own invoices without contacting us |
 | Ops team | Internal team currently generating and sending reports | Stop manual report generation, manage client access |
-| Finance lead (Sarah) | Internal — owns reporting requirements | Monthly CSV export for GL reconciliation |
-| IT lead | Not in discovery — [assumed] responsible for infrastructure | System stability, security, integration with existing stack |
+| Finance lead (Sarah) | Internal - owns reporting requirements | Monthly CSV export for GL reconciliation |
+| IT lead | Not in discovery - [assumed] responsible for infrastructure | System stability, security, integration with existing stack |
 
 ---
 
 ### 4. Assumptions & Constraints
 
 **Assumptions:**
-- [assumed] IT lead will confirm infrastructure approach — was not present in discovery
-- [assumed] Clients have internet access and a modern browser — mobile access is desired but not confirmed in scope
+- [assumed] IT lead will confirm infrastructure approach - was not present in discovery
+- [assumed] Clients have internet access and a modern browser - mobile access is desired but not confirmed in scope
 - [assumed] Existing invoice data is in a format that can be surfaced via a portal without significant transformation
 
 **Constraints:**
 - Must go live by end of Q3
 - Budget is £80k
 - No delivery or table booking features (explicitly out of scope)
-- Must comply with GDPR — client data handling requires review
+- Must comply with GDPR - client data handling requires review
 
 ---
 
@@ -95,7 +95,7 @@ Finance clients currently request invoice updates by email, creating a manual wo
 |---|---|---|---|
 | NFR-01 | Performance | Page load time for invoice list | Under 2 seconds on a standard broadband connection |
 | NFR-02 | Security | Authentication | Password + MFA for admin accounts; password only for client accounts (confirm with IT) |
-| NFR-03 | Availability | System uptime during business hours | 99.5% Monday–Friday 8am–6pm |
+| NFR-03 | Availability | System uptime during business hours | 99.5% Monday-Friday 8am-6pm |
 | NFR-04 | Accessibility | Client-facing pages | WCAG 2.1 AA minimum |
 | NFR-05 | Data | Invoice data retention | 7 years, per financial regulation |
 
@@ -106,8 +106,8 @@ Finance clients currently request invoice updates by email, creating a manual wo
 - Delivery tracking or logistics features
 - Table booking functionality
 - Integration with third-party accounting platforms (Xero, QuickBooks, etc.)
-- Mobile native app — browser on mobile is in scope, native app is not
-- Real-time invoice generation — invoices are uploaded by ops, not auto-generated
+- Mobile native app - browser on mobile is in scope, native app is not
+- Real-time invoice generation - invoices are uploaded by ops, not auto-generated
 
 ---
 
@@ -115,9 +115,9 @@ Finance clients currently request invoice updates by email, creating a manual wo
 
 | Dependency | Type | Owner | Status |
 |---|---|---|---|
-| IT infrastructure confirmation | Technical | IT Lead | Pending — IT not in discovery |
+| IT infrastructure confirmation | Technical | IT Lead | Pending - IT not in discovery |
 | GDPR review of client data handling | Compliance | Legal / DPO | Not started |
-| Existing invoice data format | Data | Ops | Assumed compatible — needs confirmation |
+| Existing invoice data format | Data | Ops | Assumed compatible - needs confirmation |
 
 ---
 
@@ -146,10 +146,10 @@ Finance clients currently request invoice updates by email, creating a manual wo
 
 **FR-07 and FR-08 are specific to real workflows.** FR-07 replaces a named 2-hour manual process with a specific target (under 15 minutes). FR-08 names Sarah, names her workflow (GL reconciliation), and lists exactly what columns the CSV must contain. A developer reading this knows exactly what to build. A tester knows exactly what to verify.
 
-**IT absence is treated as a dependency risk, not ignored.** IT wasn't in discovery. Rather than assuming they'll be fine, the PRD lists three dependency items that require IT input and flags them in Open Questions. The sign-off table includes IT Lead — they must approve before build begins.
+**IT absence is treated as a dependency risk, not ignored.** IT wasn't in discovery. Rather than assuming they'll be fine, the PRD lists three dependency items that require IT input and flags them in Open Questions. The sign-off table includes IT Lead - they must approve before build begins.
 
 **Out of scope is specific.** Five named items, including the nuance that mobile browser is in scope but native app is not. This prevents the conversation mid-build.
 
 **Open questions has 4 items.** A PRD with zero open questions after one round of discovery is almost certainly missing something. Real requirements always surface things that need a decision before build.
 
-**NFRs have numbers.** "Under 2 seconds", "99.5% uptime", "WCAG 2.1 AA" — not "fast", "reliable", "accessible". Non-functional requirements without targets cannot be tested.
+**NFRs have numbers.** "Under 2 seconds", "99.5% uptime", "WCAG 2.1 AA" - not "fast", "reliable", "accessible". Non-functional requirements without targets cannot be tested.

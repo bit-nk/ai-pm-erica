@@ -7,7 +7,7 @@
       "Bash(mv:*)",
       "Bash(ls:*)",
       "Bash(find:*)",
-      "Bash(cat:*)"
+      "Bash(cat:clients/*)"
     ],
     "deny": [
       "Bash(rm -rf:*)",
