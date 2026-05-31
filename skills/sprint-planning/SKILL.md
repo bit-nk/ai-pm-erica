@@ -1,6 +1,6 @@
 ---
 name: sprint-planning
-description: Produces a structured sprint plan from team availability, backlog items, and sprint goals. Use when a PM needs to plan an upcoming sprint — including capacity calculation, backlog scoping, dependency identification, and sprint plan document generation. Triggers on "plan the sprint", "help me plan sprint N", "let's do sprint planning", "work out our capacity", or any input that includes team availability and a backlog to prioritise.
+description: Produces a structured sprint plan from team availability, backlog items, and sprint goals. Use when a PM needs to plan an upcoming sprint - including capacity calculation, backlog scoping, dependency identification, and sprint plan document generation. Triggers on "plan the sprint", "help me plan sprint N", "let's do sprint planning", "work out our capacity", or any input that includes team availability and a backlog to prioritise.
 version: 1.0.0
 argument-hint: <team availability, backlog, and sprint goal>
 allowed-tools: Read
@@ -10,13 +10,13 @@ allowed-tools: Read
 
 $ARGUMENTS
 
-*If no input is provided above, ask: "Please share the sprint details — team members and availability, sprint length, backlog items to scope, sprint goal, and any carryover from last sprint."*
+*If no input is provided above, ask: "Please share the sprint details - team members and availability, sprint length, backlog items to scope, sprint goal, and any carryover from last sprint."*
 
 ---
 
 # Sprint Planning
 
-You produce a structured, decision-ready sprint plan. Your job is to help the PM scope the sprint honestly — not optimistically. Default to 70–80% capacity. Flag scope risk explicitly.
+You produce a structured, decision-ready sprint plan. Your job is to help the PM scope the sprint honestly - not optimistically. Default to 70-80% capacity. Flag scope risk explicitly.
 
 ---
 
@@ -29,10 +29,10 @@ Ask for anything missing before generating the plan. Do not invent placeholders 
 | Team members and availability | Yes | Names, days available, any PTO or on-call |
 | Sprint length | Yes | Number of days or weeks |
 | Backlog items to consider | Yes | Paste, describe, or pull from tracker |
-| Sprint goal | Yes | One sentence — if the user can't state it, flag that first |
+| Sprint goal | Yes | One sentence - if the user can't state it, flag that first |
 | Carryover from last sprint | No | Anything unfinished that's being re-committed |
 | Dependencies | No | Anything blocked on another team or external party |
-| Estimation unit | No | Points or hours — default to points if not specified |
+| Estimation unit | No | Points or hours - default to points if not specified |
 
 If backlog or team are missing, ask before proceeding.
 
@@ -40,18 +40,18 @@ If backlog or team are missing, ask before proceeding.
 
 ## Capacity Rules
 
-- Default planning capacity: **70–80% of available days** — interrupts, meetings, and reviews eat the rest
+- Default planning capacity: **70-80% of available days** - interrupts, meetings, and reviews eat the rest
 - Flag explicitly if the proposed sprint load exceeds 80% of capacity
 - If PTO or on-call reduces a person to less than 2 days, note them as limited capacity
-- Carryover items count against capacity — do not treat them as free
+- Carryover items count against capacity - do not treat them as free
 
 ---
 
 ## Prioritisation Logic
 
-- **P0 — Must ship:** Sprint fails without these. Commit only if capacity allows.
-- **P1 — Should ship:** High value, expected to complete. Cut first if things slip.
-- **P2 — Stretch:** Commit only after P0 and P1 are fully covered.
+- **P0 - Must ship:** Sprint fails without these. Commit only if capacity allows.
+- **P1 - Should ship:** High value, expected to complete. Cut first if things slip.
+- **P2 - Stretch:** Commit only after P0 and P1 are fully covered.
 
 Never commit stretch items at full confidence. Label them as stretch in the plan.
 
@@ -63,7 +63,7 @@ Never commit stretch items at full confidence. Label them as stretch in the plan
 
 ## Sprint Plan: [Sprint Name or Number]
 
-**Dates:** [Start date] — [End date] | **Team:** [N] people
+**Dates:** [Start date] - [End date] | **Team:** [N] people
 **Sprint Goal:** [One clear sentence about what success looks like]
 
 ---
@@ -89,7 +89,7 @@ Never commit stretch items at full confidence. Label them as stretch in the plan
 
 **Planned load:** [X] points | **Available capacity:** [X] points | **Load:** [X]%
 
-> If load exceeds 80%: flag this explicitly — "This sprint is over-committed. Recommend cutting [item] or moving to P2."
+> If load exceeds 80%: flag this explicitly - "This sprint is over-committed. Recommend cutting [item] or moving to P2."
 
 ---
 

@@ -1,7 +1,7 @@
 ---
-name: meeting-note
-description: Use this skill whenever the user wants to extract meeting notes, minutes, or a summary from a meeting transcript — especially from Microsoft Teams, Zoom, Google Meet, or any raw transcript text. Trigger when the user shares a transcript file or text and asks for a summary, key points, action items, decisions, or meeting minutes. Also trigger when the user says things like "summarize this meeting", "what was discussed", "extract the important parts", "write up the minutes", or pastes a block of conversation text that looks like a meeting transcript. This skill produces clean, plain-English meeting minutes and follow-up questions the user can ask to go deeper. Also trigger when the user wants to save or publish meeting minutes to Confluence.
-version: 1.0.0
+name: meeting-notes
+description: Use this skill whenever the user wants to extract meeting notes, minutes, or a summary from a meeting transcript - especially from Microsoft Teams, Zoom, Google Meet, or any raw transcript text. Trigger when the user shares a transcript file or text and asks for a summary, key points, action items, decisions, or meeting minutes. Also trigger when the user says things like "summarize this meeting", "what was discussed", "extract the important parts", "write up the minutes", or pastes a block of conversation text that looks like a meeting transcript. This skill produces clean, plain-English meeting minutes and follow-up questions the user can ask to go deeper. Also trigger when the user wants to save or publish meeting minutes to Confluence.
+version: 2.0.0
 argument-hint: <meeting transcript or raw notes>
 allowed-tools: Read, mcp__claude_ai_Atlassian_Rovo__createConfluencePage, mcp__claude_ai_Atlassian_Rovo__updateConfluencePage, mcp__claude_ai_Atlassian_Rovo__getConfluencePageDescendants, mcp__claude_ai_Atlassian_Rovo__getConfluenceSpaces, mcp__claude_ai_Google_Drive__create_file, mcp__claude_ai_Notion__notion-create-pages, mcp__claude_ai_Gmail__create_draft
 ---
@@ -22,9 +22,11 @@ Turn raw meeting transcripts into clean, useful meeting minutes. Remove filler, 
 
 ## What to do
 
+### Step 1 - Strip the noise
+
 Strip filler, repetition, off-topic chatter, and crosstalk from the transcript before writing.
 
-### Step 2 — Write the meeting minutes
+### Step 2 - Write the meeting minutes
 
 Output in this exact structure. Use plain English. Be concise. No bullet should be more than 2 lines.
 
@@ -39,15 +41,15 @@ Output in this exact structure. Use plain English. Be concise. No bullet should 
 ---
 
 **Summary**
-2–4 sentences. What was this meeting about and what was the overall outcome?
+2-4 sentences. What was this meeting about and what was the overall outcome?
 
 ---
 
 **Key Discussion Points**
 List the main topics discussed. For each topic:
-- **Topic name** — What was said. What was decided or concluded (if anything).
+- **Topic name** - What was said. What was decided or concluded (if anything).
 
-Keep to 3–8 points. Combine related sub-discussions under one topic.
+Keep to 3-8 points. Combine related sub-discussions under one topic.
 
 ---
 
@@ -66,11 +68,11 @@ If no action items were clear, write "No action items identified."
 ---
 
 **Open Questions**
-Things raised but not resolved. Keep it short — 2–5 items max.
+Things raised but not resolved. Keep it short - 2-5 items max.
 
 ---
 
-### Step 3 — Ask follow-up questions
+### Step 3 - Ask follow-up questions
 
 After the minutes, add a short section:
 
@@ -82,33 +84,35 @@ After the minutes, add a short section:
 - [Question about a person's role or responsibility mentioned]
 - [Question about next steps or timeline]
 
-Generate 3–5 relevant questions. Make them specific to THIS meeting, not generic.
+Generate 3-5 relevant questions. Make them specific to THIS meeting, not generic.
 
 ---
 
-### Step 4 — Ask where to save
+### Step 4 - Ask where to save
 
 After presenting the minutes, ask the user where they want them saved:
 
 > "Where would you like me to save this? I can save it locally or push it directly to any platform you have connected via MCP."
 >
 > **Local**
-> 1. **Local file** — saved to `clients/CLIENT/meeting-notes/YYYY-MM-DD-meeting-title.md`
+> 1. **Local file** - saved to `clients/CLIENT/meeting-notes/YYYY-MM-DD-meeting-title.md`
 >
 > **Connected platforms (via MCP)**
-> 2. **Confluence** — published as a new page (I'll ask for your domain, space, and parent page)
-> 3. **Google Drive** — saved as a new Doc (I'll ask for the folder)
-> 4. **Notion** — created as a new page (I'll ask for your workspace and parent page)
-> 5. **Gmail** — drafted as an email (I'll ask for the recipient)
+> 2. **Confluence** - published as a new page (I'll ask for your domain, space, and parent page)
+> 3. **Google Drive** - saved as a new Doc (I'll ask for the folder)
+> 4. **Notion** - created as a new page (I'll ask for your workspace and parent page)
+> 5. **Gmail** - drafted as an email (I'll ask for the recipient)
 >
 > **No save**
-> 6. **Clipboard only** — leave it here for you to copy manually
+> 6. **Clipboard only** - leave it here for you to copy manually
 
 Do not save or publish anything until the user confirms the destination.
 
 ---
 
-### Step 5 — Save to the confirmed destination
+### Step 5 - Save to the confirmed destination
+
+**If a chosen platform is not connected** (its MCP tool is unavailable): say so plainly, then offer to save as a local file or render the minutes as clean markdown to copy. Never claim a page was published when no MCP tool actually ran. See *Connection Failsafe* in `.claude/CLAUDE.md`.
 
 **If Confluence is chosen:**
 
@@ -118,7 +122,7 @@ Do not save or publish anything until the user confirms the destination.
    - `cloudId`: as provided by the user
    - `spaceId`: resolved from the space key via `getConfluenceSpaces`
    - `parentId`: as provided by the user
-   - `title`: `Meeting Minutes – [DD MMM YYYY]`
+   - `title`: `Meeting Minutes - [DD MMM YYYY]`
    - `contentFormat`: `markdown`
    - `body`: the full meeting minutes from Step 2
 4. **Update existing page** using `updateConfluencePage`:

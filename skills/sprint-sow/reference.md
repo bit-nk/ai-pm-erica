@@ -1,20 +1,20 @@
 # Reference: Worked Example
 
-Use this to calibrate output quality — especially for theme grouping, deliverable descriptions, and the Definition of Done checklist.
+Use this to calibrate output quality - especially for theme grouping, deliverable descriptions, and the Definition of Done checklist.
 
 ---
 
 ## Input
 
-> Sprint 2 — Reporting & Notifications
+> Sprint 2 - Reporting & Notifications
 > Goal: Give finance admins self-service access to monthly reports and notify clients automatically when new invoices are available.
-> Dates: 2 June – 13 June 2026
+> Dates: 2 June - 13 June 2026
 > Jira board: [PROJECT-board-url]
 >
 > Team:
-> - Priya Sharma — Frontend Engineer — PROJECT-44, PROJECT-51
-> - Tom Ellis — Backend Engineer — PROJECT-45, PROJECT-46, PROJECT-52
-> - Mia Chen — QA — PROJECT-53
+> - Priya Sharma - Frontend Engineer - PROJECT-44, PROJECT-51
+> - Tom Ellis - Backend Engineer - PROJECT-45, PROJECT-46, PROJECT-52
+> - Mia Chen - QA - PROJECT-53
 >
 > Tickets:
 > - PROJECT-44: Build monthly report export UI (CSV download button, date range filter)
@@ -22,7 +22,7 @@ Use this to calibrate output quality — especially for theme grouping, delivera
 > - PROJECT-46: Schedule monthly report generation job (runs 1st of each month)
 > - PROJECT-51: Invoice notification email template and send trigger
 > - PROJECT-52: Notification preferences API (client opt-in/opt-out)
-> - PROJECT-53: QA — end-to-end test plan for reporting and notifications
+> - PROJECT-53: QA - end-to-end test plan for reporting and notifications
 >
 > Out of scope: PDF export, push notifications, in-app notification centre
 
@@ -100,14 +100,14 @@ End-to-end coverage across reporting and notification flows before sprint close.
 
 ---
 
-## Out of Scope — Sprint 2
+## Out of Scope - Sprint 2
 
 The following are explicitly excluded from this sprint and will be addressed in subsequent sprints:
 
-* PDF export of monthly reports — deferred to Sprint 3 ([PROJECT-?])
-* Push notifications — deferred to Sprint 3
-* In-app notification centre — deferred to Sprint 3
-* Report filtering by category or client — not yet prioritised
+* PDF export of monthly reports - deferred to Sprint 3 ([PROJECT-?])
+* Push notifications - deferred to Sprint 3
+* In-app notification centre - deferred to Sprint 3
+* Report filtering by category or client - not yet prioritised
 
 ---
 
@@ -128,10 +128,10 @@ Sprint 2 is considered complete when all of the following conditions are met:
 
 ## Why This Output Is Good
 
-**Themes are business-readable, not technical.** "Self-Service Reporting" and "Client Notifications" — not "Backend API Layer" and "Frontend Components." A sponsor reading this understands what was built.
+**Themes are business-readable, not technical.** "Self-Service Reporting" and "Client Notifications" - not "Backend API Layer" and "Frontend Components." A sponsor reading this understands what was built.
 
-**The scheduler deliverable calls out the business benefit explicitly.** "Removes the current manual process" — not just "scheduled job configured." A stakeholder reading this knows why it matters.
+**The scheduler deliverable calls out the business benefit explicitly.** "Removes the current manual process" - not just "scheduled job configured." A stakeholder reading this knows why it matters.
 
 **Out of scope is specific.** Four named items with target sprints where known. Each one is a conversation that happened upfront rather than a surprise in Sprint 3.
 
-**Definition of Done is testable.** Every item is binary — it either passes or it doesn't. "Finance admin can filter by month and download a CSV" can be verified in two minutes. "Reporting is complete" cannot.
+**Definition of Done is testable.** Every item is binary - it either passes or it doesn't. "Finance admin can filter by month and download a CSV" can be verified in two minutes. "Reporting is complete" cannot.

@@ -1,6 +1,6 @@
 # BRD-Specific Guide
 
-Read this when the document type is BRD. The core template is the same — these are the differences.
+Read this when the document type is BRD. The core template is the same - these are the differences.
 
 ---
 
@@ -12,7 +12,7 @@ A BRD is the right choice when:
 - The outcome is a business change (process, policy, org structure) not just a product
 - Formal sign-off from senior leadership or a board is required
 
-A BRD focuses on **what the business needs to achieve** — not how the system should work. Technical details belong in a functional spec or PRD written later.
+A BRD focuses on **what the business needs to achieve** - not how the system should work. Technical details belong in a functional spec or PRD written later.
 
 ---
 
@@ -27,14 +27,14 @@ This is the one section a BRD has that a PRD doesn't. It answers the question a 
 
 | Item | Detail |
 |---|---|
-| Problem cost | [What the current situation costs — time, money, risk] |
+| Problem cost | [What the current situation costs - time, money, risk] |
 | Proposed investment | [Budget required] |
 | Expected benefit | [Financial or operational return] |
 | Payback period | [When investment is recovered] |
 | Strategic alignment | [Which company objective this supports] |
 ```
 
-Keep it to one table and 2–3 sentences max. If the numbers don't stack up, say so — a BRD that hides a weak business case creates bigger problems later.
+Keep it to one table and 2-3 sentences max. If the numbers don't stack up, say so - a BRD that hides a weak business case creates bigger problems later.
 
 ---
 
@@ -52,7 +52,7 @@ BRDs use more formal, outcome-driven language than PRDs:
 
 ### Requirements Format for BRD
 
-BRDs state business requirements — not features. Each requirement should describe a **business capability or outcome**, not a system behaviour.
+BRDs state business requirements - not features. Each requirement should describe a **business capability or outcome**, not a system behaviour.
 
 **Wrong (feature, not business requirement):**
 "The system must have a CSV export button."
@@ -60,7 +60,7 @@ BRDs state business requirements — not features. Each requirement should descr
 **Right (business requirement):**
 "Finance administrators must be able to extract monthly transaction data in a machine-readable format to support GL reconciliation without manual re-entry."
 
-The technical solution (CSV export button) follows from the business requirement — it doesn't replace it.
+The technical solution (CSV export button) follows from the business requirement - it doesn't replace it.
 
 ---
 
@@ -74,7 +74,7 @@ BRDs often need to trace requirements to business objectives. Add a traceability
 
 ---
 
-### Sign-off — BRD Is More Formal
+### Sign-off - BRD Is More Formal
 
 BRD sign-off typically requires more senior stakeholders and a formal status:
 
@@ -85,7 +85,7 @@ BRD sign-off typically requires more senior stakeholders and a formal status:
 | Finance / Procurement | | | Formally approved | |
 | IT / Technical Authority | | | Technically endorsed | |
 
-"Formally approved" means the person has read and accepted the document as a basis for proceeding. This is different from "reviewed" — make the distinction clear.
+"Formally approved" means the person has read and accepted the document as a basis for proceeding. This is different from "reviewed" - make the distinction clear.
 
 ---
 
@@ -96,4 +96,4 @@ BRD sign-off typically requires more senior stakeholders and a formal status:
 - Sprint plans or delivery timelines
 - Code or data schemas
 
-If any of these appear in a BRD, they're in the wrong document. The BRD defines what the business needs — separate documents define how it will be built.
+If any of these appear in a BRD, they're in the wrong document. The BRD defines what the business needs - separate documents define how it will be built.

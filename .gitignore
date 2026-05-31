@@ -1,6 +1,12 @@
 # Client data — never commit real client files
+# Belt-and-braces: match common client-folder names regardless of casing/variants
 clients/
+client/
+client-data/
+Clients/
 *.client.md
+*_client.md
+*-client-*.md
 
 # Generated artefacts — output only, not source
 .claude/skills/Artifacts/
@@ -27,6 +33,9 @@ clients/
 .env.*
 *.pem
 *.key
+
+# MCP connection config — may contain tokens; commit .mcp.json.example instead
+.mcp.json
 
 # Logs
 *.log

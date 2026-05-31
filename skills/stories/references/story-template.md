@@ -13,7 +13,7 @@ the field genuinely does not apply.
 
 ---
 
-**Story Points:** [1 / 2 / 3 / 5 / 8 — flag anything >8 for splitting]
+**Story Points:** [1 / 2 / 3 / 5 / 8 - flag anything >8 for splitting]
 
 **Dependencies**
 - Blocked by: [Story ID or None]
@@ -31,7 +31,7 @@ the field genuinely does not apply.
 
 ---
 
-[Acceptance Criteria — use ac-format.md]
+[Acceptance Criteria - use ac-format.md]
 
 ---
 
