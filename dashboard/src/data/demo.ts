@@ -98,11 +98,11 @@ export const DEMO_PROJECTS: ProjectContext[] = [
 ];
 
 export const DEMO_CONNECTORS: McpConnector[] = [
-  { id: "jira", label: "Jira", status: "connected", mode: "hosted" },
-  { id: "confluence", label: "Confluence", status: "connected", mode: "hosted" },
-  { id: "google-drive", label: "Drive", status: "disconnected" },
-  { id: "notion", label: "Notion", status: "disconnected" },
-  { id: "gmail", label: "Gmail", status: "error", detail: "token expired" },
+  { id: "jira", label: "Jira", status: "connected", mode: "hosted", endpoint: "https://acme.atlassian.net/rest/api/3", token: "atlassian_mock_a1b2c3d4e5f6" },
+  { id: "confluence", label: "Confluence", status: "connected", mode: "hosted", endpoint: "https://acme.atlassian.net/wiki/rest/api", token: "confluence_mock_9f8e7d6c5b4a" },
+  { id: "google-drive", label: "Drive", status: "disconnected", endpoint: "https://www.googleapis.com/drive/v3", token: "gdrive_mock_ya29x1y2z3" },
+  { id: "notion", label: "Notion", status: "disconnected", endpoint: "https://api.notion.com/v1", token: "notion_mock_secret_4d5e6f" },
+  { id: "gmail", label: "Gmail", status: "error", detail: "token expired", endpoint: "https://gmail.googleapis.com/gmail/v1", token: "gmail_mock_expired_7g8h9i" },
 ];
 
 /** Human title for a skill id (or "Orchestrator" for the pm orchestrator). */

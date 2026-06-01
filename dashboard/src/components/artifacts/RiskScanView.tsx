@@ -96,11 +96,13 @@ export function RiskScanView({ payload }: { payload: RiskScanPayload }) {
             <tr>
               <th className="px-3 py-2">Ref</th>
               <th className="px-3 py-2">Risk</th>
+              <th className="px-3 py-2">Category</th>
               <th className="px-3 py-2">Likelihood</th>
               <th className="px-3 py-2">Impact</th>
               <th className="px-3 py-2">Detect</th>
               <th className="px-3 py-2">Velocity</th>
               <th className="px-3 py-2">Priority</th>
+              <th className="px-3 py-2">Response</th>
               <th className="px-3 py-2">Owner</th>
             </tr>
           </thead>
@@ -109,16 +111,18 @@ export function RiskScanView({ payload }: { payload: RiskScanPayload }) {
               <tr key={r.ref} className="border-b border-border/60 last:border-0">
                 <td className="px-3 py-2 font-mono text-xs">{r.ref}</td>
                 <td className="px-3 py-2">{r.risk}</td>
+                <td className="px-3 py-2 text-muted-foreground">{r.category}</td>
                 <td className="px-3 py-2"><StatusBadge tone={HML_TONE[r.likelihood]}>{r.likelihood}</StatusBadge></td>
                 <td className="px-3 py-2"><StatusBadge tone={HML_TONE[r.impact]}>{r.impact}</StatusBadge></td>
                 <td className="px-3 py-2 text-muted-foreground">{r.detectability}</td>
                 <td className="px-3 py-2 text-muted-foreground">{r.velocity}</td>
                 <td className="px-3 py-2"><StatusBadge tone={PRIORITY_TONE[r.priority]}>{PRIORITY_LABEL[r.priority]}</StatusBadge></td>
+                <td className="px-3 py-2 text-muted-foreground">{r.response}</td>
                 <td className="px-3 py-2 text-muted-foreground">{r.owner}</td>
               </tr>
             ))}
             {register.length === 0 && (
-              <tr><td colSpan={8} className="px-3 py-6 text-center text-muted-foreground">No risks at this priority.</td></tr>
+              <tr><td colSpan={10} className="px-3 py-6 text-center text-muted-foreground">No risks at this priority.</td></tr>
             )}
           </tbody>
         </table>

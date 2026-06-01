@@ -416,6 +416,11 @@ export interface SprintReportPayload {
   velocityTrend: { sprint: string; points: number }[];
   burndown: { day: number; remaining: number; ideal: number }[];
   topRisks: string[];
+  /** Narrative sections (PM brief). */
+  summary?: string;
+  priorities?: string[];
+  actionsToday?: string[];
+  standupQuestions?: string[];
 }
 
 /* ---- /budget-tracker : per-developer cost mapped against budget ---- */
@@ -462,10 +467,16 @@ export interface RoadmapPayload {
   tasks: RoadmapTask[];
 }
 
-/* ---- /stories : epics + stories tree ---- */
+/* ---- /stories : epics + stories tree (As a / I want / So that + AC) ---- */
 export interface StoryItem {
   key?: string;
   title: string;
+  /** As a {persona} / I want to {goal} / So that {outcome}. */
+  asA?: string;
+  iWant?: string;
+  soThat?: string;
+  /** Testable acceptance criteria, one statement per entry. */
+  acceptanceCriteria?: string[];
   points?: number;
   status?: string;
 }
@@ -480,27 +491,28 @@ export interface StoriesPayload {
   epics: EpicItem[];
 }
 
-/* ---- Remaining skills: typed shells (extend section-by-section as built) ---- */
-export interface IntakeSummaryPayload {
-  skill: "triage";
-  requestSummary: string;
-  businessGoal: string;
-  stakeholderNeed: string;
-  whatIsClear: string[];
-  missingInformation: string[];
-  risks: string[];
-  classification: string;
-  recommendedNextStep: string;
+/* ---- Document skills : structured sections rendered as cards (DocumentView) ---- */
+export type DocSkill =
+  | "triage" | "charter" | "discovery" | "prd" | "sprint-sow"
+  | "meeting-notes" | "tech-review" | "retrospective" | "stakeholder-update";
+
+/** A rendered section of a document artifact. */
+export interface DocSection {
+  heading?: string;
+  /** fields = label/value grid, bullets = list, rows = table, tags = chips, text = paragraph. */
+  kind: "fields" | "bullets" | "rows" | "tags" | "text";
+  pairs?: { label: string; value: string }[];
+  items?: string[];
+  columns?: string[];
+  rows?: string[][];
+  body?: string;
 }
 
-export interface GenericMarkdownPayload {
-  skill: Exclude<
-    SkillId,
-    | "risk-scan" | "release-checklist" | "decision-log" | "sprint-planning" | "triage"
-    | "sprint-report" | "budget-tracker" | "roadmap" | "stories"
-  >;
-  /** Section map for skills not yet given a bespoke visual contract. */
-  sections: ArtifactSection[];
+export interface DocPayload {
+  skill: DocSkill;
+  /** Optional status banner (e.g. stakeholder RAG). */
+  status?: { label: string; tone: StatusTone };
+  sections: DocSection[];
 }
 
 /** Discriminated union - switch on `.skill` for exhaustive, typed rendering. */
@@ -513,8 +525,7 @@ export type ArtifactPayload =
   | BudgetTrackerPayload
   | RoadmapPayload
   | StoriesPayload
-  | IntakeSummaryPayload
-  | GenericMarkdownPayload;
+  | DocPayload;
 
 /* ========================================================================
  * 7. UI-LEVEL HELPERS  (status -> token mapping, type guards)
@@ -567,4 +578,11 @@ export function isRoadmap(p?: ArtifactPayload): p is RoadmapPayload {
 }
 export function isStories(p?: ArtifactPayload): p is StoriesPayload {
   return p?.skill === "stories";
+}
+const DOC_SKILLS = new Set<string>([
+  "triage", "charter", "discovery", "prd", "sprint-sow",
+  "meeting-notes", "tech-review", "retrospective", "stakeholder-update",
+]);
+export function isDoc(p?: ArtifactPayload): p is DocPayload {
+  return !!p && DOC_SKILLS.has(p.skill);
 }

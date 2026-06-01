@@ -1,7 +1,7 @@
 import {
   type McpConnector, type SkillExecution, type SaveDestination, type SkillId,
   isRiskScan, isReleaseChecklist, isDecisionLog, isSprintPlan,
-  isSprintReport, isBudgetTracker, isRoadmap, isStories,
+  isSprintReport, isBudgetTracker, isRoadmap, isStories, isDoc,
 } from "@/types/pm";
 import { Pencil, Sparkles } from "lucide-react";
 import { skillTitle } from "@/data/demo";
@@ -16,6 +16,7 @@ import { SprintReportView } from "./SprintReportView";
 import { BudgetTrackerView } from "./BudgetTrackerView";
 import { RoadmapView } from "./RoadmapView";
 import { StoriesView } from "./StoriesView";
+import { DocumentView } from "./DocumentView";
 import { MarkdownArtifact } from "./MarkdownArtifact";
 import { ActionBar } from "./ActionBar";
 
@@ -47,7 +48,7 @@ export function ArtifactViewer({
   const p = execution.payload;
   const hasVisual =
     isRiskScan(p) || isReleaseChecklist(p) || isDecisionLog(p) || isSprintPlan(p) ||
-    isSprintReport(p) || isBudgetTracker(p) || isRoadmap(p) || isStories(p);
+    isSprintReport(p) || isBudgetTracker(p) || isRoadmap(p) || isStories(p) || isDoc(p);
 
   const skill = execution.request.skill;
   const title = skillTitle(skill);
@@ -109,6 +110,7 @@ export function ArtifactViewer({
             {isBudgetTracker(p) && <BudgetTrackerView payload={p} />}
             {isRoadmap(p) && <RoadmapView payload={p} />}
             {isStories(p) && <StoriesView payload={p} />}
+            {isDoc(p) && <DocumentView payload={p} />}
           </>
         ) : (
           <MarkdownArtifact markdown={execution.markdown} />

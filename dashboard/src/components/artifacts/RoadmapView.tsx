@@ -9,10 +9,12 @@ const LANE_BAR = [
   "bg-accent text-accent-foreground",
 ];
 
-const tip = (t: RoadmapTask) =>
-  t.startDate && t.endDate ? `${t.startDate} to ${t.endDate}`
-  : t.startDate ? `From ${t.startDate}`
-  : `Week ${t.startWeek} to Week ${t.endWeek}`;
+const tip = (t: RoadmapTask) => {
+  const weeks = `Week ${t.startWeek} to Week ${t.endWeek}`;
+  if (t.startDate && t.endDate) return `${t.startDate} to ${t.endDate}  (${weeks})`;
+  if (t.startDate) return `From ${t.startDate}  (${weeks})`;
+  return weeks;
+};
 
 /**
  * /roadmap : a sprint/week timeline. Weeks are columns with dotted gridlines;

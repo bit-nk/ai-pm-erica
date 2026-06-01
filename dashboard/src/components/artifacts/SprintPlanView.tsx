@@ -51,7 +51,7 @@ export function SprintPlanView({ payload }: { payload: SprintPlanPayload }) {
         ))}
       </Table>
 
-      <Table caption="Backlog" head={["Priority", "Item", "Est", "Owner"]}>
+      <Table caption="Backlog" head={["Priority", "Item", "Est", "Owner", "Dependencies"]}>
         {payload.backlog.map((b, i) => (
           <tr key={i} className="border-b border-border/60 last:border-0">
             <td className="px-3 py-2">
@@ -61,6 +61,7 @@ export function SprintPlanView({ payload }: { payload: SprintPlanPayload }) {
             <td className="px-3 py-2">{b.item}</td>
             <td className="px-3 py-2 tabular-nums">{b.estimate}</td>
             <td className="px-3 py-2 text-muted-foreground">{b.owner}</td>
+            <td className="px-3 py-2 text-muted-foreground">{b.dependencies ?? "-"}</td>
           </tr>
         ))}
       </Table>

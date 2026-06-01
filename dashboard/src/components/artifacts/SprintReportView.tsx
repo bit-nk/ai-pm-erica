@@ -20,6 +20,8 @@ export function SprintReportView({ payload }: { payload: SprintReportPayload }) 
         <StatusBadge tone={RAG_TONE[payload.status]}>{RAG_LABEL[payload.status]}</StatusBadge>
       </div>
 
+      {payload.summary && <p className="text-sm text-muted-foreground">{payload.summary}</p>}
+
       <div className="grid grid-cols-3 gap-2">
         <Metric label="Confidence" value={`${payload.confidence}%`} />
         <Metric label="Completed" value={`${payload.completed}/${payload.committed} pts`} />
@@ -51,14 +53,21 @@ export function SprintReportView({ payload }: { payload: SprintReportPayload }) 
         </ResponsiveContainer>
       </Panel>
 
-      {payload.topRisks.length > 0 && (
-        <Panel title="Top risks">
-          <ul className="list-disc space-y-1 pl-5 text-sm">
-            {payload.topRisks.map((r, i) => <li key={i}>{r}</li>)}
-          </ul>
-        </Panel>
-      )}
+      {payload.priorities && payload.priorities.length > 0 && <ListPanel title="Top PM priorities" items={payload.priorities} />}
+      {payload.topRisks.length > 0 && <ListPanel title="Main risks" items={payload.topRisks} />}
+      {payload.actionsToday && payload.actionsToday.length > 0 && <ListPanel title="Actions today" items={payload.actionsToday} />}
+      {payload.standupQuestions && payload.standupQuestions.length > 0 && <ListPanel title="Questions for standup" items={payload.standupQuestions} />}
     </div>
+  );
+}
+
+function ListPanel({ title, items }: { title: string; items: string[] }) {
+  return (
+    <Panel title={title}>
+      <ul className="list-disc space-y-1 pl-5 text-sm">
+        {items.map((r, i) => <li key={i}>{r}</li>)}
+      </ul>
+    </Panel>
   );
 }
 

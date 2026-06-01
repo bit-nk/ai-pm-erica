@@ -233,7 +233,7 @@ export function DashboardLayout({
         <ConnectorStatusBar connectors={connectors} onManage={onManageConnectors} />
 
         <Separator className="bg-border" />
-        <CurrentUser name="Erica J." role="Product Manager" />
+        <CurrentUser name="Erica J." role="Product Owner" />
       </aside>
 
       {/* ---------------- CENTER: Execution Console ---------------- */}

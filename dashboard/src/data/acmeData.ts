@@ -29,14 +29,16 @@ export const ACME_DATA: OnbData = {
   },
   "risk-scan": {
     risks: [
-      { risk: "Legacy billing API undocumented / unstable", likelihood: "H", impact: "H", priority: "Act now", owner: "Tech Lead" },
-      { risk: "Historical invoice data quality poor", likelihood: "M", impact: "H", priority: "Contingency", owner: "Data" },
-      { risk: "Payment provider integration scope creep", likelihood: "M", impact: "M", priority: "Monitor", owner: "PM" },
-      { risk: "SSO requirement surfaces late", likelihood: "M", impact: "M", priority: "Monitor", owner: "PM" },
+      { risk: "Legacy billing API undocumented / unstable", category: "Technical", likelihood: "H", impact: "H", detectability: "Hard", velocity: "Fast", priority: "Act now", response: "Escalate", owner: "Tech Lead" },
+      { risk: "Historical invoice data quality poor", category: "Technical", likelihood: "M", impact: "H", detectability: "Moderate", velocity: "Slow", priority: "Contingency", response: "Mitigate", owner: "Data" },
+      { risk: "Payment provider integration scope creep", category: "Business", likelihood: "M", impact: "M", detectability: "Moderate", velocity: "Medium", priority: "Monitor", response: "Mitigate", owner: "PM" },
+      { risk: "SSO requirement surfaces late", category: "Stakeholder", likelihood: "M", impact: "M", detectability: "Moderate", velocity: "Slow", priority: "Monitor", response: "Accept", owner: "PM" },
     ],
   },
   charter: {
+    purpose: "Acme's legacy invoice portal is slow and unsupported. This project rebuilds it so enterprise customers can self-serve invoice access, disputes, and payment.",
     sponsor: "VP Finance, Acme Corp",
+    inScope: [{ item: "Invoice search and download" }, { item: "Online dispute and payment" }],
     objectives: [
       { objective: "Self-serve invoice download and search" },
       { objective: "Online dispute and payment" },
@@ -45,6 +47,8 @@ export const ACME_DATA: OnbData = {
     outOfScope: [{ item: "Mobile app" }, { item: "Procurement workflows" }, { item: "Multi-currency (phase 2)" }],
   },
   discovery: {
+    problem: "The legacy invoice portal is unsupported and blocks self-serve, driving avoidable support volume and slow collections.",
+    success: "Enterprise customers self-serve invoice access, disputes, and payment without contacting support.",
     unknowns: [
       { unknown: "Billing API capabilities and rate limits" },
       { unknown: "Historical data migration volume" },
@@ -53,6 +57,7 @@ export const ACME_DATA: OnbData = {
     attendees: ["VP Finance", "Billing Platform Lead", "PM", "Security"],
   },
   prd: {
+    background: "Rebuild the enterprise invoice portal on the existing billing system, prioritising self-serve access, disputes, and online payment.",
     goals: [
       { goal: "Fast self-serve invoice access", metric: "Portal load time", target: "< 2s" },
       { goal: "Reduce support load", metric: "Invoice tickets", target: "-50% in 90 days" },
@@ -67,31 +72,52 @@ export const ACME_DATA: OnbData = {
   stories: {
     epics: [
       { name: "Invoice Access", stories: [
-        { title: "Invoice search and list", points: "5", status: "To Do" },
-        { title: "Invoice PDF download", points: "3", status: "To Do" },
+        {
+          title: "Invoice search and list", points: "5", status: "To Do",
+          asA: "finance user", iWant: "search and browse my invoices", soThat: "I can find any invoice without calling support",
+          criteria: "Given the invoice list, then invoices are shown newest first with number, date, amount and status\nGiven a search term, then results filter to matching invoice numbers\nGiven zero results, then show \"No invoices match your search\"",
+        },
+        {
+          title: "Invoice PDF download", points: "3", status: "To Do",
+          asA: "finance user", iWant: "download an invoice as PDF", soThat: "I can file it",
+          criteria: "Given an invoice, when I click Download, then a PDF downloads within 3 seconds\nError: if generation fails, show \"Could not generate the PDF, please try again\"",
+        },
       ]},
       { name: "Disputes & Payments", stories: [
-        { title: "Raise a dispute on a line item", points: "8", status: "To Do" },
-        { title: "Online payment via provider", points: "8", status: "To Do" },
+        {
+          title: "Raise a dispute on a line item", points: "8", status: "To Do",
+          asA: "finance user", iWant: "dispute a specific line item", soThat: "billing errors are corrected",
+          criteria: "Given a line item, when I raise a dispute with a reason, then its status becomes \"Disputed\"\nGiven no reason entered, then show \"Please add a reason for the dispute\"",
+        },
+        {
+          title: "Online payment via provider", points: "8", status: "To Do",
+          asA: "finance user", iWant: "pay an invoice online", soThat: "I avoid bank transfers",
+          criteria: "Given an unpaid invoice, when payment succeeds, then status becomes \"Paid\" and a receipt is emailed\nGiven a declined card, then show the provider message and keep the invoice unpaid",
+        },
       ]},
     ],
   },
   "sprint-sow": {
     sprintGoal: "Ship invoice access (search, list, download) to staging",
-    deliverables: [{ deliverable: "Billing API adapter" }, { deliverable: "Invoice list and search UI" }, { deliverable: "PDF download service" }],
+    overview: "Sprint 1 builds the billing API adapter and the invoice access surface. Disputes and payments follow in later sprints.",
+    deliverables: [
+      { deliverable: "Billing API adapter", description: "Reads invoices from the billing system", assignee: "Dev A" },
+      { deliverable: "Invoice list and search UI", description: "Search, list, filter invoices", assignee: "Dev B" },
+      { deliverable: "PDF download service", description: "Generates invoice PDFs", assignee: "Dev C" },
+    ],
   },
   "sprint-planning": {
     team: [
-      { person: "Dev A (BE)", points: "13" },
-      { person: "Dev B (FE)", points: "13" },
-      { person: "Dev C (FE)", points: "8" },
-      { person: "QA", points: "5" },
+      { person: "Dev A (BE)", availableDays: "10", points: "13", notes: "Full availability" },
+      { person: "Dev B (FE)", availableDays: "10", points: "13", notes: "" },
+      { person: "Dev C (FE)", availableDays: "8", points: "8", notes: "2 days on support" },
+      { person: "QA", availableDays: "10", points: "5", notes: "QA, not story points" },
     ],
     backlog: [
-      { priority: "P0", item: "Billing API adapter", points: "8" },
-      { priority: "P0", item: "Invoice list and search", points: "5" },
-      { priority: "P1", item: "Invoice PDF download", points: "3" },
-      { priority: "P2", item: "Saved searches", points: "3" },
+      { priority: "P0", item: "Billing API adapter", points: "8", owner: "Dev A", dependencies: "API access from platform" },
+      { priority: "P0", item: "Invoice list and search", points: "5", owner: "Dev B" },
+      { priority: "P1", item: "Invoice PDF download", points: "3", owner: "Dev C" },
+      { priority: "P2", item: "Saved searches", points: "3", owner: "Dev C" },
     ],
   },
   roadmap: {
@@ -99,10 +125,10 @@ export const ACME_DATA: OnbData = {
     horizon: "Next 8 weeks",
     weeks: "8",
     tasks: [
-      { name: "Discovery + API spike", lane: "Sprint 0", startWeek: "1", endWeek: "1" },
-      { name: "Invoice access", lane: "Sprint 1", startWeek: "2", endWeek: "4" },
-      { name: "Disputes", lane: "Sprint 2", startWeek: "5", endWeek: "6" },
-      { name: "Payments + launch", lane: "Sprint 2", startWeek: "7", endWeek: "8" },
+      { name: "Discovery + API spike", lane: "Sprint 0", startWeek: "1", endWeek: "1", startDate: "2026-06-01", endDate: "2026-06-05" },
+      { name: "Invoice access", lane: "Sprint 1", startWeek: "2", endWeek: "4", startDate: "2026-06-08", endDate: "2026-06-26" },
+      { name: "Disputes", lane: "Sprint 2", startWeek: "5", endWeek: "6", startDate: "2026-06-29", endDate: "2026-07-10" },
+      { name: "Payments + launch", lane: "Sprint 2", startWeek: "7", endWeek: "8", startDate: "2026-07-13", endDate: "2026-07-24" },
     ],
   },
   "budget-tracker": {
