@@ -1,0 +1,74 @@
+/*
+ * Design tokens - derived from sample-design/main_design.png
+ * Warm ivory canvas, deep navy-black chrome, soft cards, pastel status colors.
+ * Variables are HSL triplets so they compose with shadcn-ui and Tailwind's
+ * `hsl(var(--token))` convention. Light theme is the source of truth; the dark
+ * block mirrors secondary_pages.png for optional contexts but is NOT the default.
+ */
+
+@layer base {
+  :root {
+    /* Canvas + surfaces (warm ivory / cream) */
+    --background: 40 33% 94%;        /* #F5F2EC ivory canvas      */
+    --surface: 40 30% 91%;           /* #EFEAE0 muted panel        */
+    --card: 0 0% 100%;               /* #FFFFFF raised card        */
+    --card-foreground: 222 16% 13%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 16% 13%;
+
+    /* Ink */
+    --foreground: 222 16% 13%;       /* #1B1E25 navy-black text    */
+    --muted: 40 25% 88%;             /* #E7E0D4 muted bg           */
+    --muted-foreground: 35 8% 42%;   /* #736E64 secondary text     */
+    --border: 40 22% 85%;            /* #E4DED3 hairline border    */
+    --input: 40 22% 85%;
+    --ring: 222 16% 13%;
+
+    /* Brand: deep navy primary, warm gold accent (the highlighted step pill) */
+    --primary: 222 16% 13%;          /* #1B1E25 dark buttons/chrome*/
+    --primary-foreground: 40 33% 96%;
+    --accent: 41 52% 70%;            /* #DCC084 warm gold highlight*/
+    --accent-foreground: 222 16% 13%;
+
+    /* Status palette (badges, verdicts, execution states) */
+    --status-success: 142 64% 30%;   /* GO / PASS / Ready  */
+    --status-success-bg: 141 70% 92%;
+    --status-info: 222 78% 52%;      /* Processing / info  */
+    --status-info-bg: 214 95% 93%;
+    --status-warning: 32 90% 38%;    /* RISK / CONDITIONAL / In Review */
+    --status-warning-bg: 45 96% 90%;
+    --status-danger: 0 72% 42%;      /* NO-GO / FAIL / Error */
+    --status-danger-bg: 0 86% 94%;
+    --status-neutral: 215 19% 35%;   /* UNCONFIRMED */
+    --status-neutral-bg: 210 30% 94%;
+    --status-na: 215 14% 60%;        /* N/A */
+    --status-na-bg: 210 16% 93%;
+
+    /* Risk-matrix heat quadrants (likelihood x impact), low -> high */
+    --heat-low: 142 50% 82%;
+    --heat-mid: 45 90% 80%;
+    --heat-high: 0 75% 85%;
+
+    --radius: 0.875rem;              /* rounded-xl cards from the mock */
+  }
+
+  .dark {
+    /* Mirrors secondary_pages.png - deep space navy. Optional, not default. */
+    --background: 226 30% 8%;
+    --surface: 226 26% 12%;
+    --card: 226 24% 13%;
+    --card-foreground: 40 30% 92%;
+    --popover: 226 24% 13%;
+    --popover-foreground: 40 30% 92%;
+    --foreground: 40 30% 92%;
+    --muted: 226 20% 18%;
+    --muted-foreground: 220 12% 64%;
+    --border: 226 18% 22%;
+    --input: 226 18% 22%;
+    --ring: 41 52% 70%;
+    --primary: 41 52% 70%;
+    --primary-foreground: 226 30% 10%;
+    --accent: 244 60% 68%;
+    --accent-foreground: 0 0% 100%;
+  }
+}
