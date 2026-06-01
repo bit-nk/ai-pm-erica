@@ -43,9 +43,8 @@ Every artefact was extended to carry the fields its CLI skill produces:
 10. Meeting notes (duration, summary, open questions), tech review (document type, dependencies, scope implications), retrospective (outcome, attendees, impact, owners, sentiment), and stakeholder update (RAG status, coming next, key dates, risk impact and actions).
 
 ### Theme and context
-1. Current-user chip in the left rail (Erica J., Product Owner).
-2. Inline, translucent add fields for clients and projects (no dialogs); the project selector disables and prompts to add the first project when a client has none.
-3. Connectors ship with mock API endpoints and tokens pre-filled per tool.
+1. Inline, translucent add fields for clients and projects (no dialogs); the project selector disables and prompts to add the first project when a client has none.
+2. Connectors ship with mock API endpoints and tokens pre-filled per tool.
 
 ### Multi-record skills and export
 1. Multi-record skills (meetings, sprint plans, sprint reports, release checklists, decision logs, tech reviews, retros, stakeholder updates) hold a list of records with editable title and date; open, edit, or add new.
