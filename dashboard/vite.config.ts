@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath, URL } from "node:url";
-import type { IncomingMessage, ServerResponse } from "node:http";
 
 /* ── Security: proxy request validation ────────────────────────────── */
 
@@ -51,10 +50,11 @@ function isBlockedTarget(rawUrl: string): boolean {
 function confluenceProxyPlugin() {
   return {
     name: "confluence-proxy",
-    configureServer(server: { middlewares: { use: (path: string, fn: (req: IncomingMessage, res: ServerResponse, next: () => void) => void) => void } }) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    configureServer(server: any) {
       server.middlewares.use(
         "/api/confluence-proxy",
-        async (req: IncomingMessage, res: ServerResponse) => {
+        async (req: any, res: any) => {
           const targetUrl = req.headers["x-confluence-target-url"] as string | undefined;
           const rawMethod = (req.headers["x-confluence-method"] as string | undefined) ?? "GET";
           const auth = req.headers["x-confluence-auth"] as string | undefined;
@@ -85,9 +85,9 @@ function confluenceProxyPlugin() {
           }
 
           // Read request body (present for POST/PUT)
-          const chunks: Buffer[] = [];
+          const chunks: Uint8Array[] = [];
           await new Promise<void>((resolve) => {
-            req.on("data", (chunk: Buffer) => chunks.push(chunk));
+            req.on("data", (chunk: Uint8Array) => chunks.push(chunk));
             req.on("end", resolve);
           });
           const rawBody = chunks.length > 0 ? Buffer.concat(chunks).toString("utf8") : undefined;
