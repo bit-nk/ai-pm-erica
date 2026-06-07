@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   type McpConnector, type SkillExecution, type SaveDestination, type SkillId,
   isRiskScan, isReleaseChecklist, isDecisionLog, isSprintPlan,
@@ -8,6 +9,8 @@ import { skillTitle } from "@/data/demo";
 import { useToast } from "@/store/toast";
 import { STEPS } from "@/components/onboarding/steps";
 import { Button } from "@/components/ui/button";
+import { ConfluencePublishDialog } from "./ConfluencePublishDialog";
+import { generatePublishMarkdown } from "@/lib/generatePublishMarkdown";
 import { RiskScanView } from "./RiskScanView";
 import { ReleaseChecklistView } from "./ReleaseChecklistView";
 import { DecisionLogView } from "./DecisionLogView";
@@ -42,6 +45,7 @@ export function ArtifactViewer({
   skillStatus?: Partial<Record<SkillId, "approved" | "skipped">>;
 }) {
   const { notify } = useToast();
+  const [confluenceOpen, setConfluenceOpen] = useState(false);
 
   if (!execution) return <EmptyState />;
 
@@ -56,12 +60,23 @@ export function ArtifactViewer({
   const skipped = skillStatus?.[skill as SkillId] === "skipped";
   const empty = !execution.payload && !execution.markdown.trim();
 
+  const confluenceConnector = connectors.find((c) => c.id === "confluence");
+
   const onAction = (dest: SaveDestination) => {
-    const label =
-      dest === "local" ? "Saved locally" :
-      dest === "clipboard" ? "Copied markdown" :
-      `Pushed to ${dest}`;
-    notify({ title: label, tone: "success" });
+    if (dest === "confluence") { setConfluenceOpen(true); return; }
+
+    if (dest === "clipboard") {
+      const md = generatePublishMarkdown(execution);
+      navigator.clipboard.writeText(md)
+        .then(() => notify({ title: "Markdown copied to clipboard", tone: "success" }))
+        .catch(() => notify({ title: "Copy failed — check browser permissions", tone: "danger" }));
+      return;
+    }
+
+    if (dest === "local") { notify({ title: "Saved locally", tone: "success" }); return; }
+
+    // Jira, Drive, Notion, Gmail — not yet implemented
+    notify({ title: `${dest.charAt(0).toUpperCase() + dest.slice(1)} publishing coming soon`, tone: "info" });
   };
 
   return (
@@ -118,6 +133,16 @@ export function ArtifactViewer({
       </div>
 
       <ActionBar connectors={connectors} onAction={onAction} />
+
+      {confluenceConnector && (
+        <ConfluencePublishDialog
+          open={confluenceOpen}
+          onOpenChange={setConfluenceOpen}
+          connector={confluenceConnector}
+          artifactTitle={title}
+          markdown={generatePublishMarkdown(execution)}
+        />
+      )}
     </div>
   );
 }

@@ -7,13 +7,16 @@
       "Bash(mv:*)",
       "Bash(ls:*)",
       "Bash(find:*)",
-      "Bash(cat:clients/*)"
+      "Bash(cat:clients/*)",
+      "Bash(npm install*)",
+      "Bash(npm run dev*)",
+      "Bash(npm --prefix*)",
+      "Bash(lsof*)"
     ],
     "deny": [
       "Bash(rm -rf:*)",
       "Bash(curl:*)",
       "Bash(wget:*)",
-      "Bash(npm:*)",
       "Bash(pip:*)"
     ]
   }

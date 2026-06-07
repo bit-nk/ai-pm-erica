@@ -2,6 +2,32 @@ import { createContext, useCallback, useContext, useMemo, useState, type ReactNo
 import type {
   ClientContext, ConnectionStatus, ConnectorId, McpConnector, ProjectContext, SkillExecution, SkillId,
 } from "@/types/pm";
+
+/* ── Connector credential persistence (localStorage) ─────────────────── */
+const CONNECTOR_STORAGE_KEY = "ai-pm-connector-apis";
+
+type PersistedApis = Partial<Record<ConnectorId, { endpoint?: string; token?: string }>>;
+
+function loadPersistedApis(): PersistedApis {
+  try {
+    const raw = localStorage.getItem(CONNECTOR_STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as PersistedApis) : {};
+  } catch { return {}; }
+}
+
+function persistApis(apis: PersistedApis) {
+  try { localStorage.setItem(CONNECTOR_STORAGE_KEY, JSON.stringify(apis)); }
+  catch { /* storage unavailable — in-memory only */ }
+}
+
+function mergePersistedConnectors(defaults: McpConnector[]): McpConnector[] {
+  const saved = loadPersistedApis();
+  return defaults.map((c) => {
+    const s = saved[c.id];
+    if (!s?.endpoint && !s?.token) return c;
+    return { ...c, endpoint: s.endpoint, token: s.token, status: "connected" as ConnectionStatus };
+  });
+}
 import { DEMO_CLIENTS, DEMO_PROJECTS, DEMO_CONNECTORS } from "@/data/demo";
 import { SAMPLE_ARTIFACTS } from "@/data/sampleArtifacts";
 import { STEPS, TEST_DATA, RECORD_NOUN, type StepValues } from "@/components/onboarding/steps";
@@ -112,7 +138,7 @@ const slugify = (s: string) => s.trim().replace(/[^A-Za-z0-9._-]+/g, "-").replac
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [clients, setClients] = useState<ClientContext[]>(DEMO_CLIENTS);
   const [projects, setProjects] = useState<ProjectContext[]>(DEMO_PROJECTS);
-  const [connectors, setConnectors] = useState<McpConnector[]>(DEMO_CONNECTORS);
+  const [connectors, setConnectors] = useState<McpConnector[]>(() => mergePersistedConnectors(DEMO_CONNECTORS));
   // Nothing is pre-selected: the user picks a client, then a project, before the
   // skill nav and artifacts appear.
   const [activeClientId, setActiveClientId] = useState<string | undefined>(undefined);
@@ -208,6 +234,14 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   const setConnectorApi = useCallback((id: ConnectorId, patch: { endpoint?: string; token?: string }) => {
     setConnectors((cs) => cs.map((c) => (c.id === id ? { ...c, ...patch } : c)));
+    // Persist to localStorage so credentials survive page refreshes.
+    const saved = loadPersistedApis();
+    if (!patch.endpoint && !patch.token) {
+      delete saved[id];
+    } else {
+      saved[id] = { ...saved[id], ...patch };
+    }
+    persistApis(saved);
   }, []);
 
   const beginEdit = useCallback((skill: SkillId, recordId?: string) => {
