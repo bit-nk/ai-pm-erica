@@ -1,7 +1,7 @@
 ---
 name: pm-orchestrator
 description: PM Orchestrator - analyses any input and chains the right skills automatically. Use whenever the user pastes a raw stakeholder message, meeting transcript, feature request, Jira data, or project brief and wants Claude to decide which PM skills to run and in what order. Trigger on "/pm", "orchestrate this", "figure out what I need", or any input that is too broad or ambiguous to route to a single skill directly. This is the recommended entry point for all PM work.
-version: 2.0.0
+version: 2.1.0
 argument-hint: <any input - message, transcript, brief, or Jira data>
 allowed-tools: Read, Write
 ---
@@ -143,3 +143,19 @@ These layer on top of the orchestration; they never alter the planning or execut
 - **Switching.** On `/pm switching to CLIENT/PROJECT`, re-run Step 0 against the named client/project and confirm the recovered state before doing anything else.
 - **Optional plan persistence.** For a longer chain, you may record the agreed plan and progress in `context.md` (e.g. a `## Orchestration Plan` block marking steps done/pending) so a later session can resume. This is optional and must not interrupt the live flow.
 - **No client mixing.** Only ever read/write under the active `clients/CLIENT/PROJECT/` path.
+---
+
+### Optional Next Step
+
+This analysis can be visualised as an executive dashboard showing:
+
+- Risk Heatmap (Likelihood × Impact)
+- Risk Timeline (Urgency View)
+- Risk Category Distribution
+- Executive Summary Cards
+
+Ask:
+
+> Would you like me to create this dashboard?
+
+If the user agrees, invoke the `visualisation` skill using the completed risk analysis as input.
