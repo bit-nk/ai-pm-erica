@@ -2,31 +2,33 @@ import { useCallback } from "react";
 import { OrchestratorConsole } from "@/components/OrchestratorConsole";
 import { ArtifactEditor } from "@/components/ArtifactEditor";
 import { RecordList } from "@/components/RecordList";
-import { orchestratorApi } from "@/api";
+import { getOrchestratorApi } from "@/api";
 import { useWorkspace } from "@/store/workspace";
 import { MULTI_RECORD_SKILLS } from "@/components/onboarding/steps";
 import { cn } from "@/lib/utils";
+import type { SkillExecution, SkillId } from "@/types/pm";
 
-/** Pre-filled sample so the orchestrator demo runs with one click. */
+/** Demo text loaded into the Finwave project only (shown as a one-click example). */
 const DEMO_INPUT =
   "From Sarah Chen (Head of Product): Our enterprise clients keep finding out about " +
   "failed payments only when their own customers call them. We need real-time payment " +
   "notifications before the conference in 6 weeks. Budget is around $80k.";
 
-/**
- * Center column. Normally the orchestrator console. When the user hits "Edit"
- * it swaps to the structured editor; for multi-record skills it shows the
- * record list. The console stays mounted (hidden) so an in-progress plan
- * survives those swaps.
- */
 export function ExecutionPanel() {
   const ws = useWorkspace();
   const editing = ws.editingSkill;
   const { activeProjectId, completeOrchestration } = ws;
 
+  // Resolve the orchestrator at render time so it picks up a newly-saved Claude key
+  // without requiring a page reload.
+  const api = getOrchestratorApi();
+
   const onComplete = useCallback(
-    (decisions: Parameters<typeof completeOrchestration>[1]) => {
-      if (activeProjectId) completeOrchestration(activeProjectId, decisions);
+    (
+      decisions: Parameters<typeof completeOrchestration>[1],
+      claudeExecutions?: Partial<Record<SkillId, SkillExecution>>,
+    ) => {
+      if (activeProjectId) completeOrchestration(activeProjectId, decisions, claudeExecutions);
     },
     [activeProjectId, completeOrchestration],
   );
@@ -43,11 +45,11 @@ export function ExecutionPanel() {
         <OrchestratorConsole
           clientId={ws.activeClientId}
           projectId={ws.activeProjectId}
-          api={orchestratorApi}
+          api={api}
           onViewSkill={ws.previewSkill}
           onComplete={onComplete}
           orchestrated={!!ws.activeProjectId && ws.orchestratedProjects.includes(ws.activeProjectId)}
-          defaultInput={DEMO_INPUT}
+          defaultInput={ws.activeProjectId === "p-notifications" ? DEMO_INPUT : ""}
         />
       </div>
     </div>

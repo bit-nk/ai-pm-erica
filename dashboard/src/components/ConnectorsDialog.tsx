@@ -31,13 +31,119 @@ export function ConnectorsDialog({
         </DialogHeader>
         <ul className="space-y-2">
           {connectors.map((c) =>
-            c.id === "confluence"
+            c.id === "claude"
+              ? <ClaudeRow key={c.id} connector={c} />
+              : c.id === "confluence"
               ? <ConfluenceRow key={c.id} connector={c} />
               : <GenericRow key={c.id} connector={c} />,
           )}
         </ul>
       </DialogContent>
     </Dialog>
+  );
+}
+
+/* ─────────────────────────── Claude row ─────────────────────────────── */
+
+function ClaudeRow({ connector: c }: { connector: McpConnector }) {
+  const { setConnectorApi, setConnectorStatus } = useWorkspace();
+  const { notify } = useToast();
+  const [open, setOpen] = useState(false);
+  const [key, setKey] = useState(c.token ?? "");
+  const [reveal, setReveal] = useState(false);
+
+  useEffect(() => { setKey(c.token ?? ""); }, [c.token]);
+
+  const connected = c.status === "connected";
+  const dot = connected ? "bg-status-success" : "bg-status-na";
+
+  const save = () => {
+    if (!key.trim().startsWith("sk-ant-")) {
+      notify({ title: "API key must start with sk-ant-", tone: "danger" });
+      return;
+    }
+    setConnectorApi(c.id, { token: key.trim() });
+    setConnectorStatus(c.id, "connected");
+    setOpen(false);
+    notify({ title: "Claude API key saved — orchestration is live", tone: "success" });
+  };
+
+  const remove = () => {
+    setConnectorApi(c.id, { token: undefined });
+    setConnectorStatus(c.id, "disconnected");
+    setKey("");
+    notify({ title: "Claude API key removed — using demo mode", tone: "info" });
+  };
+
+  return (
+    <li className="rounded-xl border border-border px-3 py-2.5">
+      <div className="flex items-center justify-between gap-2">
+        <div className="min-w-0">
+          <span className="flex items-center gap-2 text-sm font-medium">
+            <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full", dot)} />
+            {c.label}
+            <span className="text-xs font-normal text-muted-foreground">
+              {connected ? "live Claude orchestration" : "demo mode — add a key to go live"}
+            </span>
+          </span>
+          <button
+            type="button"
+            onClick={() => setOpen((o) => !o)}
+            className="mt-0.5 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+          >
+            <ChevronDown className={cn("h-3 w-3 transition-transform", open && "rotate-180")} />
+            {connected ? "Edit API key" : "Add API key"}
+          </button>
+        </div>
+        {connected ? (
+          <Button size="sm" className="bg-red-500 text-white hover:bg-red-600" onClick={remove}>Remove</Button>
+        ) : (
+          <Button size="sm" className="bg-emerald-500 text-white hover:bg-emerald-600" onClick={() => setOpen(true)}>
+            Add key
+          </Button>
+        )}
+      </div>
+
+      {open && (
+        <div className="mt-3 space-y-3 border-t border-border pt-3">
+          <div className="space-y-1.5">
+            <Label htmlFor="claude-api-key" className="text-xs">Anthropic API key</Label>
+            <div className="relative">
+              <Input
+                id="claude-api-key"
+                type={reveal ? "text" : "password"}
+                value={key}
+                onChange={(e) => setKey(e.target.value)}
+                placeholder="sk-ant-api03-…"
+                className="h-9 pr-9 font-mono text-xs"
+              />
+              <button
+                type="button"
+                onClick={() => setReveal((r) => !r)}
+                title={reveal ? "Hide" : "Show"}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                {reveal ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+              </button>
+            </div>
+            <a
+              href="https://console.anthropic.com/settings/keys"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-[11px] text-primary underline underline-offset-2"
+            >
+              <ExternalLink className="h-3 w-3" />
+              Get a key from Anthropic Console → API Keys
+            </a>
+          </div>
+          <div className="rounded-lg bg-muted/50 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
+            Your key is stored in your browser (localStorage) and sent only to the local Vite dev proxy,
+            which forwards it to <code className="font-mono">api.anthropic.com</code>. It never leaves your machine.
+          </div>
+          <Button className="w-full" onClick={save} disabled={!key.trim()}>Save API key</Button>
+        </div>
+      )}
+    </li>
   );
 }
 

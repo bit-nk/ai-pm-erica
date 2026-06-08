@@ -83,7 +83,7 @@ export interface ArtifactRef {
  * 2. CONNECTORS  (MCP - read-live / publish; Connection Failsafe aware)
  * ===================================================================== */
 
-export type ConnectorId = "jira" | "confluence" | "google-drive" | "notion" | "gmail";
+export type ConnectorId = "jira" | "confluence" | "google-drive" | "notion" | "gmail" | "claude";
 
 export type ConnectionStatus = "connected" | "disconnected" | "error" | "checking";
 

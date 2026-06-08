@@ -39,14 +39,70 @@ function isBlockedTarget(rawUrl: string): boolean {
 }
 
 /**
- * Vite dev-server middleware that proxies Confluence API calls server-side,
- * bypassing the CORS restriction that blocks direct browser → Atlassian requests.
- *
- * Security controls applied before any upstream fetch:
- *   1. Target URL must be HTTPS and must not resolve to a private/internal address.
- *   2. HTTP method must be in the explicit allowlist (GET/POST/PUT/DELETE/PATCH).
- *   3. Auth header is only forwarded to the validated upstream host.
+ * Proxies POST /api/claude/v1/messages -> https://api.anthropic.com/v1/messages.
+ * The API key is read from the x-claude-api-key request header (set by the
+ * browser from localStorage) and forwarded as x-api-key. The target is always
+ * the Anthropic API — no SSRF surface.
  */
+function claudeProxyPlugin() {
+  return {
+    name: "claude-proxy",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    configureServer(server: any) {
+      server.middlewares.use(
+        "/api/claude",
+        async (req: any, res: any) => {
+          if (req.method !== "POST") {
+            res.statusCode = 405;
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ error: "Method not allowed" }));
+            return;
+          }
+
+          const apiKey = req.headers["x-claude-api-key"] as string | undefined;
+          if (!apiKey || !apiKey.startsWith("sk-ant-")) {
+            res.statusCode = 401;
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ error: "Missing or invalid Anthropic API key (must start with sk-ant-)" }));
+            return;
+          }
+
+          // Strip /api/claude prefix to get the Anthropic path (e.g. /v1/messages)
+          const subpath = (req.url as string) || "/v1/messages";
+
+          const chunks: Uint8Array[] = [];
+          await new Promise<void>((resolve) => {
+            req.on("data", (chunk: Uint8Array) => chunks.push(chunk));
+            req.on("end", resolve);
+          });
+          const body = chunks.length > 0 ? Buffer.concat(chunks).toString("utf8") : undefined;
+
+          try {
+            const upstream = await fetch(`https://api.anthropic.com${subpath}`, {
+              method: "POST",
+              headers: {
+                "x-api-key": apiKey,
+                "anthropic-version": "2023-06-01",
+                "Content-Type": "application/json",
+                Accept: "application/json",
+              },
+              ...(body ? { body } : {}),
+            });
+
+            res.statusCode = upstream.status;
+            res.setHeader("Content-Type", upstream.headers.get("content-type") ?? "application/json");
+            res.end(await upstream.text());
+          } catch (err) {
+            res.statusCode = 502;
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ error: "Upstream fetch failed", message: String(err) }));
+          }
+        },
+      );
+    },
+  };
+}
+
 function confluenceProxyPlugin() {
   return {
     name: "confluence-proxy",
@@ -118,7 +174,7 @@ function confluenceProxyPlugin() {
 }
 
 export default defineConfig({
-  plugins: [react(), confluenceProxyPlugin()],
+  plugins: [react(), claudeProxyPlugin(), confluenceProxyPlugin()],
   resolve: {
     alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
   },

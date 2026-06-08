@@ -98,6 +98,7 @@ export const DEMO_PROJECTS: ProjectContext[] = [
 ];
 
 export const DEMO_CONNECTORS: McpConnector[] = [
+  { id: "claude",       label: "Claude (Orchestrator)", status: "disconnected" },
   { id: "jira",         label: "Jira",       status: "disconnected" },
   { id: "confluence",   label: "Confluence", status: "disconnected" },
   { id: "google-drive", label: "Drive",      status: "disconnected" },

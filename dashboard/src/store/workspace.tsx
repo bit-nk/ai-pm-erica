@@ -120,10 +120,17 @@ interface WorkspaceValue {
   saveRecord: (projectId: string, skill: SkillId, id: string, values: StepValues) => void;
   openRecord: (projectId: string, skill: SkillId, id: string) => void;
   /**
-   * Finish orchestration: generate the approved sections from seed data, leave
-   * skipped ones blank, record the decisions, and unlock the skill nav.
+   * Finish orchestration: generate the approved sections from seed data (or
+   * Claude executions when provided), leave skipped ones blank, record the
+   * decisions, and unlock the skill nav.
    */
-  completeOrchestration: (projectId: string, decisions: Record<SkillId, SkillDecision>) => void;
+  completeOrchestration: (
+    projectId: string,
+    decisions: Record<SkillId, SkillDecision>,
+    claudeExecutions?: Partial<Record<SkillId, import("@/types/pm").SkillExecution>>,
+  ) => void;
+  /** Store a Claude-generated execution for a specific skill. */
+  setClaudeExecution: (projectId: string, skill: SkillId, execution: import("@/types/pm").SkillExecution) => void;
   /** Show a skill's artifact in the canvas without changing the active skill. */
   previewSkill: (skill: SkillId) => void;
   /** Generate a previously-skipped section (populate from seed, mark approved). */
@@ -155,6 +162,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   });
   const [orchestratedProjects, setOrchestratedProjects] = useState<string[]>(["p-rebuild"]);
   const [skillStatus, setSkillStatus] = useState<SkillStatusMap>({ "p-rebuild": ACME_APPROVED });
+  // Claude-generated executions keyed as "${projectId}::${skill}"
+  const [claudeExecMap, setClaudeExecMap] = useState<Record<string, import("@/types/pm").SkillExecution>>({});
 
   // Changing client or project starts that context fresh: no skill, no artifact,
   // no open editor.
@@ -177,10 +186,11 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   const selectSkill = useCallback((id: SkillId) => {
     setActiveSkill(id);
-    setCurrent(artifactFor(id, activeClientId, activeProjectId, artifactValues));
+    const claudeExec = claudeExecMap[`${activeProjectId}::${id}`];
+    setCurrent(claudeExec ?? artifactFor(id, activeClientId, activeProjectId, artifactValues));
     setEditingSkill(null); // switching skills leaves any open editor
     setEditingRecordId(null);
-  }, [activeClientId, activeProjectId, artifactValues]);
+  }, [activeClientId, activeProjectId, artifactValues, claudeExecMap]);
 
   const showExecution = useCallback((e: SkillExecution) => setCurrent(e), []);
 
@@ -313,7 +323,11 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     }
   }, [records, activeClientId]);
 
-  const completeOrchestration = useCallback((projectId: string, decisions: Record<SkillId, SkillDecision>) => {
+  const completeOrchestration = useCallback((
+    projectId: string,
+    decisions: Record<SkillId, SkillDecision>,
+    incomingClaudeExecs?: Partial<Record<SkillId, import("@/types/pm").SkillExecution>>,
+  ) => {
     const skills = Object.keys(decisions) as SkillId[];
     // Approved -> generate from seed data; skipped -> blank (an explicit {}).
     setArtifactValues((m) => {
@@ -326,18 +340,39 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     setSkillStatus((s) => ({ ...s, [projectId]: decisions }));
     setOrchestratedProjects((p) => (p.includes(projectId) ? p : [...p, projectId]));
 
+    // Store Claude executions (override the TEST_DATA path for skill nav clicks).
+    if (incomingClaudeExecs) {
+      setClaudeExecMap((m) => {
+        const next = { ...m };
+        for (const [skill, exec] of Object.entries(incomingClaudeExecs)) {
+          if (exec) next[`${projectId}::${skill}`] = exec;
+        }
+        return next;
+      });
+    }
+
     // Surface the first approved section so the canvas isn't empty.
     const firstApproved = skills.find((k) => decisions[k] === "approved");
-    const step = firstApproved && STEPS.find((s) => s.id === firstApproved);
-    if (firstApproved && step) {
+    if (firstApproved) {
       setActiveSkill(firstApproved);
-      setCurrent(buildExecution(step, (TEST_DATA[firstApproved] ?? {}) as StepValues, activeClientId ?? "", projectId));
+      const claudeExec = incomingClaudeExecs?.[firstApproved];
+      if (claudeExec) {
+        setCurrent(claudeExec);
+      } else {
+        const step = STEPS.find((s) => s.id === firstApproved);
+        if (step) setCurrent(buildExecution(step, (TEST_DATA[firstApproved] ?? {}) as StepValues, activeClientId ?? "", projectId));
+      }
     }
   }, [activeClientId]);
 
   const previewSkill = useCallback((skill: SkillId) => {
-    setCurrent(artifactFor(skill, activeClientId, activeProjectId, artifactValues));
-  }, [activeClientId, activeProjectId, artifactValues]);
+    const claudeExec = claudeExecMap[`${activeProjectId}::${skill}`];
+    setCurrent(claudeExec ?? artifactFor(skill, activeClientId, activeProjectId, artifactValues));
+  }, [activeClientId, activeProjectId, artifactValues, claudeExecMap]);
+
+  const setClaudeExecution = useCallback((projectId: string, skill: SkillId, execution: import("@/types/pm").SkillExecution) => {
+    setClaudeExecMap((m) => ({ ...m, [`${projectId}::${skill}`]: execution }));
+  }, []);
 
   const generateSkill = useCallback((projectId: string, skill: SkillId) => {
     const seed = (TEST_DATA[skill] ?? {}) as StepValues;
@@ -357,14 +392,14 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       selectClient, selectProject, selectSkill, pushExecution, showExecution,
       addClient, addProject, setConnectorStatus, setConnectorApi,
       beginEdit, endEdit, saveArtifactValues, completeOrchestration, previewSkill, generateSkill,
-      ensureRecords, addRecord, updateRecordMeta, saveRecord, openRecord,
+      ensureRecords, addRecord, updateRecordMeta, saveRecord, openRecord, setClaudeExecution,
     }),
     [clients, projects, connectors, activeClientId, activeProjectId, activeSkill, current, history,
       editingSkill, editingRecordId, artifactValues, records, orchestratedProjects, skillStatus,
       selectClient, selectProject, selectSkill, pushExecution, showExecution,
       addClient, addProject, setConnectorStatus, setConnectorApi,
       beginEdit, endEdit, saveArtifactValues, completeOrchestration, previewSkill, generateSkill,
-      ensureRecords, addRecord, updateRecordMeta, saveRecord, openRecord],
+      ensureRecords, addRecord, updateRecordMeta, saveRecord, openRecord, setClaudeExecution],
   );
 
   return <WorkspaceContext.Provider value={value}>{children}</WorkspaceContext.Provider>;

@@ -1,7 +1,8 @@
 ---
 name: risk-scan
 description: Identifies, evaluates, and recommends mitigation strategies for project risks across any phase of delivery. Use whenever a PM needs continuous risk discovery or decision support - including when someone says "analyse the risks on this project", "do a full risk analysis", "we need a risk review", "what risks should I be tracking right now", "update the risk picture", or shares project context and wants a structured risk assessment. It runs at any depth, from a fast initial pre-screen right after triage (Low depth) through to ongoing risk discovery across all project phases (Discovery through Deployment), adjusting depth to how much time the PM has. Use it at any phase gate, after significant scope changes, or when the risk landscape feels unclear.
-version: 2.0.0
+
+version: 3.0.0
 argument-hint: <project context, phase, and known risks>
 allowed-tools: Read
 ---
@@ -21,7 +22,7 @@ Extract or ask for these before writing anything:
 | Input | Required? | Why |
 |---|---|---|
 | Project context | Yes | Scope, timeline, stakeholders, goals - without this, risks are generic |
-| Current phase | Yes | Risk profile changes by phase - read `phase-guide.md` for phase-specific profiles (especially Testing and Deployment) |
+| Current phase | Yes | Risk profile changes by phase - read `phase-guide.md` for phase-specific profiles |
 | Known constraints | No | Fixed deadlines, budget caps - these turn risks into near-certainties |
 | Recent changes | No | Scope, team, or requirement changes are a primary risk source |
 | Depth needed | No | Default Medium - see depth table below |
@@ -30,25 +31,54 @@ If project context or current phase is missing, ask before proceeding.
 
 ---
 
+# Risk Discovery Guidance
+
+Identify risks across multiple dimensions.
+
+Consider:
+
+- Product value
+- Customer adoption
+- Delivery execution
+- Technical architecture
+- Security & privacy
+- Compliance & legal
+- Operational readiness
+- Stakeholder alignment
+- External dependencies
+- Budget and commercial viability
+
+Avoid concentrating all risks in one category unless evidence strongly supports it.
+
+For early-stage initiatives, ensure at least one risk is considered from:
+
+- Product/Customer
+- Delivery/Technical
+- Business/Compliance
+
+If insufficient information exists to assess an area, record it in Not Assessed rather than assuming.
+
+---
+
 # Depth
 
 | Depth | When | Risks | Sections to include |
 |---|---|---|---|
-| Low | "quick", "brief", initial pre-screen after triage | 3-5 | Risk register + verdict only |
-| Medium | default | 5-8 | Full output except Prioritisation Reasoning |
-| High | "thorough", "board report" | 8-12 | Full output including Prioritisation Reasoning |
+| Low | "quick", "brief", initial pre-screen after triage | 3-5 | Overall Verdict, Top Risk Snapshot, Risk Register, Not Assessed |
+| Medium | default | 5-8 | Full output including Key Assumptions |
+| High | "thorough", "board report" | 8-12 | Full output including Key Assumptions and Prioritisation Reasoning |
 
-> Use **Low** depth as a fast initial pre-screen right after triage and before the charter. Use Medium or High for ongoing scans at phase gates. (This pre-screen mode replaces the separate initial-risk-scan skill that was consolidated into these depth modes.)
+Use Low depth as a fast pre-screen. Prefer Medium for most reviews. Reserve High for major investments, board discussions, regulatory reviews, or critical phase gates.
 
 ---
 
 # Scoring
 
-Score every risk across four dimensions - each one changes the response, not just the priority colour.
+Score every risk across four dimensions.
 
 **Likelihood:** H = more likely than not / M = possible / L = unlikely but real
 
-**Impact:** H = project fails or major rework / M = delay or cost increase / L = minor inconvenience
+**Impact:** H = project fails, launch blocked, major rework, regulatory exposure, or significant customer impact / M = delay, cost increase, reduced adoption, or operational burden / L = minor inconvenience
 
 **Detectability:** Easy = clear leading indicators / Moderate = needs active monitoring / Hard = little or no warning before it triggers
 
@@ -58,31 +88,95 @@ Score every risk across four dimensions - each one changes the response, not jus
 
 | | High Impact | Low Impact |
 |---|---|---|
-| **High Likelihood** | 🔴 Act now | 🟡 Monitor actively |
-| **Low Likelihood** | 🟡 Prepare contingency | 🟢 Log and revisit |
+| High Likelihood | 🔴 Act now | 🟡 Monitor actively |
+| Low Likelihood | 🟡 Prepare contingency | 🟢 Log and revisit |
 
-Every Hard-detectability risk needs a **trigger signal** - a specific observable event that tells you the risk has activated. Without one, nobody knows when to act. (Trigger signals are recorded in the Top Risks - Detail section, included from Medium depth up. At Low depth, either keep flagged risks to Easy/Moderate detectability or note the trigger inline in the register.)
+Every Hard-detectability risk requires a trigger signal.
 
-**Response types:** Mitigate / Transfer / Avoid / Accept / Escalate. "Monitor" alone is not a response.
+**Response types:** Mitigate / Transfer / Avoid / Accept / Escalate
+
+A risk must be written as an event and consequence, not a topic.
+
+Good:
+- Third-party API rate limits prevent transaction processing during peak demand.
+
+Bad:
+- API risk
+- Performance
+- Dependencies
+
+---
+
+# Quality Checks
+
+Before finalising the report:
+
+- Every risk must be specific to the project context.
+- Avoid generic risks that could apply to any project.
+- Every 🔴 risk must have a named owner.
+- Every Hard-detectability risk must include a trigger signal.
+- Validation experiments must test a specific assumption.
+- Decisions Needed should only include items requiring authority beyond the PM.
+- Include product, customer, and adoption risks where relevant.
+- If a major risk area cannot be evaluated, record it in Not Assessed.
+- Prefer fewer high-quality risks over many generic risks.
+
+Do not generate more than:
+- 5 assumptions
+- 8 risks (Medium)
+- 12 risks (High)
+- 5 decisions
+- 5 unknowns
 
 ---
 
 # Output Format
 
----
-
 ## RISK ANALYSIS
 
 **Project:** [Name] | **Phase:** [Phase] | **Date:** [Today]
+
 **Depth:** Low / Medium / High | **Recent changes assessed:** Yes / No
 
 ---
 
 ### Overall Verdict
 
-🔴 High / 🟡 Medium / 🟢 Low
+Risk Level: 🔴 High / 🟡 Medium / 🟢 Low
 
-[2-3 sentences: dominant risk theme, whether the project is healthy for its current phase, what needs to change if not.]
+Recommendation:
+- Proceed
+- Proceed with Conditions
+- Escalate
+- Pause
+
+
+Conditions:
+[List only for Proceed with Conditions]
+
+[2-3 sentences covering dominant risk theme, project health, and rationale.]
+
+---
+
+### Key Assumptions
+*(Medium/High depth only)*
+
+| Assumption | Confidence | Risk if Wrong |
+|---|---|---|
+| [Statement] | High/Medium/Low | [Consequence] |
+
+Maximum 5 assumptions.
+
+---
+
+### Top Risk Snapshot
+*(Low depth only)*
+
+1. [Most significant risk]
+2. [Second most significant risk]
+3. [Third most significant risk]
+
+Maximum 3 items.
 
 ---
 
@@ -90,58 +184,60 @@ Every Hard-detectability risk needs a **trigger signal** - a specific observable
 
 | # | Risk | Category | Likelihood | Impact | Priority | Detectability | Velocity | Response | Owner | Proximity |
 |---|---|---|---|---|---|---|---|---|---|---|
-| R1 | [Event - not a label] | Delivery/Technical/Stakeholder/Business | H/M/L | H/M/L | 🔴/🟡/🟢 | Easy/Moderate/Hard | Fast/Medium/Slow | [Type] | [Role] | [Week 1-2/Month 1/Later] |
+| R1 | [Event - not a label] | Product/Customer/Adoption/Delivery/Technical/Security/Compliance/Operational/Dependency/Stakeholder/Business | H/M/L | H/M/L | 🔴/🟡/🟢 | Easy/Moderate/Hard | Fast/Medium/Slow | [Type] | [Role] | [Week 1-2 / Month 1 / Later] |
 
 ---
 
 ### Top Risks - Detail
-This should be in table format. 
-*(every 🔴 risk; if none, top 2 🟡)*
+*(Every 🔴 risk; if none, top 2 🟡)*
 
 **R[N] - [Name]**
-*What could happen:* [Specific bad outcome]
-*Why exposed:* [What makes this real for this project]
-*Trigger signal:* [Observable event that confirms the risk has activated - required for Hard detectability]
-*Velocity:* [How fast it escalates and why]
-*Risk score:* [Qualitative one-liner]
-*Action:* [Who does what by when]
 
----
+- What could happen: [Specific bad outcome]
+- Root cause: [Underlying reason]
+- Why exposed: [Project-specific context]
+- Trigger signal: [Observable event]
+- Velocity: [How quickly it escalates]
+- Risk score: [Qualitative summary]
+- Action: [Who does what by when]
 
-### Validation Experiments
-*(Medium/High depth only - High-impact risks where the outcome is genuinely uncertain)*
-
-| Risk | Experiment | What We're Testing | Expected Learning | By |
-|---|---|---|---|---|
-| [Name] | Spike/Prototype/Pilot/Data pull | [Assumption being tested] | [What we'll know] | [Hard date] |
 
 ---
 
 ### Stakeholder Summary
-*(Medium/High depth - written for sponsor, not PM)*
+*(Medium/High depth only)*
 
 > "We are at risk of [outcome] due to [cause]. Recommended action: [next step]."
 
-One line per top risk. Plain language. No jargon.
+Summarise the major themes, trade-offs, and leadership implications.
+
+Do not simply repeat risks.
+
+Summarise themes, trade-offs, and leadership implications.
 
 ---
 
 ### Prioritisation Reasoning
 *(High depth only)*
 
-Explain why top risks are ranked as they are - especially where velocity or detectability overrides a lower probability score.
+Explain why top risks are ranked as they are, especially where detectability or velocity elevates priority.
 
 ---
 
 ### Decisions Needed
 
-| Decision | Owner | By |
-|---|---|---|
-| [Requires authority above PM] | [Role] | [Date] |
+| Decision | Owner | By | Impact if Delayed |
+|---|---|---|---|
+| [Requires authority above PM] | [Role] | [Date] | [Delivery / Cost / Compliance / Launch impact] |
 
 ---
 
 ### Not Assessed
 
-- [Area - why it couldn't be evaluated from available information]
+Rank unknowns by potential impact.
 
+**Critical Unknowns**
+- [Area and reason]
+
+**Secondary Unknowns**
+- [Area and reason]

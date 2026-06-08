@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useReducer, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
+import { Paperclip, X } from "lucide-react";
 import {
   type OrchestrationPlan,
   type PlanStep,
   type PlanStepState,
+  type SkillExecution,
   type SkillExecutionRequest,
   type SkillId,
 } from "@/types/pm";
@@ -18,11 +20,9 @@ import { Badge } from "@/components/ui/badge";
  * OrchestratorConsole - the "/pm" console.
  *
  * Flow:
- *   1. Paste a message / drop a transcript -> Run orchestrator -> a plan appears.
- *   2. Every suggested step starts Approved; the user toggles Approve/Skip
- *      (reversible) per step. Nothing is generated yet.
- *   3. "Complete Orchestration" -> the AI generates the approved sections;
- *      skipped sections are created blank (addable later from the left nav).
+ *   1. Paste a message / upload a PDF / drop a file → Run orchestrator → plan appears.
+ *   2. Every suggested step starts Approved; the user toggles Approve/Skip per step.
+ *   3. "Complete Orchestration" → Claude generates approved sections; skipped are blank.
  */
 
 type Decision = "approved" | "skipped";
@@ -31,17 +31,16 @@ export interface OrchestratorConsoleProps {
   clientId?: string;
   projectId?: string;
   api: OrchestratorApi;
-  /** View a generated (or blank) section in the canvas after completion. */
   onViewSkill?: (skill: SkillId) => void;
-  /** Finish: hand the per-skill decisions to the store to generate artifacts. */
-  onComplete?: (decisions: Record<SkillId, Decision>) => void;
-  /** True when this project's orchestration is already done (shows a hub). */
+  onComplete?: (
+    decisions: Record<SkillId, Decision>,
+    claudeExecutions?: Partial<Record<SkillId, SkillExecution>>,
+  ) => void;
   orchestrated?: boolean;
-  /** Pre-fill the input box (mock/demo). */
   defaultInput?: string;
 }
 
-/* ----------------------------- reducer ----------------------------- */
+/* ─── reducer ───────────────────────────────────────────────────────── */
 
 interface PlanState { plan: OrchestrationPlan | null; }
 type PlanAction =
@@ -51,8 +50,7 @@ type PlanAction =
 
 function planReducer(state: PlanState, action: PlanAction): PlanState {
   switch (action.type) {
-    case "set-plan":
-      return { plan: action.plan };
+    case "set-plan": return { plan: action.plan };
     case "set-step":
       if (!state.plan) return state;
       return {
@@ -61,14 +59,30 @@ function planReducer(state: PlanState, action: PlanAction): PlanState {
           steps: state.plan.steps.map((s) => (s.id === action.stepId ? { ...s, state: action.state } : s)),
         },
       };
-    case "reset":
-      return { plan: null };
-    default:
-      return state;
+    case "reset": return { plan: null };
+    default: return state;
   }
 }
 
-/* ----------------------------- component ----------------------------- */
+/* ─── PDF extraction ─────────────────────────────────────────────────── */
+
+async function extractPdfText(file: File): Promise<string> {
+  const { getDocument, GlobalWorkerOptions } = await import("pdfjs-dist");
+  // Point the worker at the bundled worker file via CDN to avoid complex bundling
+  GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${(await import("pdfjs-dist")).version}/build/pdf.worker.min.mjs`;
+
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await getDocument({ data: arrayBuffer }).promise;
+  const pages: string[] = [];
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    pages.push(content.items.map((item) => ("str" in item ? item.str : "")).join(" "));
+  }
+  return pages.join("\n\n");
+}
+
+/* ─── component ──────────────────────────────────────────────────────── */
 
 export function OrchestratorConsole({
   clientId, projectId, api, onViewSkill, onComplete, orchestrated, defaultInput = "",
@@ -76,24 +90,69 @@ export function OrchestratorConsole({
   const [input, setInput] = useState(defaultInput);
   const [dragging, setDragging] = useState(false);
   const [attachments, setAttachments] = useState<File[]>([]);
+  const [extracting, setExtracting] = useState(false);
   const [{ plan }, dispatch] = useReducer(planReducer, { plan: null });
   const [completing, setCompleting] = useState(false);
+  const [completingStep, setCompletingStep] = useState<string | null>(null);
   const [completed, setCompleted] = useState(false);
   const [rerun, setRerun] = useState(false);
+  const [completionError, setCompletionError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Switching projects clears any in-progress plan (state is per project).
+  // When the active project changes, reset ALL per-project state so a new
+  // project always starts with a blank console — not with the previous
+  // project's input or the demo pre-fill.
   useEffect(() => {
     dispatch({ type: "reset" });
     setCompleted(false);
     setRerun(false);
+    setCompletionError(null);
+    setInput("");
+    setAttachments([]);
   }, [projectId]);
 
   const canRun = Boolean(input.trim() && clientId && projectId);
-
-  // Already-orchestrated project with no active plan -> show the hub, not the plan.
   const showHub = !!orchestrated && !plan && !rerun;
 
-  /* --- Run the orchestrator: build the plan (every step starts Approved) --- */
+  /* ── handle files (drag-drop or file input) ── */
+  const handleFiles = useCallback(async (files: File[]) => {
+    const pdfs = files.filter((f) => f.type === "application/pdf");
+    const others = files.filter((f) => f.type !== "application/pdf");
+    setAttachments((prev) => [...prev, ...others]);
+
+    for (const pdf of pdfs) {
+      setExtracting(true);
+      try {
+        const text = await extractPdfText(pdf);
+        // Replace if the textarea is empty; otherwise append below a divider.
+        setInput((prev) => {
+          const trimmed = prev.trim();
+          return trimmed ? `${trimmed}\n\n---\n\n${text}` : text;
+        });
+        setAttachments((prev) => [...prev, pdf]);
+      } catch (e) {
+        console.error("PDF extraction failed:", e);
+        setAttachments((prev) => [...prev, pdf]);
+      } finally {
+        setExtracting(false);
+      }
+    }
+  }, []);
+
+  const onDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    handleFiles(Array.from(e.dataTransfer.files));
+  }, [handleFiles]);
+
+  const onFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.length) {
+      handleFiles(Array.from(e.target.files));
+      e.target.value = "";
+    }
+  }, [handleFiles]);
+
+  /* ── plan mutation ── */
   const planMutation = useMutation({
     mutationFn: async () => {
       const req: SkillExecutionRequest = {
@@ -113,6 +172,7 @@ export function OrchestratorConsole({
         plan: { ...p, steps: p.steps.map((s) => ({ ...s, state: "approved" as PlanStepState })) },
       });
       setCompleted(false);
+      setCompletionError(null);
     },
   });
 
@@ -120,24 +180,37 @@ export function OrchestratorConsole({
     dispatch({ type: "set-step", stepId: step.id, state });
   }, []);
 
-  /* --- Complete: "generate" the approved sections, leave skipped ones blank --- */
+  /* ── complete: run Claude for each approved step ── */
   const complete = async () => {
     if (!plan) return;
     setCompleting(true);
-    await new Promise((r) => setTimeout(r, 700)); // simulate AI generation
+    setCompletionError(null);
+
+    const approvedSteps = plan.steps.filter((s) => s.state !== "skipped");
+    const claudeExecutions: Partial<Record<SkillId, SkillExecution>> = {};
+
+    for (const step of approvedSteps) {
+      setCompletingStep(skillTitle(step.skill));
+      const ctrl = new AbortController();
+      try {
+        const execution = await api.streamStep(plan.id, step, () => {}, ctrl.signal);
+        claudeExecutions[step.skill] = execution;
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        // Surface the first error but continue with remaining steps
+        if (!completionError) setCompletionError(msg);
+      }
+    }
+
+    setCompletingStep(null);
     const decisions = Object.fromEntries(
       plan.steps.map((s) => [s.skill, s.state === "skipped" ? "skipped" : "approved"]),
     ) as Record<SkillId, Decision>;
-    onComplete?.(decisions);
+
+    onComplete?.(decisions, Object.keys(claudeExecutions).length > 0 ? claudeExecutions : undefined);
     setCompleting(false);
     setCompleted(true);
   };
-
-  const onDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setDragging(false);
-    setAttachments((prev) => [...prev, ...Array.from(e.dataTransfer.files)]);
-  }, []);
 
   const reset = () => {
     dispatch({ type: "reset" });
@@ -145,6 +218,7 @@ export function OrchestratorConsole({
     setInput("");
     setAttachments([]);
     setCompleted(false);
+    setCompletionError(null);
   };
 
   const approvedCount = plan ? plan.steps.filter((s) => s.state !== "skipped").length : 0;
@@ -154,7 +228,7 @@ export function OrchestratorConsole({
 
   return (
     <div className="flex flex-col gap-4">
-      {/* ---------- Input surface (drag-drop + paste) ---------- */}
+      {/* ── Input surface ── */}
       <div
         onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
         onDragLeave={() => setDragging(false)}
@@ -168,38 +242,72 @@ export function OrchestratorConsole({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           rows={6}
-          placeholder="Paste a client message, meeting transcript, or brief - or drop a .txt/.md transcript here."
+          placeholder="Paste a stakeholder message, meeting transcript, PRD, or requirements — or drop a PDF here."
           className="w-full resize-none bg-transparent text-sm leading-relaxed outline-none placeholder:text-muted-foreground"
         />
+
+        {extracting && (
+          <p className="mt-1 text-xs text-muted-foreground animate-pulse">Extracting PDF text…</p>
+        )}
 
         {attachments.length > 0 && (
           <ul className="mt-2 flex flex-wrap gap-1.5">
             {attachments.map((f, i) => (
-              <li key={i} className="rounded-md border border-border bg-muted px-2 py-1 text-xs">{f.name}</li>
+              <li key={i} className="flex items-center gap-1 rounded-md border border-border bg-muted px-2 py-1 text-xs">
+                {f.name}
+                <button
+                  type="button"
+                  onClick={() => setAttachments((prev) => prev.filter((_, j) => j !== i))}
+                  className="ml-0.5 text-muted-foreground hover:text-foreground"
+                  aria-label="Remove attachment"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </li>
             ))}
           </ul>
         )}
 
         <div className="mt-3 flex items-center justify-between">
-          <p className="text-xs text-muted-foreground">
-            {clientId && projectId ? "Orchestrator will plan the right skills." : "Select a client & project to begin."}
-          </p>
+          <div className="flex items-center gap-2">
+            {/* Hidden file input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.txt,.md"
+              multiple
+              className="hidden"
+              onChange={onFileChange}
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              title="Attach a PDF, TXT, or MD file"
+              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+            >
+              <Paperclip className="h-3.5 w-3.5" />
+              Attach PDF
+            </button>
+            <span className="text-xs text-muted-foreground">
+              {clientId && projectId ? "Orchestrator will plan the right skills." : "Select a client & project first."}
+            </span>
+          </div>
           <div className="flex gap-2">
             {plan && <Button variant="ghost" size="sm" onClick={reset}>Reset</Button>}
-            <Button size="sm" disabled={!canRun || planMutation.isPending} onClick={() => planMutation.mutate()}>
-              {planMutation.isPending ? "Planning..." : "Run orchestrator"}
+            <Button size="sm" disabled={!canRun || planMutation.isPending || extracting} onClick={() => planMutation.mutate()}>
+              {planMutation.isPending ? "Planning…" : "Run orchestrator"}
             </Button>
           </div>
         </div>
       </div>
 
-      {/* ---------- Planning state ---------- */}
+      {/* ── States ── */}
       {planMutation.isPending && <PlanSkeleton />}
       {planMutation.isError && (
         <ErrorCard message={(planMutation.error as Error).message} onRetry={() => planMutation.mutate()} />
       )}
 
-      {/* ---------- Step-by-step plan (decide, then complete) ---------- */}
+      {/* ── Step-by-step plan ── */}
       {plan && (
         <div className="rounded-xl border border-border bg-card p-4 shadow-card">
           <div className="mb-3 flex items-center justify-between">
@@ -224,6 +332,7 @@ export function OrchestratorConsole({
                     step={step}
                     index={i}
                     completed={completed}
+                    completing={completing && completingStep === skillTitle(step.skill)}
                     onApprove={() => setDecision(step, "approved")}
                     onSkip={() => setDecision(step, "skipped")}
                     onView={() => onViewSkill?.(step.skill)}
@@ -233,21 +342,28 @@ export function OrchestratorConsole({
             </AnimatePresence>
           </ol>
 
-          {/* ---------- Complete / completed footer ---------- */}
+          {/* ── Footer ── */}
           {!completed ? (
             <div className="mt-4 flex items-center justify-between gap-3 border-t border-border pt-3">
               <p className="text-xs text-muted-foreground">
-                {approvedCount} approved, {skippedCount} skipped. Skipped sections are created blank and can be added later.
+                {completing
+                  ? completingStep ? `Generating ${completingStep}…` : "Finishing up…"
+                  : `${approvedCount} approved, ${skippedCount} skipped.`}
               </p>
-              <Button size="sm" onClick={complete} disabled={completing}>
-                {completing ? "Generating..." : "Complete Orchestration"}
+              <Button size="sm" onClick={complete} disabled={completing || approvedCount === 0}>
+                {completing ? "Generating…" : "Complete Orchestration"}
               </Button>
             </div>
           ) : (
-            <div className="mt-4 border-t border-border pt-3">
+            <div className="mt-4 border-t border-border pt-3 space-y-1">
               <p className="text-xs text-status-success">
-                Orchestration complete. Approved sections generated; skipped ones are blank. Pick a skill on the left - skipped ones can be generated from there anytime.
+                Orchestration complete. Pick a skill on the left to view the output.
               </p>
+              {completionError && (
+                <p className="text-xs text-status-danger">
+                  Some steps encountered errors: {completionError}
+                </p>
+              )}
             </div>
           )}
         </div>
@@ -256,25 +372,26 @@ export function OrchestratorConsole({
   );
 }
 
-/* ----------------------------- step card ----------------------------- */
+/* ─── step card ─────────────────────────────────────────────────────── */
 
 const STEP_DOT: Record<PlanStepState, string> = {
-  pending: "border-border bg-card",
+  pending:  "border-border bg-card",
   approved: "border-status-info bg-status-info-bg",
-  running: "border-status-info bg-status-info animate-pulse",
-  done: "border-status-success bg-status-success",
-  skipped: "border-status-na bg-status-na-bg",
-  failed: "border-status-danger bg-status-danger",
+  running:  "border-status-info bg-status-info animate-pulse",
+  done:     "border-status-success bg-status-success",
+  skipped:  "border-status-na bg-status-na-bg",
+  failed:   "border-status-danger bg-status-danger",
 };
 
 const SEG = "rounded px-2.5 py-1 text-xs font-medium transition-colors";
 
 function StepCard({
-  step, index, completed, onApprove, onSkip, onView,
+  step, index, completed, completing, onApprove, onSkip, onView,
 }: {
   step: PlanStep;
   index: number;
   completed: boolean;
+  completing: boolean;
   onApprove: () => void;
   onSkip: () => void;
   onView: () => void;
@@ -285,7 +402,7 @@ function StepCard({
       <span
         className={cn(
           "absolute -left-[3px] mt-1 grid h-[18px] w-[18px] -translate-x-1/2 place-items-center rounded-full border-2",
-          STEP_DOT[step.state],
+          completing ? "border-status-info bg-status-info animate-pulse" : STEP_DOT[step.state],
         )}
         aria-hidden
       />
@@ -301,7 +418,6 @@ function StepCard({
 
         <div className="flex shrink-0 items-center gap-1.5">
           {!completed ? (
-            // Reversible Approve / Skip toggle - click either at any time.
             <div className="flex rounded-md border border-border p-0.5" role="group" aria-label="Approve or skip">
               <button
                 type="button"
@@ -334,14 +450,14 @@ function StepCard({
   );
 }
 
-/* ----------------------------- helpers ----------------------------- */
+/* ─── helpers ────────────────────────────────────────────────────────── */
 
 function OrchestratedHub({ onRerun }: { onRerun: () => void }) {
   return (
     <div className="rounded-xl border border-border bg-card p-6 shadow-card">
       <p className="text-sm font-semibold">Project orchestrated</p>
       <p className="mt-1 text-sm text-muted-foreground">
-        This project is set up. Pick a skill on the left to view or edit it - skipped sections are marked and can be added anytime.
+        This project is set up. Pick a skill on the left to view or edit it — skipped sections can be generated from there anytime.
       </p>
       <Button variant="outline" size="sm" className="mt-4" onClick={onRerun}>Re-run orchestration</Button>
     </div>
