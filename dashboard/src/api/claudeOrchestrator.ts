@@ -1,8 +1,8 @@
 /**
  * Live Claude orchestrator — calls api.anthropic.com via the local Vite proxy
- * at /api/claude/v1/messages. The user's API key is stored in localStorage
- * (persisted by the connector system) and forwarded as a request header; it
- * never leaves the local machine.
+ * at /api/claude/v1/messages. The user's API key is stored in sessionStorage
+ * (persisted by the connector system, cleared when the tab closes) and
+ * forwarded as a request header; it never leaves the local machine.
  *
  * Skill system prompts are loaded from `virtual:skill-prompts` — a Vite virtual
  * module that reads every skills/<id>/SKILL.md + reference.md at dev-server
@@ -24,7 +24,7 @@ const CONNECTOR_KEY = "ai-pm-connector-apis";
 
 export function getClaudeApiKey(): string | null {
   try {
-    const raw = localStorage.getItem(CONNECTOR_KEY);
+    const raw = sessionStorage.getItem(CONNECTOR_KEY);
     if (!raw) return null;
     const apis = JSON.parse(raw) as Record<string, { token?: string }>;
     return apis["claude"]?.token ?? null;
@@ -37,6 +37,7 @@ async function callClaude(
   systemPrompt: string,
   userContent: string,
   maxTokens = 4096,
+  signal?: AbortSignal,
 ): Promise<string> {
   const res = await fetch("/api/claude/v1/messages", {
     method: "POST",
@@ -50,6 +51,7 @@ async function callClaude(
       system: systemPrompt,
       messages: [{ role: "user", content: userContent }],
     }),
+    ...(signal ? { signal } : {}),
   });
 
   if (!res.ok) {
@@ -139,11 +141,12 @@ export const claudeApi: OrchestratorApi = {
       status: "awaiting-approval",
     };
 
+    activePlans.clear();        // only the latest plan is ever active
     activePlans.set(plan.id, req);
     return plan;
   },
 
-  async streamStep(planId, step, onChunk, signal) {
+  async streamStep(planId, step, _onChunk, signal) {
     const apiKey = getClaudeApiKey();
     if (!apiKey) throw new Error("No Claude API key configured.");
 
@@ -155,34 +158,7 @@ export const claudeApi: OrchestratorApi = {
     const skillSystem = SKILL_PROMPTS[step.skill]
       ?? `You are a senior PM. Generate a structured ${step.skill} artefact from the input provided.`;
 
-    const res = await fetch("/api/claude/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-claude-api-key": apiKey,
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 4096,
-        system: skillSystem,
-        messages: [{ role: "user", content: input }],
-      }),
-      signal,
-    });
-
-    if (!res.ok) {
-      const detail = await res.text().catch(() => res.statusText);
-      throw new Error(`Claude API ${res.status}: ${detail}`);
-    }
-
-    const data = await res.json() as { content: { type: string; text: string }[] };
-    const markdown = data.content.find((c) => c.type === "text")?.text ?? "";
-
-    // Feed tokens to the chunk handler so the caller can show streaming progress
-    for (const token of markdown.split(/(\s+)/)) {
-      if (signal.aborted) break;
-      onChunk({ executionId: `exec-${step.id}`, status: "streaming", delta: token });
-    }
+    const markdown = await callClaude(apiKey, skillSystem, input, 4096, signal);
 
     const now = new Date().toISOString();
     return {

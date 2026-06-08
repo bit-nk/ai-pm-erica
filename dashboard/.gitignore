@@ -4,3 +4,9 @@ dist-ssr
 *.local
 .vite
 *.tsbuildinfo
+
+# Emitted config artifacts (tsc -b of vite/tailwind configs)
+vite.config.js
+vite.config.d.ts
+tailwind.config.js
+tailwind.config.d.ts

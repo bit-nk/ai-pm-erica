@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   CartesianGrid, Cell, ReferenceArea, ResponsiveContainer,
   Scatter, ScatterChart, Tooltip, XAxis, YAxis,
 } from "recharts";
+import { Sparkles } from "lucide-react";
 import {
-  type RiskScanPayload, type Priority, type HML, type StatusTone, type RagStatus,
+  type RiskScanPayload, type RiskEntry, type Priority, type HML, type StatusTone, type RagStatus,
   PRIORITY_TONE,
 } from "@/types/pm";
 import { cn } from "@/lib/utils";
+import { useWorkspace } from "@/store/workspace";
+import { Button } from "@/components/ui/button";
 import { StatusBadge } from "./StatusBadge";
 
 const PRIORITY_FILL: Record<Priority, string> = {
@@ -25,18 +28,42 @@ const RAG_TONE: Record<RagStatus, StatusTone> = { red: "danger", amber: "warning
 
 /** /risk-scan : matrix + scored register, filterable by priority (click a chip). */
 export function RiskScanView({ payload }: { payload: RiskScanPayload }) {
+  const ws = useWorkspace();
+  // Was the visualisation generated during orchestration (or for a pre-built project)?
+  const vizApproved = !!(ws.activeProjectId && ws.riskVizApproved[ws.activeProjectId]);
   const [pri, setPri] = useState<Priority | null>(null);
+  const [showDash, setShowDash] = useState(vizApproved);
+  useEffect(() => { if (vizApproved) setShowDash(true); }, [vizApproved]);
   const register = pri ? payload.register.filter((r) => r.priority === pri) : payload.register;
+
+  const generate = () => {
+    setShowDash(true);
+    if (ws.activeProjectId) ws.setRiskViz(ws.activeProjectId, true);
+  };
 
   return (
     <div className="space-y-4">
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between gap-2">
         <div>
           <p className="text-xs uppercase tracking-wide text-muted-foreground">Risk Analysis - {payload.project}</p>
           <p className="text-sm text-muted-foreground">Phase: {payload.phase} - Depth: {payload.depth}</p>
         </div>
-        <StatusBadge tone={RAG_TONE[payload.verdict]}>{payload.verdict.toUpperCase()} RISK</StatusBadge>
+        <div className="flex shrink-0 items-center gap-2">
+          {vizApproved ? (
+            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setShowDash((v) => !v)}>
+              <Sparkles className="h-3.5 w-3.5" /> {showDash ? "Hide dashboard" : "Show dashboard"}
+            </Button>
+          ) : (
+            // Visuals were skipped at orchestration: offer on-demand generation.
+            <Button size="sm" variant="outline" className="gap-1.5" onClick={generate}>
+              <Sparkles className="h-3.5 w-3.5" /> Generate dashboard
+            </Button>
+          )}
+          <StatusBadge tone={RAG_TONE[payload.verdict]}>{payload.verdict.toUpperCase()} RISK</StatusBadge>
+        </div>
       </div>
+
+      {showDash && <ExecutiveDashboard register={payload.register} />}
 
       <div className="rounded-xl border border-border bg-card p-3 shadow-card">
         <p className="mb-2 text-xs font-medium text-muted-foreground">Likelihood x Impact</p>
@@ -126,6 +153,83 @@ export function RiskScanView({ payload }: { payload: RiskScanPayload }) {
             )}
           </tbody>
         </table>
+      </div>
+    </div>
+  );
+}
+
+/* ── visualisation skill: executive dashboard from the risk register ── */
+
+const RAG_OF: Record<Priority, RagStatus> = { "act-now": "red", monitor: "amber", contingency: "amber", log: "green" };
+
+function countBy(arr: RiskEntry[], key: (r: RiskEntry) => string): [string, number][] {
+  const m = new Map<string, number>();
+  for (const r of arr) { const k = (key(r) || "-").trim() || "-"; m.set(k, (m.get(k) ?? 0) + 1); }
+  return [...m.entries()].sort((a, b) => b[1] - a[1]);
+}
+
+/** The `visualisation` skill rendered: summary cards + category/owner/urgency. */
+function ExecutiveDashboard({ register }: { register: RiskEntry[] }) {
+  const total = register.length;
+  const reds = register.filter((r) => RAG_OF[r.priority] === "red").length;
+  const ambers = register.filter((r) => RAG_OF[r.priority] === "amber").length;
+  const greens = register.filter((r) => RAG_OF[r.priority] === "green").length;
+  const byCat = countBy(register, (r) => r.category);
+  const byOwner = countBy(register, (r) => r.owner);
+  const PROX_ORDER = ["Week 1-2", "Month 1", "Month 2-3", "Later"];
+  const timeline = PROX_ORDER.map((p) => [p, register.filter((r) => (r.proximity ?? "Later") === p).length] as [string, number]);
+  const topCat = byCat[0]?.[0] ?? "-";
+
+  return (
+    <div className="space-y-3 rounded-xl border border-accent/40 bg-muted/20 p-3">
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Executive dashboard</p>
+
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+        <Stat label="Total" value={total} />
+        <Stat label="Red" value={reds} tone="danger" />
+        <Stat label="Amber" value={ambers} tone="warning" />
+        <Stat label="Green" value={greens} tone="success" />
+        <Stat label="Top category" value={topCat} />
+      </div>
+
+      <Distribution title="Risk timeline (by proximity)" data={timeline} total={total} />
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Distribution title="Category distribution" data={byCat} total={total} />
+        <Distribution title="Ownership distribution" data={byOwner} total={total} />
+      </div>
+    </div>
+  );
+}
+
+function Stat({ label, value, tone }: { label: string; value: number | string; tone?: StatusTone }) {
+  return (
+    <div className="rounded-lg border border-border bg-card p-2 text-center">
+      <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
+      {tone ? (
+        <StatusBadge tone={tone} className="mt-1 text-sm">{value}</StatusBadge>
+      ) : (
+        <p className="mt-0.5 truncate text-sm font-semibold">{value}</p>
+      )}
+    </div>
+  );
+}
+
+function Distribution({ title, data, total }: { title: string; data: [string, number][]; total: number }) {
+  return (
+    <div className="rounded-lg border border-border bg-card p-3">
+      <p className="mb-2 text-xs font-medium">{title}</p>
+      <div className="space-y-1.5">
+        {data.map(([label, n]) => (
+          <div key={label} className="flex items-center gap-2 text-xs">
+            <span className="w-24 shrink-0 truncate text-muted-foreground" title={label}>{label}</span>
+            <div className="h-3 flex-1 overflow-hidden rounded-full bg-muted">
+              <div className="h-full rounded-full bg-status-info" style={{ width: `${total ? (n / total) * 100 : 0}%` }} />
+            </div>
+            <span className="w-4 shrink-0 text-right tabular-nums">{n}</span>
+          </div>
+        ))}
+        {data.length === 0 && <p className="text-xs text-muted-foreground">No data.</p>}
       </div>
     </div>
   );

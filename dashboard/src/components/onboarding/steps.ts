@@ -76,6 +76,7 @@ const DECISION_AREA = ["Scope", "Timeline", "Budget", "Architecture", "Team", "P
 const CHANGE_STATUS = ["Proposed", "Under Review", "Approved", "Rejected"];
 const RISK_CATEGORY = ["Delivery", "Technical", "Stakeholder", "Business"];
 const RISK_RESPONSE = ["Mitigate", "Transfer", "Avoid", "Accept", "Escalate"];
+const RISK_PROXIMITY = ["Week 1-2", "Month 1", "Month 2-3", "Later"];
 const DETECT = ["Easy", "Moderate", "Hard"];
 const VELOCITY = ["Fast", "Medium", "Slow"];
 const RELEASE_TYPE = ["planned", "hotfix", "phased", "feature-flag"];
@@ -108,6 +109,7 @@ export const STEPS: OnbStep[] = [
       { name: "velocity", label: "Velocity", kind: "select", options: VELOCITY },
       { name: "priority", label: "Priority", kind: "select", options: RISK_PRIORITY },
       { name: "response", label: "Response", kind: "select", options: RISK_RESPONSE },
+      { name: "proximity", label: "Proximity", kind: "select", options: RISK_PROXIMITY },
       { name: "owner", label: "Owner", kind: "text", placeholder: "Who owns it" },
     ]},
   ]},
@@ -444,11 +446,11 @@ export const TEST_DATA: OnbData = {
   },
   "risk-scan": {
     risks: [
-      { risk: "6-week deadline unachievable for full scope", category: "Delivery", likelihood: "H", impact: "H", detectability: "Easy", velocity: "Fast", priority: "Act now", response: "Mitigate", owner: "PM" },
-      { risk: "Real-time needs event streaming infra not in place", category: "Technical", likelihood: "M", impact: "H", detectability: "Hard", velocity: "Fast", priority: "Act now", response: "Escalate", owner: "Tech Lead" },
-      { risk: "Notification channel scope expands mid-sprint", category: "Business", likelihood: "H", impact: "M", detectability: "Moderate", velocity: "Medium", priority: "Monitor", response: "Mitigate", owner: "PM" },
-      { risk: "$80k budget insufficient if webhook infra needed", category: "Business", likelihood: "M", impact: "H", detectability: "Moderate", velocity: "Slow", priority: "Contingency", response: "Transfer", owner: "PM" },
-      { risk: "Per-client config complexity underestimated", category: "Technical", likelihood: "M", impact: "M", detectability: "Moderate", velocity: "Slow", priority: "Monitor", response: "Mitigate", owner: "PM" },
+      { risk: "6-week deadline unachievable for full scope", category: "Delivery", likelihood: "H", impact: "H", detectability: "Easy", velocity: "Fast", priority: "Act now", response: "Mitigate", proximity: "Week 1-2", owner: "PM" },
+      { risk: "Real-time needs event streaming infra not in place", category: "Technical", likelihood: "M", impact: "H", detectability: "Hard", velocity: "Fast", priority: "Act now", response: "Escalate", proximity: "Week 1-2", owner: "Tech Lead" },
+      { risk: "Notification channel scope expands mid-sprint", category: "Business", likelihood: "H", impact: "M", detectability: "Moderate", velocity: "Medium", priority: "Monitor", response: "Mitigate", proximity: "Month 1", owner: "PM" },
+      { risk: "$80k budget insufficient if webhook infra needed", category: "Business", likelihood: "M", impact: "H", detectability: "Moderate", velocity: "Slow", priority: "Contingency", response: "Transfer", proximity: "Month 2-3", owner: "PM" },
+      { risk: "Per-client config complexity underestimated", category: "Technical", likelihood: "M", impact: "M", detectability: "Moderate", velocity: "Slow", priority: "Monitor", response: "Mitigate", proximity: "Month 1", owner: "PM" },
     ],
   },
   charter: {

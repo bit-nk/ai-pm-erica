@@ -3,20 +3,23 @@ import type {
   ClientContext, ConnectionStatus, ConnectorId, McpConnector, ProjectContext, SkillExecution, SkillId,
 } from "@/types/pm";
 
-/* ── Connector credential persistence (localStorage) ─────────────────── */
+/* ── Connector credential persistence (sessionStorage) ───────────────── */
+// Credentials (Claude key, Confluence token) are kept in sessionStorage, not
+// localStorage, so they are cleared when the tab closes and never persisted to
+// disk - a smaller window for a stolen key.
 const CONNECTOR_STORAGE_KEY = "ai-pm-connector-apis";
 
 type PersistedApis = Partial<Record<ConnectorId, { endpoint?: string; token?: string }>>;
 
 function loadPersistedApis(): PersistedApis {
   try {
-    const raw = localStorage.getItem(CONNECTOR_STORAGE_KEY);
+    const raw = sessionStorage.getItem(CONNECTOR_STORAGE_KEY);
     return raw ? (JSON.parse(raw) as PersistedApis) : {};
   } catch { return {}; }
 }
 
 function persistApis(apis: PersistedApis) {
-  try { localStorage.setItem(CONNECTOR_STORAGE_KEY, JSON.stringify(apis)); }
+  try { sessionStorage.setItem(CONNECTOR_STORAGE_KEY, JSON.stringify(apis)); }
   catch { /* storage unavailable — in-memory only */ }
 }
 
@@ -34,6 +37,7 @@ import { STEPS, TEST_DATA, RECORD_NOUN, type StepValues } from "@/components/onb
 import { RECORD_SEEDS } from "@/components/onboarding/recordSeeds";
 import { buildExecution } from "@/components/onboarding/buildArtifact";
 import { ACME_DATA } from "@/data/acmeData";
+import { PORTAL_DATA } from "@/data/portalData";
 
 /** A single named record for a multi-record skill (a meeting, a sprint, etc.). */
 export interface ArtifactRecord {
@@ -96,6 +100,10 @@ interface WorkspaceValue {
   orchestratedProjects: string[];
   /** Per-project, per-skill orchestration decision (drives the nav indicators). */
   skillStatus: SkillStatusMap;
+  /** Per-project: was the risk-scan visualisation/dashboard generated? */
+  riskVizApproved: Record<string, boolean>;
+  /** Record the risk visualisation decision for a project. */
+  setRiskViz: (projectId: string, approved: boolean) => void;
   selectClient: (id: string) => void;
   selectProject: (id: string) => void;
   selectSkill: (id: SkillId) => void;
@@ -156,12 +164,25 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [editingSkill, setEditingSkill] = useState<SkillId | null>(null);
   const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
   const [records, setRecords] = useState<RecordsMap>({});
-  // Acme/Invoice Portal Rebuild ships pre-orchestrated; other projects start empty.
+  // All demo projects ship pre-orchestrated with stub data so they open populated.
   const [artifactValues, setArtifactValues] = useState<ArtifactValues>({
+    "p-notifications": { ...(TEST_DATA as Partial<Record<SkillId, StepValues>>) },
+    "p-portal": { ...(PORTAL_DATA as Partial<Record<SkillId, StepValues>>) },
     "p-rebuild": { ...(ACME_DATA as Partial<Record<SkillId, StepValues>>) },
   });
-  const [orchestratedProjects, setOrchestratedProjects] = useState<string[]>(["p-rebuild"]);
-  const [skillStatus, setSkillStatus] = useState<SkillStatusMap>({ "p-rebuild": ACME_APPROVED });
+  // Customer Portal + Acme ship pre-orchestrated (stub data visible). Real-time
+  // Notifications is left un-orchestrated so it demos the Run Orchestrator flow
+  // with a pre-filled prompt.
+  const [orchestratedProjects, setOrchestratedProjects] = useState<string[]>(["p-portal", "p-rebuild"]);
+  const [skillStatus, setSkillStatus] = useState<SkillStatusMap>({
+    "p-portal": ACME_APPROVED,
+    "p-rebuild": ACME_APPROVED,
+  });
+  // Pre-built projects have their risk dashboard available; Notifications decides at orchestration.
+  const [riskVizApproved, setRiskVizApproved] = useState<Record<string, boolean>>({ "p-portal": true, "p-rebuild": true });
+  const setRiskViz = useCallback((projectId: string, approved: boolean) => {
+    setRiskVizApproved((m) => ({ ...m, [projectId]: approved }));
+  }, []);
   // Claude-generated executions keyed as "${projectId}::${skill}"
   const [claudeExecMap, setClaudeExecMap] = useState<Record<string, import("@/types/pm").SkillExecution>>({});
 
@@ -244,7 +265,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   const setConnectorApi = useCallback((id: ConnectorId, patch: { endpoint?: string; token?: string }) => {
     setConnectors((cs) => cs.map((c) => (c.id === id ? { ...c, ...patch } : c)));
-    // Persist to localStorage so credentials survive page refreshes.
+    // Persist to sessionStorage so credentials survive a refresh within the tab.
     const saved = loadPersistedApis();
     if (!patch.endpoint && !patch.token) {
       delete saved[id];
@@ -388,14 +409,14 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const value = useMemo<WorkspaceValue>(
     () => ({
       clients, projects, connectors, activeClientId, activeProjectId, activeSkill, current, history,
-      editingSkill, editingRecordId, artifactValues, records, orchestratedProjects, skillStatus,
+      editingSkill, editingRecordId, artifactValues, records, orchestratedProjects, skillStatus, riskVizApproved, setRiskViz,
       selectClient, selectProject, selectSkill, pushExecution, showExecution,
       addClient, addProject, setConnectorStatus, setConnectorApi,
       beginEdit, endEdit, saveArtifactValues, completeOrchestration, previewSkill, generateSkill,
       ensureRecords, addRecord, updateRecordMeta, saveRecord, openRecord, setClaudeExecution,
     }),
     [clients, projects, connectors, activeClientId, activeProjectId, activeSkill, current, history,
-      editingSkill, editingRecordId, artifactValues, records, orchestratedProjects, skillStatus,
+      editingSkill, editingRecordId, artifactValues, records, orchestratedProjects, skillStatus, riskVizApproved, setRiskViz,
       selectClient, selectProject, selectSkill, pushExecution, showExecution,
       addClient, addProject, setConnectorStatus, setConnectorApi,
       beginEdit, endEdit, saveArtifactValues, completeOrchestration, previewSkill, generateSkill,
