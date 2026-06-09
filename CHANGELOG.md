@@ -4,6 +4,34 @@ All notable changes to AI PM Assistant are recorded here.
 
 ---
 
+## [3.1.0] - 2026-06-08
+
+v3.1 is **additive** to v3.0: it sharpens the live Claude orchestrator, splits
+risk visualisation into its own opt-in skill so the text scan and the dashboard
+no longer cost the same tokens, renders live Claude output as the same card
+artefacts the mock path produces, and hardens the client-only app. The CLI
+skills, the orchestration chain, and the output templates are unchanged.
+
+### Risk-scan visualisation as a separate skill
+1. The executive dashboard (summary cards, a risk timeline by proximity of Week 1-2 / Month 1 / Month 2-3 / Later, and category and ownership distributions) is now a distinct `risk-scan/visualisation` skill, derived client-side from the existing register so it makes no extra Claude call.
+2. The orchestration plan shows it as a nested sub-step under Risk Scan: it slides down only when Risk Scan is approved, with its own Approve/Skip; skipping Risk Scan defaults the sub-step to skip.
+3. When visuals are skipped, the risk view keeps a "Generate dashboard" button so the dashboard can be produced on demand later; when approved, it renders automatically with a Show/Hide toggle.
+4. Risk entries gained a `proximity` field so the timeline reflects when each risk is expected to bite rather than a velocity proxy.
+
+### Live orchestrator and document rendering
+1. Live Claude output for the nine document skills (triage, charter, discovery, PRD, sprint SOW, meeting notes, tech review, retrospective, stakeholder update) is now parsed into structured card sections (field grids, bullet lists, tables, paragraphs, and a stakeholder RAG banner) instead of raw markdown, matching the mock path.
+2. The orchestrator no longer waits on the API when no Claude key is set: it offers an immediate stub-data path so "Complete Orchestration" returns at once in demo mode.
+3. The Run Orchestrator input is pre-filled with the demo brief for the seeded Finwave project.
+4. Internal cleanups: a single `callClaude` helper with abort-signal support (removing a duplicated fetch and a dead fake-streaming loop), and the in-flight plan map is cleared per run so it cannot grow unbounded.
+
+### Security hardening
+1. Connector credentials (the Claude key and the Confluence token) now persist in `sessionStorage` rather than `localStorage`, so they are cleared when the tab closes and never written to disk.
+2. The production build injects a Content-Security-Policy meta tag (`default-src 'self'`, no inline scripts) into `index.html`; the dev server is left untouched so HMR still works.
+3. The dev-proxy SSRF guard is extracted to `src/lib/proxyGuard.ts` with a unit test covering IMDS, loopback, RFC-1918, IPv6 ULA, non-HTTPS, and unparseable URLs. The test surfaced and fixed a real gap: bracketed IPv6 hosts (`[::1]`, `[fd00::1]`) were bypassing the loopback and ULA checks.
+4. Build hygiene: `tsc -b` emits its config artefacts to a temp dir instead of the working tree, and the previously committed emitted `vite.config.js`/`tailwind.config.js` (+ `.d.ts`) files are removed and ignored.
+
+---
+
 ## [3.0.0] - 2026-06-01
 
 v3.0 adds a web dashboard for the AI PM Assistant. It is **additive**: the CLI

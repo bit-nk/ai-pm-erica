@@ -44,6 +44,7 @@ function buildRiskScan(values: StepValues): RiskScanPayload {
         velocity: (r.velocity || "Medium") as Velocity,
         priority, owner: r.owner?.trim() || "Unassigned",
         response: (r.response || "Mitigate") as RiskEntry["response"],
+        proximity: (r.proximity || undefined) as RiskEntry["proximity"],
       };
     });
   const matrix: RiskMatrixPoint[] = register.map((e) => ({

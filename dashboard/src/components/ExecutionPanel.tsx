@@ -48,6 +48,7 @@ export function ExecutionPanel() {
           api={api}
           onViewSkill={ws.previewSkill}
           onComplete={onComplete}
+          onVizDecision={(approved) => { if (ws.activeProjectId) ws.setRiskViz(ws.activeProjectId, approved); }}
           orchestrated={!!ws.activeProjectId && ws.orchestratedProjects.includes(ws.activeProjectId)}
           defaultInput={ws.activeProjectId === "p-notifications" ? DEMO_INPUT : ""}
         />

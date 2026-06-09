@@ -11,10 +11,12 @@ import {
   type SkillId,
 } from "@/types/pm";
 import { type OrchestratorApi } from "@/api/orchestrator";
+import { getClaudeApiKey } from "@/api";
 import { skillTitle } from "@/data/demo";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 /**
  * OrchestratorConsole - the "/pm" console.
@@ -36,6 +38,8 @@ export interface OrchestratorConsoleProps {
     decisions: Record<SkillId, Decision>,
     claudeExecutions?: Partial<Record<SkillId, SkillExecution>>,
   ) => void;
+  /** Records whether the risk-scan visualisation/dashboard should be generated. */
+  onVizDecision?: (approved: boolean) => void;
   orchestrated?: boolean;
   defaultInput?: string;
 }
@@ -85,7 +89,7 @@ async function extractPdfText(file: File): Promise<string> {
 /* ─── component ──────────────────────────────────────────────────────── */
 
 export function OrchestratorConsole({
-  clientId, projectId, api, onViewSkill, onComplete, orchestrated, defaultInput = "",
+  clientId, projectId, api, onViewSkill, onComplete, onVizDecision, orchestrated, defaultInput = "",
 }: OrchestratorConsoleProps) {
   const [input, setInput] = useState(defaultInput);
   const [dragging, setDragging] = useState(false);
@@ -96,6 +100,8 @@ export function OrchestratorConsole({
   const [completingStep, setCompletingStep] = useState<string | null>(null);
   const [completed, setCompleted] = useState(false);
   const [rerun, setRerun] = useState(false);
+  const [stubPrompt, setStubPrompt] = useState(false);
+  const [vizApproved, setVizApproved] = useState(true); // risk-scan dashboard sub-step
   const [completionError, setCompletionError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -107,8 +113,10 @@ export function OrchestratorConsole({
     setCompleted(false);
     setRerun(false);
     setCompletionError(null);
-    setInput("");
+    setInput(defaultInput); // pre-fill the demo input where one is provided
     setAttachments([]);
+    setVizApproved(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
 
   const canRun = Boolean(input.trim() && clientId && projectId);
@@ -181,7 +189,29 @@ export function OrchestratorConsole({
   }, []);
 
   /* ── complete: run Claude for each approved step ── */
-  const complete = async () => {
+  const decisionsFor = () =>
+    Object.fromEntries(
+      plan!.steps.map((s) => [s.skill, s.state === "skipped" ? "skipped" : "approved"]),
+    ) as Record<SkillId, Decision>;
+
+  // Risk dashboard is generated only when risk-scan is approved AND its viz sub-step is approved.
+  const recordViz = () => {
+    const rs = plan?.steps.find((s) => s.skill === "risk-scan");
+    const rsApproved = !!rs && rs.state !== "skipped";
+    onVizDecision?.(rsApproved && vizApproved);
+  };
+
+  /** Instant completion using seeded stub data (no API wait). */
+  const finishWithStub = () => {
+    if (!plan) return;
+    setStubPrompt(false);
+    recordViz();
+    onComplete?.(decisionsFor()); // no Claude executions -> buildExecution/TEST_DATA path
+    setCompleted(true);
+  };
+
+  /** Live completion: run Claude for each approved step. */
+  const runLive = async () => {
     if (!plan) return;
     setCompleting(true);
     setCompletionError(null);
@@ -197,19 +227,22 @@ export function OrchestratorConsole({
         claudeExecutions[step.skill] = execution;
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
-        // Surface the first error but continue with remaining steps
         if (!completionError) setCompletionError(msg);
       }
     }
 
     setCompletingStep(null);
-    const decisions = Object.fromEntries(
-      plan.steps.map((s) => [s.skill, s.state === "skipped" ? "skipped" : "approved"]),
-    ) as Record<SkillId, Decision>;
-
-    onComplete?.(decisions, Object.keys(claudeExecutions).length > 0 ? claudeExecutions : undefined);
+    recordViz();
+    onComplete?.(decisionsFor(), Object.keys(claudeExecutions).length > 0 ? claudeExecutions : undefined);
     setCompleting(false);
     setCompleted(true);
+  };
+
+  /** Entry point: live if a Claude key exists, otherwise offer stub mode. */
+  const complete = async () => {
+    if (!plan) return;
+    if (!getClaudeApiKey()) { setStubPrompt(true); return; }
+    await runLive();
   };
 
   const reset = () => {
@@ -228,6 +261,22 @@ export function OrchestratorConsole({
 
   return (
     <div className="flex flex-col gap-4">
+      {/* No Claude key -> offer instant stub data instead of waiting on the API */}
+      <Dialog open={stubPrompt} onOpenChange={setStubPrompt}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Claude API not found</DialogTitle>
+            <DialogDescription>
+              No Anthropic API key is configured, so live orchestration is unavailable. Continue with stub data for test mode? You can add a key under Manage to run live Claude orchestration.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-4 flex justify-end gap-2">
+            <Button variant="ghost" size="sm" onClick={() => setStubPrompt(false)}>Cancel</Button>
+            <Button size="sm" onClick={finishWithStub}>Continue with stub data</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* ── Input surface ── */}
       <div
         onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
@@ -337,6 +386,35 @@ export function OrchestratorConsole({
                     onSkip={() => setDecision(step, "skipped")}
                     onView={() => onViewSkill?.(step.skill)}
                   />
+
+                  {/* Risk-scan visualisation: a sub-step that slides down when risk-scan is approved */}
+                  {step.skill === "risk-scan" && !completed && (
+                    <AnimatePresence initial={false}>
+                      {step.state !== "skipped" && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="ml-3 mt-1.5 overflow-hidden"
+                        >
+                          <div className="rounded-lg border border-dashed border-border bg-muted/30 p-2.5">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="min-w-0">
+                                <p className="text-xs font-semibold text-foreground/80">↳ Risk dashboard (visualisation)</p>
+                                <p className="text-[11px] text-muted-foreground">Optional executive dashboard. Skip to save tokens; you can generate it on the artifact later.</p>
+                              </div>
+                              <div className="flex shrink-0 rounded-md border border-border p-0.5" role="group" aria-label="Generate risk visuals?">
+                                <button type="button" onClick={() => setVizApproved(true)} aria-pressed={vizApproved}
+                                  className={cn(SEG, vizApproved ? "bg-status-success-bg text-status-success" : "text-muted-foreground hover:bg-muted")}>Approve</button>
+                                <button type="button" onClick={() => setVizApproved(false)} aria-pressed={!vizApproved}
+                                  className={cn(SEG, !vizApproved ? "bg-status-na-bg text-status-na" : "text-muted-foreground hover:bg-muted")}>Skip</button>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  )}
                 </motion.li>
               ))}
             </AnimatePresence>

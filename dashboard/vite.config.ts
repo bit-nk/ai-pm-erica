@@ -1,42 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath, URL } from "node:url";
-
-/* ── Security: proxy request validation ────────────────────────────── */
-
-const ALLOWED_PROXY_METHODS = new Set(["GET", "POST", "PUT", "DELETE", "PATCH"]);
-
-/**
- * Returns true if the URL must be blocked:
- *  - Non-HTTPS scheme (file://, http://, etc.)
- *  - Loopback: localhost, 127.x.x.x, ::1
- *  - Link-local / cloud metadata: 169.254.x.x
- *  - RFC-1918 private ranges: 10.x, 172.16-31.x, 192.168.x
- *  - IPv6 ULA: fd00::/8
- *  - Wildcard / unspecified: 0.0.0.0
- */
-function isBlockedTarget(rawUrl: string): boolean {
-  let url: URL;
-  try {
-    url = new URL(rawUrl);
-  } catch {
-    return true; // unparseable → block
-  }
-
-  if (url.protocol !== "https:") return true;
-
-  const h = url.hostname.toLowerCase();
-
-  if (h === "localhost" || h === "0.0.0.0" || h === "::1") return true;
-  if (/^127\./.test(h)) return true;               // loopback
-  if (/^169\.254\./.test(h)) return true;           // link-local / IMDS
-  if (/^10\./.test(h)) return true;                 // RFC-1918 class A
-  if (/^172\.(1[6-9]|2\d|3[01])\./.test(h)) return true; // RFC-1918 class B
-  if (/^192\.168\./.test(h)) return true;           // RFC-1918 class C
-  if (/^fd[0-9a-f]{2}:/i.test(h)) return true;     // IPv6 ULA
-
-  return false;
-}
+import { ALLOWED_PROXY_METHODS, isBlockedTarget } from "./src/lib/proxyGuard";
 
 /**
  * Proxies POST /api/claude/v1/messages -> https://api.anthropic.com/v1/messages.
@@ -173,8 +138,40 @@ function confluenceProxyPlugin() {
   };
 }
 
+/**
+ * Inject a Content-Security-Policy meta tag into the PRODUCTION build only.
+ * Applied at build time (not in dev) because the Vite dev server relies on
+ * inline scripts, eval, and a websocket for HMR, which a strict CSP would break.
+ * The built app loads only same-origin hashed assets, so 'self' is sufficient.
+ */
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self'",
+  "style-src 'self' 'unsafe-inline'",   // runtime-injected style tags / inline styles
+  "img-src 'self' data: blob:",
+  "font-src 'self' data:",
+  "connect-src 'self' https://api.anthropic.com",
+  "worker-src 'self' blob:",            // pdfjs-dist web worker
+  "object-src 'none'",
+  "base-uri 'self'",
+  "frame-ancestors 'none'",
+].join("; ");
+
+function cspPlugin() {
+  return {
+    name: "csp-meta",
+    apply: "build" as const,
+    transformIndexHtml(html: string) {
+      return html.replace(
+        "</title>",
+        `</title>\n    <meta http-equiv="Content-Security-Policy" content="${CSP}" />`,
+      );
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [react(), claudeProxyPlugin(), confluenceProxyPlugin()],
+  plugins: [react(), claudeProxyPlugin(), confluenceProxyPlugin(), cspPlugin()],
   resolve: {
     alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
   },

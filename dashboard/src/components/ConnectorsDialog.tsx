@@ -137,8 +137,9 @@ function ClaudeRow({ connector: c }: { connector: McpConnector }) {
             </a>
           </div>
           <div className="rounded-lg bg-muted/50 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
-            Your key is stored in your browser (localStorage) and sent only to the local Vite dev proxy,
-            which forwards it to <code className="font-mono">api.anthropic.com</code>. It never leaves your machine.
+            Your key is stored in your browser for this tab only (sessionStorage, cleared when you close it)
+            and sent only to the local Vite dev proxy, which forwards it to{" "}
+            <code className="font-mono">api.anthropic.com</code>. It never leaves your machine.
           </div>
           <Button className="w-full" onClick={save} disabled={!key.trim()}>Save API key</Button>
         </div>

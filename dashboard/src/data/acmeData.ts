@@ -29,10 +29,10 @@ export const ACME_DATA: OnbData = {
   },
   "risk-scan": {
     risks: [
-      { risk: "Legacy billing API undocumented / unstable", category: "Technical", likelihood: "H", impact: "H", detectability: "Hard", velocity: "Fast", priority: "Act now", response: "Escalate", owner: "Tech Lead" },
-      { risk: "Historical invoice data quality poor", category: "Technical", likelihood: "M", impact: "H", detectability: "Moderate", velocity: "Slow", priority: "Contingency", response: "Mitigate", owner: "Data" },
-      { risk: "Payment provider integration scope creep", category: "Business", likelihood: "M", impact: "M", detectability: "Moderate", velocity: "Medium", priority: "Monitor", response: "Mitigate", owner: "PM" },
-      { risk: "SSO requirement surfaces late", category: "Stakeholder", likelihood: "M", impact: "M", detectability: "Moderate", velocity: "Slow", priority: "Monitor", response: "Accept", owner: "PM" },
+      { risk: "Legacy billing API undocumented / unstable", category: "Technical", likelihood: "H", impact: "H", detectability: "Hard", velocity: "Fast", priority: "Act now", response: "Escalate", proximity: "Week 1-2", owner: "Tech Lead" },
+      { risk: "Historical invoice data quality poor", category: "Technical", likelihood: "M", impact: "H", detectability: "Moderate", velocity: "Slow", priority: "Contingency", response: "Mitigate", proximity: "Month 2-3", owner: "Data" },
+      { risk: "Payment provider integration scope creep", category: "Business", likelihood: "M", impact: "M", detectability: "Moderate", velocity: "Medium", priority: "Monitor", response: "Mitigate", proximity: "Month 1", owner: "PM" },
+      { risk: "SSO requirement surfaces late", category: "Stakeholder", likelihood: "M", impact: "M", detectability: "Moderate", velocity: "Slow", priority: "Monitor", response: "Accept", proximity: "Later", owner: "PM" },
     ],
   },
   charter: {

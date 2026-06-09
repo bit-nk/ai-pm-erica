@@ -264,6 +264,8 @@ export type Velocity = "Fast" | "Medium" | "Slow";
 export type Priority = "act-now" | "monitor" | "contingency" | "log"; // red/amber/amber/green
 
 /* ---- /risk-scan : 4-dimension matrix (Likelihood x Impact x Detect x Velocity) ---- */
+export type RiskProximity = "Week 1-2" | "Month 1" | "Month 2-3" | "Later";
+
 export interface RiskEntry {
   ref: string; // R1, R2...
   risk: string;
@@ -274,6 +276,8 @@ export interface RiskEntry {
   velocity: Velocity;
   priority: Priority;
   owner: string;
+  /** When the risk is likely to materialise - drives the visualisation Timeline. */
+  proximity?: RiskProximity;
   /** Required when detectability is "Hard". */
   triggerSignal?: string;
   response: "Mitigate" | "Transfer" | "Avoid" | "Accept" | "Escalate";
