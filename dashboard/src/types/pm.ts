@@ -264,23 +264,45 @@ export type Velocity = "Fast" | "Medium" | "Slow";
 export type Priority = "act-now" | "monitor" | "contingency" | "log"; // red/amber/amber/green
 
 /* ---- /risk-scan : 4-dimension matrix (Likelihood x Impact x Detect x Velocity) ---- */
+export type RiskCategory =
+  | "Product" | "Customer" | "Adoption"
+  | "Delivery" | "Technical"
+  | "Security" | "Compliance"
+  | "Operational" | "Dependency"
+  | "Stakeholder" | "Business";
+
 export type RiskProximity = "Week 1-2" | "Month 1" | "Month 2-3" | "Later";
+
+export type Recommendation = "Proceed" | "Proceed with Conditions" | "Escalate" | "Pause";
 
 export interface RiskEntry {
   ref: string; // R1, R2...
   risk: string;
-  category: "Delivery" | "Technical" | "Stakeholder" | "Business";
+  category: RiskCategory;
   likelihood: HML;
   impact: HML;
   detectability: Detectability;
   velocity: Velocity;
   priority: Priority;
   owner: string;
-  /** When the risk is likely to materialise - drives the visualisation Timeline. */
+  /** When the risk is likely to materialise - drives the Timeline view. */
   proximity?: RiskProximity;
   /** Required when detectability is "Hard". */
   triggerSignal?: string;
   response: "Mitigate" | "Transfer" | "Avoid" | "Accept" | "Escalate";
+}
+
+export interface RiskAssumption {
+  assumption: string;
+  confidence: "High" | "Medium" | "Low";
+  riskIfWrong: string;
+}
+
+export interface RiskDecision {
+  decision: string;
+  owner: string;
+  by: string;
+  impactIfDelayed: string;
 }
 
 /** Pre-scaled coordinates (0-100) for the Recharts likelihood x impact matrix. */
@@ -297,8 +319,20 @@ export interface RiskScanPayload {
   phase: DeliveryPhase;
   depth: "low" | "medium" | "high";
   verdict: RagStatus;
+  /** Overall recommendation from the skill. */
+  recommendation?: Recommendation;
+  /** Conditions listed when recommendation is "Proceed with Conditions". */
+  conditions?: string[];
+  /** Stakeholder summary paragraph. */
+  stakeholderSummary?: string;
   register: RiskEntry[];
   matrix: RiskMatrixPoint[];
+  /** Key assumptions (Medium/High depth). */
+  assumptions?: RiskAssumption[];
+  /** Decisions needed with owners and deadlines. */
+  decisionsNeeded?: RiskDecision[];
+  /** Areas not assessed due to insufficient data. */
+  notAssessed?: { critical: string[]; secondary: string[] };
 }
 
 /* ---- /release-checklist : 7 categories, status flags, verdict banner ---- */

@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import {
-  CartesianGrid, Cell, ReferenceArea, ResponsiveContainer,
+  Bar, BarChart, CartesianGrid, Cell, ReferenceArea, ResponsiveContainer,
   Scatter, ScatterChart, Tooltip, XAxis, YAxis,
 } from "recharts";
 import { Sparkles } from "lucide-react";
 import {
   type RiskScanPayload, type RiskEntry, type Priority, type HML, type StatusTone, type RagStatus,
+  type RiskProximity,
   PRIORITY_TONE,
 } from "@/types/pm";
 import { cn } from "@/lib/utils";
@@ -14,19 +15,33 @@ import { Button } from "@/components/ui/button";
 import { StatusBadge } from "./StatusBadge";
 
 const PRIORITY_FILL: Record<Priority, string> = {
-  "act-now": "hsl(var(--status-danger))",
-  monitor: "hsl(var(--status-warning))",
-  contingency: "hsl(var(--status-warning))",
-  log: "hsl(var(--status-success))",
+  "act-now":    "hsl(var(--status-danger))",
+  monitor:      "hsl(var(--status-warning))",
+  contingency:  "hsl(var(--status-warning))",
+  log:          "hsl(var(--status-success))",
 };
 const PRIORITY_LABEL: Record<Priority, string> = {
-  "act-now": "Act now", monitor: "Monitor", contingency: "Contingency", log: "Log",
+  "act-now": "Act Now", monitor: "Monitor", contingency: "Contingency", log: "Log",
 };
 const PRIORITIES: Priority[] = ["act-now", "monitor", "contingency", "log"];
 const HML_TONE: Record<HML, StatusTone> = { H: "danger", M: "warning", L: "neutral" };
 const RAG_TONE: Record<RagStatus, StatusTone> = { red: "danger", amber: "warning", green: "success" };
+const CONFIDENCE_TONE: Record<string, StatusTone> = { High: "success", Medium: "warning", Low: "danger" };
+const PROXIMITY_ORDER: RiskProximity[] = ["Week 1-2", "Month 1", "Month 2-3", "Later"];
+const PROXIMITY_LABEL: Record<RiskProximity, string> = {
+  "Week 1-2":  "Immediate — Week 1–2",
+  "Month 1":   "Near-term — Month 1",
+  "Month 2-3": "Near-term — Month 2–3",
+  "Later":     "Watch — Later",
+};
+const PROXIMITY_TONE: Record<RiskProximity, StatusTone> = {
+  "Week 1-2":  "danger",
+  "Month 1":   "warning",
+  "Month 2-3": "warning",
+  "Later":     "neutral",
+};
 
-/** /risk-scan : matrix + scored register, filterable by priority (click a chip). */
+/** /risk-scan: executive cards + heatmap + category chart + urgency timeline + register. */
 export function RiskScanView({ payload }: { payload: RiskScanPayload }) {
   const ws = useWorkspace();
   // Was the visualisation generated during orchestration (or for a pre-built project)?
@@ -41,12 +56,42 @@ export function RiskScanView({ payload }: { payload: RiskScanPayload }) {
     if (ws.activeProjectId) ws.setRiskViz(ws.activeProjectId, true);
   };
 
+  // Priority counts for summary cards
+  const counts = { "act-now": 0, monitor: 0, contingency: 0, log: 0 } satisfies Record<Priority, number>;
+  for (const r of payload.register) counts[r.priority]++;
+
+  // Category distribution for bar chart
+  const catMap: Record<string, number> = {};
+  for (const r of payload.register) catMap[r.category] = (catMap[r.category] ?? 0) + 1;
+  const categoryData = Object.entries(catMap)
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, count]) => ({ name, count }));
+
+  // Timeline: group by proximity
+  const proximityGroups: Partial<Record<RiskProximity, typeof payload.register>> = {};
+  for (const r of payload.register) {
+    const key = (r.proximity ?? "Later") as RiskProximity;
+    if (!proximityGroups[key]) proximityGroups[key] = [];
+    proximityGroups[key]!.push(r);
+  }
+  const hasTimeline = payload.register.some((r) => r.proximity);
+
   return (
     <div className="space-y-4">
+      {/* ── Header ─────────────────────────────────────────────────── */}
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">Risk Analysis - {payload.project}</p>
-          <p className="text-sm text-muted-foreground">Phase: {payload.phase} - Depth: {payload.depth}</p>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">
+            Risk Analysis — {payload.project}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Phase: {payload.phase} · Depth: {payload.depth}
+          </p>
+          {payload.recommendation && (
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Recommendation: <span className="font-medium text-foreground">{payload.recommendation}</span>
+            </p>
+          )}
         </div>
         <div className="flex shrink-0 items-center gap-2">
           {vizApproved ? (
@@ -54,7 +99,6 @@ export function RiskScanView({ payload }: { payload: RiskScanPayload }) {
               <Sparkles className="h-3.5 w-3.5" /> {showDash ? "Hide dashboard" : "Show dashboard"}
             </Button>
           ) : (
-            // Visuals were skipped at orchestration: offer on-demand generation.
             <Button size="sm" variant="outline" className="gap-1.5" onClick={generate}>
               <Sparkles className="h-3.5 w-3.5" /> Generate dashboard
             </Button>
@@ -63,36 +107,152 @@ export function RiskScanView({ payload }: { payload: RiskScanPayload }) {
         </div>
       </div>
 
-      {showDash && <ExecutiveDashboard register={payload.register} />}
+      {/* ── Conditions banner ──────────────────────────────────────── */}
+      {payload.conditions && payload.conditions.length > 0 && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50/60 px-3 py-2 dark:border-amber-900/40 dark:bg-amber-950/30">
+          <p className="mb-1 text-xs font-semibold text-amber-800 dark:text-amber-300">Conditions to proceed</p>
+          <ul className="space-y-0.5 text-xs text-amber-700 dark:text-amber-400">
+            {payload.conditions.map((c, i) => <li key={i}>· {c}</li>)}
+          </ul>
+        </div>
+      )}
 
-      <div className="rounded-xl border border-border bg-card p-3 shadow-card">
-        <p className="mb-2 text-xs font-medium text-muted-foreground">Likelihood x Impact</p>
-        <ResponsiveContainer width="100%" height={300}>
-          <ScatterChart margin={{ top: 8, right: 16, bottom: 24, left: 8 }}>
-            <ReferenceArea x1={0} x2={50} y1={0} y2={50} fill="hsl(var(--heat-low))" fillOpacity={0.55} />
-            <ReferenceArea x1={50} x2={100} y1={0} y2={50} fill="hsl(var(--heat-mid))" fillOpacity={0.5} />
-            <ReferenceArea x1={0} x2={50} y1={50} y2={100} fill="hsl(var(--heat-mid))" fillOpacity={0.5} />
-            <ReferenceArea x1={50} x2={100} y1={50} y2={100} fill="hsl(var(--heat-high))" fillOpacity={0.55} />
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-            <XAxis
-              type="number" dataKey="x" domain={[0, 100]} tickCount={6} tick={{ fontSize: 11 }}
-              label={{ value: "Likelihood", position: "insideBottom", offset: -12, fontSize: 11 }}
-            />
-            <YAxis
-              type="number" dataKey="y" domain={[0, 100]} tickCount={6} tick={{ fontSize: 11 }}
-              label={{ value: "Impact", angle: -90, position: "insideLeft", fontSize: 11 }}
-            />
-            <Tooltip cursor={{ strokeDasharray: "3 3" }} content={<MatrixTooltip />} />
-            <Scatter data={payload.matrix} isAnimationActive={false}>
-              {payload.matrix.map((p) => (
-                <Cell key={p.ref} fill={PRIORITY_FILL[p.priority]} fillOpacity={pri && p.priority !== pri ? 0.15 : 1} />
-              ))}
-            </Scatter>
-          </ScatterChart>
-        </ResponsiveContainer>
+      {/* ── Executive Summary Cards ────────────────────────────────── */}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <SummaryCard label="Act Now" count={counts["act-now"]} tone="danger" />
+        <SummaryCard label="Monitor" count={counts.monitor + counts.contingency} tone="warning" />
+        <SummaryCard label="Low Priority" count={counts.log} tone="success" />
+        <SummaryCard
+          label="Decisions Needed"
+          count={payload.decisionsNeeded?.length ?? 0}
+          tone={payload.decisionsNeeded?.length ? "danger" : "neutral"}
+        />
       </div>
 
-      {/* Clickable priority legend - filters the register + dims the matrix */}
+      {showDash && <ExecutiveDashboard register={payload.register} />
+
+      {/* ── Heatmap + Category Distribution ───────────────────────── */}
+      <div className="grid gap-3 lg:grid-cols-2">
+        {/* Heatmap */}
+        <div className="rounded-xl border border-border bg-card p-3 shadow-card">
+          <p className="mb-2 text-xs font-medium text-muted-foreground">Risk Heatmap — Likelihood × Impact</p>
+          <ResponsiveContainer width="100%" height={240}>
+            <ScatterChart margin={{ top: 8, right: 16, bottom: 24, left: 8 }}>
+              <ReferenceArea x1={0} x2={50} y1={0} y2={50} fill="hsl(var(--heat-low))"  fillOpacity={0.55} />
+              <ReferenceArea x1={50} x2={100} y1={0} y2={50} fill="hsl(var(--heat-mid))" fillOpacity={0.5} />
+              <ReferenceArea x1={0} x2={50} y1={50} y2={100} fill="hsl(var(--heat-mid))" fillOpacity={0.5} />
+              <ReferenceArea x1={50} x2={100} y1={50} y2={100} fill="hsl(var(--heat-high))" fillOpacity={0.55} />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis
+                type="number" dataKey="x" domain={[0, 100]} tickCount={6}
+                tick={{ fontSize: 10 }}
+                label={{ value: "Likelihood", position: "insideBottom", offset: -12, fontSize: 10 }}
+              />
+              <YAxis
+                type="number" dataKey="y" domain={[0, 100]} tickCount={6}
+                tick={{ fontSize: 10 }}
+                label={{ value: "Impact", angle: -90, position: "insideLeft", fontSize: 10 }}
+              />
+              <Tooltip cursor={{ strokeDasharray: "3 3" }} content={<MatrixTooltip />} />
+              <Scatter data={payload.matrix} isAnimationActive={false}>
+                {payload.matrix.map((p) => (
+                  <Cell
+                    key={p.ref}
+                    fill={PRIORITY_FILL[p.priority]}
+                    fillOpacity={pri && p.priority !== pri ? 0.15 : 1}
+                  />
+                ))}
+              </Scatter>
+            </ScatterChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Category Distribution */}
+        <div className="rounded-xl border border-border bg-card p-3 shadow-card">
+          <p className="mb-2 text-xs font-medium text-muted-foreground">Risk Category Distribution</p>
+          {categoryData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={240}>
+              <BarChart
+                data={categoryData}
+                layout="vertical"
+                margin={{ top: 4, right: 20, bottom: 4, left: 8 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
+                <XAxis type="number" allowDecimals={false} tick={{ fontSize: 10 }} />
+                <YAxis
+                  type="category" dataKey="name" width={88}
+                  tick={{ fontSize: 10 }} tickLine={false}
+                />
+                <Tooltip
+                  cursor={{ fill: "hsl(var(--muted))", fillOpacity: 0.4 }}
+                  content={<CategoryTooltip />}
+                />
+                <Bar dataKey="count" radius={[0, 4, 4, 0]} isAnimationActive={false}>
+                  {categoryData.map((entry) => (
+                    <Cell
+                      key={entry.name}
+                      fill={
+                        entry.count >= 3
+                          ? "hsl(var(--status-danger))"
+                          : entry.count === 2
+                          ? "hsl(var(--status-warning))"
+                          : "hsl(var(--status-info))"
+                      }
+                      fillOpacity={0.8}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <p className="pt-4 text-center text-xs text-muted-foreground">No category data.</p>
+          )}
+        </div>
+      </div>
+
+      {/* ── Risk Timeline — Urgency View ───────────────────────────── */}
+      {hasTimeline && (
+        <div className="rounded-xl border border-border bg-card p-3 shadow-card">
+          <p className="mb-3 text-xs font-medium text-muted-foreground">Risk Timeline — Urgency View</p>
+          <div className="space-y-3">
+            {PROXIMITY_ORDER.map((prox) => {
+              const group = proximityGroups[prox];
+              if (!group?.length) return null;
+              return (
+                <div key={prox}>
+                  <div className="mb-1.5 flex items-center gap-2">
+                    <StatusBadge tone={PROXIMITY_TONE[prox]} className="text-[10px]">
+                      {prox}
+                    </StatusBadge>
+                    <span className="text-xs text-muted-foreground">{PROXIMITY_LABEL[prox]}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {group.map((r) => (
+                      <div
+                        key={r.ref}
+                        title={r.risk}
+                        className={cn(
+                          "flex max-w-[260px] items-center gap-1.5 rounded-lg border px-2 py-1",
+                          r.priority === "act-now"
+                            ? "border-red-200 bg-red-50/60 dark:border-red-900/40 dark:bg-red-950/30"
+                            : r.priority === "log"
+                            ? "border-emerald-200 bg-emerald-50/60 dark:border-emerald-900/40 dark:bg-emerald-950/30"
+                            : "border-amber-200 bg-amber-50/60 dark:border-amber-900/40 dark:bg-amber-950/30"
+                        )}
+                      >
+                        <span className="font-mono text-[10px] font-semibold shrink-0">{r.ref}</span>
+                        <span className="truncate text-xs">{r.risk}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── Priority filter chips ──────────────────────────────────── */}
       <div className="flex flex-wrap items-center gap-2">
         {PRIORITIES.map((k) => {
           const active = pri === k;
@@ -104,19 +264,27 @@ export function RiskScanView({ payload }: { payload: RiskScanPayload }) {
               onClick={() => setPri(active ? null : k)}
               className="rounded-full transition-transform hover:-translate-y-0.5"
             >
-              <StatusBadge tone={PRIORITY_TONE[k]} className={cn(active && "ring-2 ring-foreground/40", !active && "opacity-80")}>
+              <StatusBadge
+                tone={PRIORITY_TONE[k]}
+                className={cn(active && "ring-2 ring-foreground/40", !active && "opacity-80")}
+              >
                 {PRIORITY_LABEL[k]}
               </StatusBadge>
             </button>
           );
         })}
         {pri && (
-          <button type="button" onClick={() => setPri(null)} className="text-xs text-muted-foreground underline underline-offset-2">
+          <button
+            type="button"
+            onClick={() => setPri(null)}
+            className="text-xs text-muted-foreground underline underline-offset-2"
+          >
             Clear
           </button>
         )}
       </div>
 
+      {/* ── Risk Register table ────────────────────────────────────── */}
       <div className="overflow-x-auto rounded-xl border border-border bg-card shadow-card">
         <table className="w-full text-sm">
           <thead className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
@@ -124,13 +292,14 @@ export function RiskScanView({ payload }: { payload: RiskScanPayload }) {
               <th className="px-3 py-2">Ref</th>
               <th className="px-3 py-2">Risk</th>
               <th className="px-3 py-2">Category</th>
-              <th className="px-3 py-2">Likelihood</th>
-              <th className="px-3 py-2">Impact</th>
+              <th className="px-3 py-2">L</th>
+              <th className="px-3 py-2">I</th>
               <th className="px-3 py-2">Detect</th>
               <th className="px-3 py-2">Velocity</th>
               <th className="px-3 py-2">Priority</th>
               <th className="px-3 py-2">Response</th>
               <th className="px-3 py-2">Owner</th>
+              <th className="px-3 py-2">Proximity</th>
             </tr>
           </thead>
           <tbody>
@@ -146,14 +315,88 @@ export function RiskScanView({ payload }: { payload: RiskScanPayload }) {
                 <td className="px-3 py-2"><StatusBadge tone={PRIORITY_TONE[r.priority]}>{PRIORITY_LABEL[r.priority]}</StatusBadge></td>
                 <td className="px-3 py-2 text-muted-foreground">{r.response}</td>
                 <td className="px-3 py-2 text-muted-foreground">{r.owner}</td>
+                <td className="px-3 py-2 text-muted-foreground">
+                  {r.proximity
+                    ? <StatusBadge tone={PROXIMITY_TONE[r.proximity]} className="text-[10px]">{r.proximity}</StatusBadge>
+                    : <span className="text-muted-foreground/50">—</span>}
+                </td>
               </tr>
             ))}
             {register.length === 0 && (
-              <tr><td colSpan={10} className="px-3 py-6 text-center text-muted-foreground">No risks at this priority.</td></tr>
+              <tr>
+                <td colSpan={11} className="px-3 py-6 text-center text-muted-foreground">
+                  No risks at this priority.
+                </td>
+              </tr>
             )}
           </tbody>
         </table>
       </div>
+
+      {/* ── Key Assumptions ───────────────────────────────────────── */}
+      {payload.assumptions && payload.assumptions.length > 0 && (
+        <div className="rounded-xl border border-border bg-card shadow-card overflow-x-auto">
+          <div className="border-b border-border px-3 py-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Key Assumptions</p>
+          </div>
+          <table className="w-full text-sm">
+            <thead className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
+              <tr>
+                <th className="px-3 py-2">Assumption</th>
+                <th className="px-3 py-2 whitespace-nowrap">Confidence</th>
+                <th className="px-3 py-2 whitespace-nowrap">Risk if Wrong</th>
+              </tr>
+            </thead>
+            <tbody>
+              {payload.assumptions.map((a, i) => (
+                <tr key={i} className="border-b border-border/60 last:border-0">
+                  <td className="px-3 py-2">{a.assumption}</td>
+                  <td className="px-3 py-2">
+                    <StatusBadge tone={CONFIDENCE_TONE[a.confidence]}>{a.confidence}</StatusBadge>
+                  </td>
+                  <td className="px-3 py-2 text-muted-foreground">{a.riskIfWrong}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* ── Decisions Needed ──────────────────────────────────────── */}
+      {payload.decisionsNeeded && payload.decisionsNeeded.length > 0 && (
+        <div className="rounded-xl border border-border bg-card shadow-card overflow-x-auto">
+          <div className="border-b border-border px-3 py-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Decisions Needed</p>
+          </div>
+          <table className="w-full text-sm">
+            <thead className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
+              <tr>
+                <th className="px-3 py-2">Decision</th>
+                <th className="px-3 py-2">Owner</th>
+                <th className="px-3 py-2">By</th>
+                <th className="px-3 py-2 whitespace-nowrap">Impact if Delayed</th>
+              </tr>
+            </thead>
+            <tbody>
+              {payload.decisionsNeeded.map((d, i) => (
+                <tr key={i} className="border-b border-border/60 last:border-0">
+                  <td className="px-3 py-2">{d.decision}</td>
+                  <td className="px-3 py-2 text-muted-foreground whitespace-nowrap">{d.owner}</td>
+                  <td className="px-3 py-2 text-muted-foreground whitespace-nowrap">{d.by}</td>
+                  <td className="px-3 py-2 text-muted-foreground">{d.impactIfDelayed}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* ── Stakeholder Summary ───────────────────────────────────── */}
+      {payload.stakeholderSummary && (
+        <blockquote className="rounded-lg border-l-4 border-primary/40 bg-muted/40 px-4 py-3 text-sm italic text-muted-foreground">
+          {payload.stakeholderSummary}
+        </blockquote>
+      )}
     </div>
   );
 }
@@ -168,7 +411,6 @@ function countBy(arr: RiskEntry[], key: (r: RiskEntry) => string): [string, numb
   return [...m.entries()].sort((a, b) => b[1] - a[1]);
 }
 
-/** The `visualisation` skill rendered: summary cards + category/owner/urgency. */
 function ExecutiveDashboard({ register }: { register: RiskEntry[] }) {
   const total = register.length;
   const reds = register.filter((r) => RAG_OF[r.priority] === "red").length;
@@ -235,17 +477,59 @@ function Distribution({ title, data, total }: { title: string; data: [string, nu
   );
 }
 
-interface TooltipProps {
+/* ── Sub-components ─────────────────────────────────────────────────── */
+
+function SummaryCard({ label, count, tone }: { label: string; count: number; tone: StatusTone }) {
+  const colours: Record<StatusTone, string> = {
+    danger:  "border-red-200 bg-red-50/60 dark:border-red-900/40 dark:bg-red-950/30",
+    warning: "border-amber-200 bg-amber-50/60 dark:border-amber-900/40 dark:bg-amber-950/30",
+    success: "border-emerald-200 bg-emerald-50/60 dark:border-emerald-900/40 dark:bg-emerald-950/30",
+    info:    "border-blue-200 bg-blue-50/60 dark:border-blue-900/40 dark:bg-blue-950/30",
+    neutral: "border-border bg-muted/40",
+    na:      "border-border bg-muted/40",
+  };
+  const textColours: Record<StatusTone, string> = {
+    danger:  "text-red-700 dark:text-red-400",
+    warning: "text-amber-700 dark:text-amber-400",
+    success: "text-emerald-700 dark:text-emerald-400",
+    info:    "text-blue-700 dark:text-blue-400",
+    neutral: "text-foreground",
+    na:      "text-muted-foreground",
+  };
+  return (
+    <div className={cn("rounded-xl border px-3 py-2.5", colours[tone])}>
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className={cn("text-2xl font-bold tabular-nums", textColours[tone])}>{count}</p>
+    </div>
+  );
+}
+
+interface MatrixTooltipProps {
   active?: boolean;
   payload?: { payload: { ref: string; x: number; y: number } }[];
 }
-function MatrixTooltip({ active, payload }: TooltipProps) {
+function MatrixTooltip({ active, payload }: MatrixTooltipProps) {
   if (!active || !payload?.length) return null;
   const p = payload[0].payload;
   return (
     <div className="rounded-md border border-border bg-popover px-2 py-1 text-xs shadow-pop">
       <p className="font-mono font-semibold">{p.ref}</p>
-      <p className="text-muted-foreground">Likelihood {p.x} - Impact {p.y}</p>
+      <p className="text-muted-foreground">Likelihood {p.x} · Impact {p.y}</p>
+    </div>
+  );
+}
+
+interface CategoryTooltipProps {
+  active?: boolean;
+  payload?: { value: number }[];
+  label?: string;
+}
+function CategoryTooltip({ active, payload, label }: CategoryTooltipProps) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="rounded-md border border-border bg-popover px-2 py-1 text-xs shadow-pop">
+      <p className="font-medium">{label}</p>
+      <p className="text-muted-foreground">{payload[0].value} risk{payload[0].value !== 1 ? "s" : ""}</p>
     </div>
   );
 }
