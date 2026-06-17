@@ -4,6 +4,23 @@ All notable changes to AI PM Assistant are recorded here.
 
 ---
 
+## [3.2.0] - 2026-06-17
+
+### Risk-scan pre-scan interview protocol
+
+1. `skills/risk-scan/intake.md` — new structured 13-question interview protocol run before every risk analysis. Questions are asked one at a time; conditional questions trigger only when their signal (date gap, named dependencies, explicit risks, T&M model, multi-phase scope, team composition, compliance requirements, tight timeline, third-party integrations, or ambiguous phase) is detected in the input. The interview gates analysis: no output is generated until Q13 (the open risk question) has been answered.
+2. `SKILL.md` updated to `version: 3.2.0`. Step 1 now reads `intake.md` and enforces the interview; the old "What to Gather" table is replaced with four rules (one question at a time, scan for signals, no skipping, gate on Q13).
+3. Output quality rules tightened: top-risks detail no longer restates register scores; the stakeholder summary is explicitly a synthesised paragraph, not a risk re-list; a new no-repetition rule across sections is enforced.
+
+### Dashboard sample data enrichment
+
+1. Risk-scan sample in `dashboard/src/data/sampleArtifacts.ts` gains four new top-level fields: `recommendation` (Proceed / Proceed with Conditions / Do Not Proceed), `conditions` (array of named pre-conditions), `stakeholderSummary` (executive paragraph), and `decisionsNeeded` (array of decisions with owner and deadline).
+2. Each register entry gains a `proximity` field (`Week 1-2` / `Month 1` / `Month 2-3` / `Later`) consistent with the timeline visualisation added in v3.1.
+3. Risk descriptions and categories updated to match the tighter output rules: `Business` split into `Stakeholder` where appropriate; descriptions are more specific and project-contextual.
+4. An `assumptions` array is added to the sample, each with `confidence` and `riskIfWrong` fields.
+
+---
+
 ## [3.1.0] - 2026-06-08
 
 v3.1 is **additive** to v3.0: it sharpens the live Claude orchestrator, splits

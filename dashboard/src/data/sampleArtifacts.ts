@@ -55,12 +55,20 @@ export const SAMPLE_ARTIFACTS: Partial<Record<SkillId, SkillExecution>> = {
     phase: "pre-project",
     depth: "medium",
     verdict: "red",
+    recommendation: "Proceed with Conditions",
+    conditions: [
+      "Confirm event streaming infrastructure (Kafka consumer) is available before Week 3 build start",
+      "Lock notification channel scope (email + in-app only) in writing with Sarah Chen before Sprint 1",
+      "Budget approval for Redis and SendGrid secured before development begins",
+    ],
+    stakeholderSummary:
+      "We are at risk of missing the 6-week Salesforce deadline due to unconfirmed infrastructure and an under-scoped budget. Recommended leadership action: lock scope to email-only MVP, spike Kafka readiness in Week 1, and get written sign-off from Sarah Chen on the channel list.",
     register: [
-      { ref: "R1", risk: "6-week deadline unachievable for full scope", category: "Delivery", likelihood: "H", impact: "H", detectability: "Easy", velocity: "Fast", priority: "act-now", owner: "PM", response: "Mitigate" },
-      { ref: "R2", risk: "Real-time needs event streaming infra not in place", category: "Technical", likelihood: "M", impact: "H", detectability: "Hard", velocity: "Fast", triggerSignal: "Spike shows no Kafka consumer for payments", priority: "act-now", owner: "Tech Lead", response: "Escalate" },
-      { ref: "R3", risk: "Notification channel scope expands mid-sprint", category: "Business", likelihood: "H", impact: "M", detectability: "Moderate", velocity: "Medium", priority: "monitor", owner: "PM", response: "Mitigate" },
-      { ref: "R4", risk: "$80k budget insufficient if webhook infra needed", category: "Business", likelihood: "M", impact: "H", detectability: "Moderate", velocity: "Slow", priority: "contingency", owner: "PM", response: "Transfer" },
-      { ref: "R5", risk: "Per-client config complexity underestimated", category: "Technical", likelihood: "M", impact: "M", detectability: "Moderate", velocity: "Slow", priority: "monitor", owner: "PM", response: "Mitigate" },
+      { ref: "R1", risk: "6-week deadline unachievable if scope extends beyond email-only MVP", category: "Delivery", likelihood: "H", impact: "H", detectability: "Easy", velocity: "Fast", priority: "act-now", owner: "PM", response: "Mitigate", proximity: "Week 1-2" },
+      { ref: "R2", risk: "Real-time event streaming requires Kafka consumer not yet confirmed in prod", category: "Technical", likelihood: "M", impact: "H", detectability: "Hard", velocity: "Fast", triggerSignal: "Spike in Week 1 shows no active Kafka consumer for payment events", priority: "act-now", owner: "Tech Lead", response: "Escalate", proximity: "Week 1-2" },
+      { ref: "R3", risk: "Notification channel scope expands mid-sprint after stakeholder demos", category: "Stakeholder", likelihood: "H", impact: "M", detectability: "Moderate", velocity: "Medium", priority: "monitor", owner: "PM", response: "Mitigate", proximity: "Month 1" },
+      { ref: "R4", risk: "$80k budget insufficient if webhook infrastructure is added in Sprint 2", category: "Business", likelihood: "M", impact: "H", detectability: "Moderate", velocity: "Slow", priority: "contingency", owner: "PM", response: "Transfer", proximity: "Month 1" },
+      { ref: "R5", risk: "Per-client configuration complexity underestimated — recipient rules vary by enterprise", category: "Technical", likelihood: "M", impact: "M", detectability: "Moderate", velocity: "Slow", priority: "monitor", owner: "PM", response: "Mitigate", proximity: "Later" },
     ],
     matrix: [
       { ref: "R1", x: 80, y: 80, priority: "act-now" },
@@ -68,6 +76,15 @@ export const SAMPLE_ARTIFACTS: Partial<Record<SkillId, SkillExecution>> = {
       { ref: "R3", x: 80, y: 50, priority: "monitor" },
       { ref: "R4", x: 50, y: 80, priority: "contingency" },
       { ref: "R5", x: 50, y: 50, priority: "monitor" },
+    ],
+    assumptions: [
+      { assumption: "Kafka event layer is already deployed and accessible in the production environment", confidence: "Medium", riskIfWrong: "Real-time delivery is blocked; fallback to polling adds 3–5 days of rework" },
+      { assumption: "Sarah Chen will approve email-only as the MVP channel without requiring webhooks", confidence: "Medium", riskIfWrong: "Scope expands to webhook delivery in Sprint 1, making the 6-week deadline impossible" },
+      { assumption: "$80k budget is sufficient for email-only MVP with Redis dedup and SendGrid", confidence: "High", riskIfWrong: "Budget overrun requires sponsor approval and may delay Sprint 2 start" },
+    ],
+    decisionsNeeded: [
+      { decision: "Lock MVP scope to email-only notifications — no webhooks in Sprint 1", owner: "Sarah Chen", by: "2026-06-10", impactIfDelayed: "Sprint 1 planning cannot be finalised; team risks building to the wrong scope" },
+      { decision: "Confirm Kafka consumer availability in production before Week 3 build", owner: "Marcus Reid (Tech Lead)", by: "2026-06-13", impactIfDelayed: "R2 becomes a live blocker; real-time delivery falls back to polling" },
     ],
   }),
 

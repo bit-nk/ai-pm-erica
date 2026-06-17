@@ -2,7 +2,7 @@
 name: risk-scan
 description: Identifies, evaluates, and recommends mitigation strategies for project risks across any phase of delivery. Use whenever a PM needs continuous risk discovery or decision support - including when someone says "analyse the risks on this project", "do a full risk analysis", "we need a risk review", "what risks should I be tracking right now", "update the risk picture", or shares project context and wants a structured risk assessment. It runs at any depth, from a fast initial pre-screen right after triage (Low depth) through to ongoing risk discovery across all project phases (Discovery through Deployment), adjusting depth to how much time the PM has. Use it at any phase gate, after significant scope changes, or when the risk landscape feels unclear.
 
-version: 3.1.0
+version: 3.2.0
 argument-hint: <project context, phase, and known risks>
 allowed-tools: Read
 ---
@@ -11,23 +11,18 @@ allowed-tools: Read
 
 $ARGUMENTS
 
-*If no input is provided above, ask: "Please share the project context - name, phase, timeline, known risks, and any recent changes."*
+*If no input is provided above, ask: "Please share the project context — name, phase, timeline, known risks, and any recent changes."*
 
 ---
 
-# Before Starting - What to Gather
+# Step 1: Run the Pre-Scan Interview
 
-Extract or ask for these before writing anything:
+Before writing any analysis, read `skills/risk-scan/intake.md` and follow the interview protocol exactly.
 
-| Input | Required? | Why |
-|---|---|---|
-| Project context | Yes | Scope, timeline, stakeholders, goals - without this, risks are generic |
-| Current phase | Yes | Risk profile changes by phase - read `phase-guide.md` for phase-specific profiles |
-| Known constraints | No | Fixed deadlines, budget caps - these turn risks into near-certainties |
-| Recent changes | No | Scope, team, or requirement changes are a primary risk source |
-| Depth needed | No | Default Medium - see depth table below |
-
-If project context or current phase is missing, ask before proceeding.
+- Scan the input for signals listed in intake.md to determine which conditional questions apply
+- Ask **one question at a time** — present the question, offer the suggested answers, wait for the response, then move to the next
+- Do not skip the interview even if the input appears complete
+- Do not proceed to analysis until Q13 (the open risk question) has been answered
 
 ---
 
@@ -115,11 +110,11 @@ Before finalising the report:
 - Avoid generic risks that could apply to any project.
 - Every 🔴 risk must have a named owner.
 - Every Hard-detectability risk must include a trigger signal.
-- Validation experiments must test a specific assumption.
 - Decisions Needed should only include items requiring authority beyond the PM.
 - Include product, customer, and adoption risks where relevant.
 - If a major risk area cannot be evaluated, record it in Not Assessed.
 - Prefer fewer high-quality risks over many generic risks.
+- No information should be repeated across sections: the Register holds scores and ownership; Top Risks Detail adds root cause and action only; Stakeholder Summary synthesises themes, not individual risks; Key Assumptions must be distinct from risks in the register.
 
 Do not generate more than:
 - 5 assumptions
@@ -188,19 +183,17 @@ Maximum 3 items.
 
 ---
 
-### Top Risks - Detail
+### Top Risks — Detail
 *(Every 🔴 risk; if none, top 2 🟡)*
 
-**R[N] - [Name]**
+Expand only on what the register table cannot hold. Do not restate the risk description, scores, or owner — those are already in the table.
 
-- What could happen: [Specific bad outcome]
-- Root cause: [Underlying reason]
-- Why exposed: [Project-specific context]
-- Trigger signal: [Observable event]
-- Velocity: [How quickly it escalates]
-- Risk score: [Qualitative summary]
+**R[N] — [Short name]**
+
+- Root cause: [Underlying reason this risk exists]
+- Why exposed: [What in this specific project creates the exposure]
+- Trigger signal: [Observable event that confirms the risk is materialising]
 - Action: [Who does what by when]
-
 
 ---
 
@@ -209,11 +202,7 @@ Maximum 3 items.
 
 > "We are at risk of [outcome] due to [cause]. Recommended action: [next step]."
 
-Summarise the major themes, trade-offs, and leadership implications.
-
-Do not simply repeat risks.
-
-Summarise themes, trade-offs, and leadership implications.
+Write as an executive paragraph covering: dominant risk theme, key trade-off leadership must make, and the single most important next action. Do not re-list individual risks by name or restate register content — synthesise only.
 
 ---
 
