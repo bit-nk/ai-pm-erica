@@ -4,6 +4,19 @@ All notable changes to AI PM Assistant are recorded here.
 
 ---
 
+## [3.3.0] - 2026-06-18
+
+### PRD intake interview protocol
+
+1. `skills/prd/intake.md` — new 10-question intake interview run before every PRD or BRD. Questions are asked one at a time; six conditional questions trigger only when their signal is detected in the input (`no-discovery`, `stale-input`, `regulated`, `no-out-of-scope`, `integration-heavy`, `locale-specific`). Q10 (open risks and gaps) is the gate: no PRD is generated until it has been answered.
+2. `skills/prd/SKILL.md` updated to `version: 3.1.0`. Restructured into seven numbered steps: intake interview → confirm feature areas → translate source material into requirements → requirement quality rules → error state enumeration → coverage check → output. The old "What to Gather First" table and flat instruction block are replaced by this stepped workflow.
+3. Requirements quality rules tightened: one FR per observable behaviour; no adjectives without numbers; error states are their own FRs; no TBD inside an FR; smell-check list catches copy-pasted deliverables, vague error messages, duplicate FRs, and misplaced process rules.
+4. Coverage check added (Step 6): verifies that performance, security, accessibility, availability, data retention, account deletion, audit logging, API rate limiting, session management, browser/device support, and localisation are each placed in an NFR row, a constraint, or an explicit out-of-scope entry — never silently omitted.
+5. Scope Changes section added to the output template: any item the intake interview surfaces that contradicts or extends the source document is logged explicitly as a numbered change with before/after and a confirmation owner.
+6. NFR targets collected during the interview (Q5b) are written into the NFR table immediately with `[NEEDS TARGET]` for unknowns — not deferred to after generation.
+
+---
+
 ## [3.2.0] - 2026-06-17
 
 ### Risk-scan pre-scan interview protocol

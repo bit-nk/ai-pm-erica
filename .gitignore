@@ -39,3 +39,7 @@ Clients/
 
 # Logs
 *.log
+
+# Local reference material — books, PDFs, personal notes
+Books/
+*.pdf

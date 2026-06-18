@@ -168,7 +168,9 @@ Plans a discovery workshop or structures the output from one. Produces a facilit
 <summary><strong>prd</strong> - Full Product Requirements Document</summary>
 
 **What it does:**  
-Produces a complete PRD: problem statement, goals, non-goals, user stories, functional requirements, edge cases, and open questions.
+Runs a structured 10-question intake interview before writing — asking one question at a time to confirm document type (PRD vs BRD), scope boundaries, target users, success metrics, constraints, and NFR targets. Conditional questions trigger automatically when signals like stale input, regulated context, or missing out-of-scope items are detected. No document is generated until the final gate question is answered.
+
+Once intake is complete it produces a full PRD or BRD: purpose and background, goals and success metrics, users and stakeholders, assumptions and constraints, functional requirements (grouped by feature area with error states as first-class FRs), non-functional requirements (with concrete targets), out-of-scope items, dependencies, open questions, and sign-off table. Any scope divergence from the source document is logged in a dedicated Scope Changes section.
 
 **When to use:**  
 - Documenting requirements for a new feature or product  
