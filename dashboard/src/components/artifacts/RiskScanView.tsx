@@ -129,7 +129,7 @@ export function RiskScanView({ payload }: { payload: RiskScanPayload }) {
         />
       </div>
 
-      {showDash && <ExecutiveDashboard register={payload.register} />
+      {showDash && <ExecutiveDashboard register={payload.register} />}
 
       {/* ── Heatmap + Category Distribution ───────────────────────── */}
       <div className="grid gap-3 lg:grid-cols-2">
